@@ -6,7 +6,7 @@
 
 */
 ({
-    sourceDir: "../src",
+    sourceDir: "../sqlcode/wwwroot",
     buildDir: "./build",
     targetDir: null,
     autoTargetDirExp: "${new Date().toISOString().replace(/[-T:]/g, '').substring(0, 12)}",
@@ -73,23 +73,9 @@
                     "libs/feature-detect",
                     "libs/require",
                     "libs/text",
-                    "libs/test",
-                    "spa/template",
-                    "spa/cors-template",
-                    "spa/cors-text",
-                    "template!views/templates/unbundled-parametrized-view.html",
-                    "text!views/templates/unbundled-text-view.html",
-                    "text!views/modules/new-bundle/template.html",
-                    "views/modules/new-bundle/module-view"
+                    "spa/template"
                 ],
                 entryPoint: true
-            },
-            'views/modules/new-bundle/module-view': {
-                includes: [
-                    "text!views/modules/new-bundle/template.html",
-                    "views/modules/new-bundle/module-view"
-                ],
-                excludes: []
             }
         }
     }

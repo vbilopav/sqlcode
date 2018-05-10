@@ -1,4 +1,4 @@
 var fs = require("fs");
 
-fs.copyFileSync("./node_modules/requirejs/require.js", "./src/libs/require.js");
-fs.copyFileSync("./node_modules//requirejs-text/text.js", "./src/libs/text.js");
+fs.copyFileSync("./node_modules/requirejs/require.js", "./sqlcode/wwwroot/libs/require.js");
+fs.copyFileSync("./node_modules/requirejs-text/text.js", "./sqlcode/wwwroot/libs/text.js");

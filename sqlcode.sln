@@ -12,10 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build-system", "_build-sys
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_config", "_config", "{7B9BC057-C88D-4145-B360-8D70BD588B1A}"
 	ProjectSection(SolutionItems) = preProject
-		src\_build-system\_config\app.js = src\_build-system\_config\app.js
-		src\_build-system\_config\bundle-main.js = src\_build-system\_config\bundle-main.js
-		src\_build-system\_config\css.js = src\_build-system\_config\css.js
-		src\_build-system\_config\libs.js = src\_build-system\_config\libs.js
 		src\_build-system\_config\user-config.js = src\_build-system\_config\user-config.js
 	EndProjectSection
 EndProject
