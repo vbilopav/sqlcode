@@ -3,17 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "npgsqlcode", "src\sqlcode\npgsqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build-system", "_build-system", "{D9B8078D-D2C9-4BA2-8D3C-03CFF47309E9}"
-	ProjectSection(SolutionItems) = preProject
-		src\_build-system\build.js = src\_build-system\build.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_config", "_config", "{7B9BC057-C88D-4145-B360-8D70BD588B1A}"
-	ProjectSection(SolutionItems) = preProject
-		src\_build-system\_config\user-config.js = src\_build-system\_config\user-config.js
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "npgsqlcode", "src\sqlcode\npgsqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,9 +18,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{7B9BC057-C88D-4145-B360-8D70BD588B1A} = {D9B8078D-D2C9-4BA2-8D3C-03CFF47309E9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E213EB42-A251-4EE4-9EF3-E60E96415B3C}
