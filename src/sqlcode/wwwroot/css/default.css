@@ -1,0 +1,21 @@
+#container {
+    padding-top: 50px;
+}
+@media (max-width: 767px) {
+    #container {
+        padding-top: 120px;
+    }
+}
+
+#loading-screen {
+    width: 100%;
+    margin-left: 40%;
+    margin-top: 10%;
+    font-size: 5em;
+}
+.not-found{
+    width: 100%;
+    margin-left: 40%;
+    margin-top: 10%;
+    font-size: 8em;
+}
