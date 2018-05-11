@@ -1,0 +1,25 @@
+#main {
+  position: absolute;
+  grid-template-columns: 200px 5px auto;
+  display: grid;
+  left: 0px;
+  top: 0px;  
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+#left {
+  grid-column: 1;
+  padding-left: 50px;
+}
+
+#main-split {
+  grid-column: 2;
+  background-color: #333333;;
+}
+
+#right {
+  grid-column: 3
+}
+

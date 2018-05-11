@@ -16,6 +16,7 @@
         document.write(
             '<link rel="stylesheet" href="' + u + 'default.css"' + q + '" />' +
             '<link rel="stylesheet" href="' + u + 'index.css"' + q + '" />' +
+            '<link rel="stylesheet" href="' + u + 'main.css"' + q + '" />' +
             '<link rel="stylesheet" href="' + u + 'toolbar.css"' + q + '" />' +
             '<link rel="stylesheet" href="' + u + 'footer.css"' + q + '" />' +
             '<link rel="stylesheet" href="' + u + 'icons.css"' + q + '" />'
@@ -25,7 +26,7 @@
 <body>
 
     <div id="loading-screen" style="display: none" class="align-center"></div>
-    <script type="text/javascript">
+    <script id="loading-screen-script" type="text/javascript">
         document.getElementById("loading-screen").innerHTML = "&#8987;";
         document.write('<script src="' + (window._spa && window._spa.libsUrl ? window._spa.libsUrl : "") + '/feature-detect.js">\x3C/script>');
     </script>
