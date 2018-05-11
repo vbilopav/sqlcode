@@ -47,22 +47,31 @@ define([], () => {
 
     HTMLElement.prototype.css = function(property, value) {
         if (!this._styles) {
-            this._styles = window.getComputedStyle(this);
+            this._styles = Object.assign({}, window.getComputedStyle(this));
         }
         if (value !== undefined) {
-            this._styles[property] = this.style[property] = value;
+            this._styles[property] = value;
+            this.style[property] = value;
             return this
         }
-        return this._styles[property];
+        let result = this._styles[property];
+        if (result === undefined) {
+            return this._styles[property.toCamelCase()];
+        }
+        return result;
     }
 
     HTMLElement.prototype.on = function(eventName, eventHandler) {
-        this.addEventListener(eventName, eventHandler);
+        for(let e of eventName.split(" ")) {
+            this.addEventListener(e, eventHandler);
+        }
         return this;
     }
 
     HTMLElement.prototype.off = function(eventName, eventHandler) {
-        this.removeEventListener(eventName, eventHandler);
+        for(let e of eventName.split(" ")) {
+            this.removeEventListener(e, eventHandler);
+        }
         return this;
     }
 
@@ -75,6 +84,10 @@ define([], () => {
             return this;
         }
         return this._data[key];
+    }
+
+    String.prototype.toCamelCase = function() {
+        return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
     }
 
     //

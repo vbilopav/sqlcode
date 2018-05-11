@@ -11,6 +11,26 @@ define(["text!layout.html"], layout => {
         mainSplit = main.children[1],
         right = main.children[2];
 
+    mainSplit.on("mousedown", (e) => {
+        e.target.data("moving", true);
+        e.target.data("clientX", e.clientX);
+    //}).on("mouseup", (e) => {
+    //    e.target.data("moving", false);
+    }).on("mouseout mousemove", (e) => {
+        if (!e.target.data("moving")) {
+            return
+        }
+        let diffX = e.target.data("clientX") - e.clientX;
+        let l = main.css("grid-template-columns").split(" ")[0].replace("px", "");
+        main.css("grid-template-columns", l - diffX + "px 5px auto");
+        //console.log(diffX);
+        e.target.data("clientX", e.clientX);
+    });
+
+    window.addEventListener("mouseup", () => {
+        mainSplit.data("moving", false);
+    });
+
     return () => {
         document.body.find("#loading-screen").remove();
         document.body.find("#loading-screen-script").remove();
