@@ -6,6 +6,7 @@
     height: 100%;
     font-size: 28px;
     padding-top: 10px;
+    padding-left: 3px;
 }
 .tbarBtn {
     cursor: pointer
