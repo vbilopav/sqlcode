@@ -13,13 +13,22 @@
   grid-column: 1;
   padding-left: 50px;
 }
-
-#main-split {
+#split {
   grid-column: 2;
-  background-color: #333333;;
 }
-
 #right {
   grid-column: 3
 }
 
+
+.control {
+  color: #ADADAD;
+  background-color: #333333;
+}
+.active {
+  color: #ADADAD;
+  background-color: #242425;
+}
+.splitter-h {
+  cursor: ew-resize;
+}

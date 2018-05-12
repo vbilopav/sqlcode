@@ -1,5 +1,11 @@
-define(["text!layout.html"], layout => {
-    
+define([
+    "text!layout.html",
+    "splitter"
+], (
+    layout,
+    Splitter
+) => {
+
     document.title = "sql code";
 
     const 
@@ -8,28 +14,8 @@ define(["text!layout.html"], layout => {
         main = app.children[1],
         footer = app.children[2],
         left = main.children[0],
-        mainSplit = main.children[1],
+        splitter = new Splitter({element: main.children[1], direction: "h", resize: 0, auto: 2}),
         right = main.children[2];
-
-    mainSplit.on("mousedown", (e) => {
-        e.target.data("moving", true);
-        e.target.data("clientX", e.clientX);
-    //}).on("mouseup", (e) => {
-    //    e.target.data("moving", false);
-    }).on("mouseout mousemove", (e) => {
-        if (!e.target.data("moving")) {
-            return
-        }
-        let diffX = e.target.data("clientX") - e.clientX;
-        let l = main.css("grid-template-columns").split(" ")[0].replace("px", "");
-        main.css("grid-template-columns", l - diffX + "px 5px auto");
-        //console.log(diffX);
-        e.target.data("clientX", e.clientX);
-    });
-
-    window.addEventListener("mouseup", () => {
-        mainSplit.data("moving", false);
-    });
 
     return () => {
         document.body.find("#loading-screen").remove();
@@ -37,12 +23,3 @@ define(["text!layout.html"], layout => {
         app.show();
     }
 });
-/*
-style = window.getComputedStyle(main)
-style.gridTemplateColumns
-"200px 5px 343px"
-main.style.gridTemplateColumns = "400px 5px 343px"
-"400px 5px 343px"
-main.style.gridTemplateColumns = "400px 5px auto"
-"400px 5px auto"
-*/

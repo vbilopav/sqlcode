@@ -11,6 +11,7 @@ define([], () => {
 
     test(HTMLElement, [
         "find", "show", "hide", "html",
+        "addClass", "removeClass",
         "css", "_styles",
         "on", "off",
         "data", "_data"
@@ -45,9 +46,36 @@ define([], () => {
         return this;
     }
 
+    HTMLElement.prototype.addClass = function(className) {
+        if (this.classList) {
+            this.classList.add(className);
+        } else {
+            this.className += " " + className;
+        }
+        return this;
+    }
+
+    HTMLElement.prototype.removeClass = function(className) {
+        if (this.classList) {
+            this.classList.remove(className);
+        } else {
+            this.className = this.className.replace(
+                new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " "
+            );
+        }
+        return this;
+    }
+
     HTMLElement.prototype.css = function(property, value) {
         if (!this._styles) {
-            this._styles = Object.assign({}, window.getComputedStyle(this));
+            this._styles = {};
+            let styles = window.getComputedStyle(this);
+            for(let style in styles) {
+                if (!isNaN(style)) {
+                    continue;
+                }
+                this._styles[style] = styles[style];
+            }
         }
         if (value !== undefined) {
             this._styles[property] = value;
@@ -89,6 +117,11 @@ define([], () => {
     String.prototype.toCamelCase = function() {
         return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
     }
+
+    test(Document, ["on", "off"]);
+    test(Window, ["on", "off"]);
+    Document.prototype.on = HTMLElement.prototype.on;
+    Window.prototype.off = HTMLElement.prototype.off;
 
     //
     // lit-html vs code extension support

@@ -8,8 +8,6 @@ html {
   font-family: 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback';
   font-size: 14px;
   line-height: 1.15;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
   -ms-overflow-style: scrollbar;
   -webkit-tap-highlight-color: transparent;
 }
@@ -37,17 +35,4 @@ body {
   margin-top: auto;
   margin-bottom: auto;
   text-align: center;
-}
-
-.control {
-  color: #ADADAD;
-  background-color: #333333;
-}
-.active {
-  color: #ADADAD;
-  background-color: #242425;
-}
-
-.splitter-h {
-  cursor: ew-resize;
 }
