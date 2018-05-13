@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" id="_spa">window._spa = {version: "", appUrl: "app", cssUrl: "css", libsUrl: "libs", sysPath: "spa", settings: {usePreloadedTemplates: false}};</script>
+    <script type="text/javascript" id="_spa">window._spa = {version: "", appUrl: "app", cssUrl: "css", libsUrl: "libs", sysPath: "_sys", settings: {usePreloadedTemplates: false}};</script>
     <script>var require = {baseUrl: window._spa.appUrl}; if (window._spa && window._spa.version) {require.urlArgs = "v=" + window._spa.version;}</script>
     
     <meta charset="utf-8">
@@ -62,7 +62,7 @@
             paths: {
                 libs: libs,
                 text: ["https://cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text.min", "libs/text"],
-                sys: sysUrl,
+                spa: sysUrl,
                 template: sysUrl + "template"
             }
         });

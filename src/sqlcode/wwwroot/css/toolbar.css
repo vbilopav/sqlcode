@@ -8,10 +8,11 @@
     padding-top: 10px;
 }
 .btn {
-    cursor: pointer
+    margin: 2px;
+    cursor: pointer;
 }
 .btn:hover {
-    color: white
+    color: white;
 }
 .bottom {
     position: absolute;

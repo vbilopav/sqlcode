@@ -1,6 +1,6 @@
 define([], () => class {
     constructor ({element, direction, resize, auto}) {
-        this._element = element;
+        this._element = element || (() => {throw element})();
         this._parent = this._element.parentElement;
         direction === "h" || direction === "v" || (() => {throw direction})();
         this._element.addClass("splitter-" + direction);
@@ -11,12 +11,9 @@ define([], () => class {
         !isNaN(auto) || (() => {throw auto})();
         this._auto = auto;
         this._offset = null;
-        let getValues = () => {
-            let values = this._element.parentElement.css(this._css).split(" ");
-            return [values, values[this._resize].replace("px", "")]
-        };
+        let getValues = () => this._parent.css(this._css).split(" ");
         this._element.on("mousedown", e => {
-            let [_, value] = getValues();
+            let value = getValues()[this._resize].replace("px", "");
             this._offset = value - e[this._prop];
         });
         document.on("mouseup", () => this._offset = null);
@@ -24,7 +21,8 @@ define([], () => class {
             if (this._offset === null) {
                 return
             }
-            let [values, value] = getValues();
+            e.preventDefault();
+            let values = getValues();
             values[this._resize] = e[this._prop] + this._offset + "px";
             values[this._auto] = "auto";
             this._element.parentElement.css(this._css, values.join(" "));
