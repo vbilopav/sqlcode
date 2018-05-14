@@ -1,27 +1,38 @@
 define([
-    "template!layout/main.html",
-    "splitter"
+    "text!templates/main.html", 
+    "ui/splitter",
+    "ui/toolbar"
 ], (
-    layout,
-    Splitter
+    layout, 
+    Splitter, 
+    Toolbar
 ) => {
 
     document.title = "sql code";
 
     const 
-        app = document.body.find("#app-container").html(layout()),
-        toolbar = app.children[0],
-
-        contianer = app.children[1],
+        app = document.body.find("#app-container").html(layout),
+        toolbar = new Toolbar(app.children[0]),
+        container = app.children[1],
         footer = app.children[2],
-        lpane = contianer.children[0],
+        lpane = container.children[0],
         splitter = new Splitter({
-            element: contianer.children[1],
+            element: container.children[1],
             direction: "h",
             resize: 0,
-            auto: 2
+            auto: 2,
+            beforeMove: (pr, pos) => {
+                if (pr.width - pos <= 250) { // max rpane width
+                    return false;
+                }
+                if (pos <= 150) { // max lpane width - 50 (toolbar)
+                    // now dock
+                    return false;
+                }
+                return true;
+            }
         }),
-        rpane = contianer.children[2];
+        rpane = container.children[2];
 
     return () => {
         document.body.find("#loading-screen").remove();

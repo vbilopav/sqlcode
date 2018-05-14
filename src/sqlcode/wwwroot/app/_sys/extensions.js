@@ -10,8 +10,11 @@ define([], () => {
         };
 
     test(HTMLElement, [
-        "find", "show", "hide", "html",
+        "find", "findAll",
+        "show", "hide", "html", 
+        "appendTo",
         "addClass", "removeClass",
+        "attr",
         "css", "_styles",
         "on", "off",
         "data", "_data"
@@ -28,6 +31,10 @@ define([], () => {
         return e;
     }
 
+    HTMLElement.prototype.findAll = function(search) {
+        return this.querySelectorAll(search);
+    }
+
     HTMLElement.prototype.show = function() {
         this.style.display = ""; 
         return this;
@@ -35,6 +42,24 @@ define([], () => {
 
     HTMLElement.prototype.hide = function() {
         this.style.display = "none"; 
+        return this;
+    }
+
+    HTMLElement.prototype.appendTo = function(e) {
+        e.append(this);
+        return this;
+    }
+
+    HTMLElement.prototype.append = function(element) {
+        this.appendChild(element);
+        return this;
+    }
+
+    HTMLElement.prototype.attr = function(key, value) {
+        if (value === undefined) {
+            return this.getAttribute(key);
+        }
+        this.setAttribute(key, value);
         return this;
     }
 
@@ -114,8 +139,33 @@ define([], () => {
         return this._data[key];
     }
 
+    test(String, ["hashCode", "createElement", "toCamelCase"]);
+
     String.prototype.toCamelCase = function() {
         return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
+    }
+
+    String.prototype.createElement = function(id, content) {
+        let e = typeof this === "object" ? 
+            document.createElement(this.toString()) : 
+            document.createElement(this);
+        if (id) {
+            e.id = id;
+        }
+        if (content) {
+            e.html(content);
+        }
+        return e;
+    }
+
+    String.prototype.hashCode = function() {
+        let h = 0;
+        for (let i = 0, len = this.length; i < len; i++) {
+            let c = this.charCodeAt(i);
+            h = ((h<<5)-h)+c;
+            h = h & h;
+        }
+        return h;
     }
 
     test(Document, ["on", "off"]);

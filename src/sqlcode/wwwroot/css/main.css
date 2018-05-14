@@ -25,10 +25,12 @@
   color: #ADADAD;
   background-color: #333333;
 }
+/*
 .active {
   color: #ADADAD;
   background-color: #242425;
 }
+*/
 .splitter-h {
   cursor: ew-resize;
 }

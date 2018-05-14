@@ -1,5 +1,6 @@
 define([], () => class {
-    constructor ({element, direction, resize, auto}) {
+
+    constructor ({element, direction, resize, auto, beforeMove}) {
         this._element = element || (() => {throw element})();
         this._parent = this._element.parentElement;
         direction === "h" || direction === "v" || (() => {throw direction})();
@@ -11,6 +12,11 @@ define([], () => class {
         !isNaN(auto) || (() => {throw auto})();
         this._auto = auto;
         this._offset = null;
+        this._beforeMove = beforeMove || (() => true);
+        this._run();
+    }
+
+    _run () {
         let getValues = () => this._parent.css(this._css).split(" ");
         let getPos = e => e[this._prop];
         this._element.on("mousedown", e => {
@@ -22,17 +28,16 @@ define([], () => class {
             if (this._offset === null) {
                 return
             }
+            e.preventDefault();
             let values = getValues();
             let pos = getPos(e);
             values[this._resize] = pos + this._offset + "px";
             values[this._auto] = "auto";
-            //console.log(this._parent.getBoundingClientRect());
-            //console.log(e[this._prop]);
-            if (this._parent.getBoundingClientRect().width - e[this._prop] <= 150) {
+            if (!this._beforeMove(this._parent.getBoundingClientRect(), pos)) {
                 return;
-            } 
-            e.preventDefault();
+            }
             this._element.parentElement.css(this._css, values.join(" "));
         });
     }
+
 });
