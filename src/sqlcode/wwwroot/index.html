@@ -53,7 +53,7 @@
     <script type="text/javascript">
         var libsUrl = window._spa && window._spa.libsUrl ? window._spa.libsUrl : "",
             libs = libsUrl ? "../" + libsUrl: "../libs"
-            sysUrl = (window._spa.sysPath ? window._spa.sysPath : "spa") + "/";
+            sysUrl = (window._spa.sysPath ? window._spa.sysPath : "spa");
         window.requirejs || 
             document.write(
                 '<script data-main="main.js" src="' + libsUrl + '/require.js">\x3C/script>'
@@ -63,7 +63,7 @@
                 libs: libs,
                 text: ["https://cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text.min", "libs/text"],
                 spa: sysUrl,
-                template: sysUrl + "template"
+                template: sysUrl + "/template"
             }
         });
     </script>
