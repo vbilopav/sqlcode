@@ -1,4 +1,4 @@
-#main {
+.sc-container {
   position: absolute;
   grid-template-columns: 200px 5px auto;
   display: grid;
@@ -9,14 +9,14 @@
   z-index: -1;
 }
 
-#left {
+.sc-left-pane {
   grid-column: 1;
   padding-left: 50px;
 }
-#split {
+.sc-split {
   grid-column: 2;
 }
-#right {
+.sc-right-pane {
   grid-column: 3
 }
 
