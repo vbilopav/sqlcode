@@ -13,6 +13,7 @@ define([], () => class {
         this._auto = auto;
         this._offset = null;
         this._beforeMove = beforeMove || (() => true);
+        this._cursor = document.body.css("cursor");
         this._run();
     }
 
@@ -22,8 +23,12 @@ define([], () => class {
         this._element.on("mousedown", e => {
             let value = getValues()[this._resize].replace("px", "");
             this._offset = value - getPos(e);
+            document.body.css("cursor", this._element.css("cursor"));
         });
-        document.on("mouseup", () => this._offset = null);
+        document.on("mouseup", () => {
+            this._offset = null;
+            document.body.css("cursor", this._cursor);
+        });
         document.on("mousemove", e => {
             if (this._offset === null) {
                 return
