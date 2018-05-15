@@ -12,7 +12,6 @@ define([
 
     const 
         app = document.body.find("#app-container").html(layout),
-        toolbar = new Toolbar(app.children[0]),
         container = app.children[1],
         footer = app.children[2],
         lpane = container.children[0],
@@ -32,7 +31,8 @@ define([
                 return true;
             }
         }),
-        rpane = container.children[2];
+        rpane = container.children[2],
+        toolbar = new Toolbar({element: app.children[0], splitter: splitter});
 
     return () => {
         document.body.find("#loading-screen").remove();

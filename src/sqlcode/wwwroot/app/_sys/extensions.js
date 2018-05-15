@@ -13,7 +13,7 @@ define([], () => {
         "find", "findAll",
         "show", "hide", "html", 
         "appendTo",
-        "addClass", "removeClass",
+        "addClass", "removeClass", "hasClass", "toggleClass",
         "attr",
         "css", "_styles",
         "on", "off",
@@ -87,6 +87,23 @@ define([], () => {
             this.className = this.className.replace(
                 new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " "
             );
+        }
+        return this;
+    }
+
+    HTMLElement.prototype.hasClass = function(className) {
+        if (this.classList) {
+            return this.classList.contains(className);
+        } else {
+            return new RegExp('(^| )' + className + '( |$)', 'gi').test(this.className);
+        }
+    }
+
+    HTMLElement.prototype.toggleClass = function(className) {
+        if (this.hasClass(className)) {
+            this.removeClass(className)
+        } else {
+            this.addClass(className)
         }
         return this;
     }
