@@ -1,6 +1,6 @@
 .sc-container {
   position: absolute;
-  grid-template-columns: 200px 5px auto;
+  grid-template-columns: 200px 3px auto;
   display: grid;
   left: 0px;
   top: 0px;  
@@ -33,9 +33,11 @@
 */
 .splitter-h {
   cursor: ew-resize;
+  background-color: #252526;
 }
 
 .panel {
   width: 100%;
   height: 100%;
+  background-color: #252526;
 }

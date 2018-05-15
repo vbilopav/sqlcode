@@ -1,17 +1,17 @@
 <div id="toolbar" class="control">
     <div>
-        <div class="btn align-center icon-doc"></div>
-        <div class="btn align-center icon-database"></div>
-        <div class="btn align-center icon-search"></div>
+        <div class="btn align-center icon-doc" id="doc"></div>
+        <div class="btn align-center icon-database" id="database"></div>
+        <div class="btn align-center icon-search" id="search"></div>
     </div>
     <div class="bottom">
-        <div class="btn align-center icon-terminal"></div>
-        <div class="btn align-center icon-menu"></div>
+        <div class="btn align-center icon-terminal" id="terminal"></div>
+        <div class="btn align-center icon-menu" id="menu"></div>
     </div>
 </div>
 
 <div class="sc-container">
-    <div class="sc-left-pane">
+    <div class="sc-left-pane" name="lpane">
         
         <div class="panel">scripts explorer
 
@@ -21,7 +21,9 @@
         <div style="display: none;">search</div>
 
     </div>
+
     <div class="control sc-split"></div>
+    
     <div class="sc-right-pane">
         tabz
     </div>
