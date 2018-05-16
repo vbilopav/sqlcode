@@ -20,7 +20,7 @@ define([], () => class {
 
     each(callback) {
         for(var name of this._names) {
-            callback(this[name]);
+            callback(this[name], name);
         }
     }
 

@@ -43,7 +43,13 @@ define([
 
     const toolbar = new Toolbar({
         element: model.toolbar, 
-        splitter: splitter
+        events: {
+            doc: state => console.log("doc " + (state ? "on": "off")),
+            database: state => console.log("database " + (state ? "on": "off")),
+            search: state => console.log("search " + (state ? "on": "off")),
+            terminal: state => console.log("terminal " + (state ? "on": "off")),
+            menu: state => console.log("menu " + (state ? "on": "off")),
+        }
     });
 
     return () => {
