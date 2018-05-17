@@ -1,28 +1,30 @@
 define([], () => class {
-
-    constructor ({element, direction, resize, auto, beforeMove}) {
+    constructor (
+        {element, container, direction, resizeIndex, autoIndex, dockPosition, events}
+    ) {
         this._element = element || (() => {throw element})();
-        this._parent = this._element.parentElement;
+        this._container = container;
         direction === "h" || direction === "v" || (() => {throw direction})();
         this._element.addClass("splitter-" + direction);
         this._prop = direction === "h" ? "clientX" : "clientY";
         this._css = direction === "h" ? "grid-template-columns" : "grid-template-rows";
-        !isNaN(resize) || (() => {throw resize})();
-        this._resize = resize;
-        !isNaN(auto) || (() => {throw auto})();
-        this._auto = auto;
-        this._offset = null;
-        this._beforeMove = beforeMove || (() => true);
+        !isNaN(resizeIndex) || (() => {throw resizeIndex})();
+        this._resizeIdx = resizeIndex;
+        !isNaN(autoIndex) || (() => {throw autoIndex})();
+        this._autoIdx = autoIndex;
         this._cursor = document.body.css("cursor");
-        this._run();
+        this._dockPos = dockPosition;
+        this._events = events || {docked: ()=>{}, undocked: ()=>{}};
+
+        this._offset = null;
+        this._docked = false;
+        this._dockTimeout = undefined;
     }
 
-    _run () {
-        let getValues = () => this._parent.css(this._css).split(" ");
-        let getPos = e => e[this._prop];
+    run (maxDelta=250, min=150) {
         this._element.on("mousedown", e => {
-            let value = getValues()[this._resize].replace("px", "");
-            this._offset = value - getPos(e);
+            let value = this._getValues()[this._resizeIdx].replace("px", "");
+            this._offset = value - this._getPos(e);
             document.body.css("cursor", this._element.css("cursor"));
         });
         document.on("mouseup", () => {
@@ -34,15 +36,62 @@ define([], () => class {
                 return
             }
             e.preventDefault();
-            let values = getValues();
-            let pos = getPos(e);
-            values[this._resize] = pos + this._offset + "px";
-            values[this._auto] = "auto";
-            if (!this._beforeMove(this._parent.getBoundingClientRect(), pos)) {
-                return;
+            let pos = this._getPos(e);
+            let values = this._getValuesArray(pos + this._offset + "px");
+            let pr = this._container.getBoundingClientRect();
+            if (pr.width - pos <= maxDelta) {
+                return false;
             }
-            this._element.parentElement.css(this._css, values.join(" "));
+            if (pos <= min) {
+                if (!this._docked) {
+                    if (this._dockTimeout) {
+                        return false;
+                    }
+                    this._dockTimeout = setTimeout(() => {
+                        this.dock();
+                        clearTimeout(this._dockTimeout);
+                        this._dockTimeout = undefined;
+                    }, 250);
+                    return false;
+                } else {
+                    return false;
+                }
+            } else {
+                if (this._docked) {
+                    this.undock(min);
+                }
+            }
+            this._container.css(this._css, values.join(" "));
         });
+        return this;
     }
 
+    dock() {
+        let values = this._getValuesArray(this._dockPos + "px");
+        this._container.css(this._css, values.join(" "));
+        this._docked = true;
+        this._events.docked();
+    }
+
+    undock(pos) {
+        let values = this._getValuesArray(pos + "px");
+        this._container.css(this._css, values.join(" "));
+        this._docked = false;
+        this._events.undocked();
+    }
+
+    _getValues() {
+        return this._container.css(this._css).split(" ") 
+    }
+
+    _getValuesArray(newPostition) {
+        let values = this._getValues();
+        values[this._resizeIdx] = newPostition;
+        values[this._autoIdx] = "auto";
+        return values;
+    }
+
+    _getPos(e) {
+        return e[this._prop];
+    }
 });

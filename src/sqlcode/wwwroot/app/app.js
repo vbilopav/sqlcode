@@ -17,36 +17,40 @@ define([
     const model = new Model({
         model: {
             toolbar: "toolbar",
+            docs: e => e.hasClass("docs-panel"),
+            db: e => e.hasClass("db-panel"),
+            search: e => e.hasClass("search-panel"),
             lpane: e => e.hasClass("sc-left-pane"),
             splitter: e => e.hasClass("sc-split"),
             rpane: e => e.hasClass("sc-right-pane"),
-            footer: "footer"
+            footer: "footer",
         }
     }).bind(app);
 
     const splitter = new Splitter({
         element: model.splitter,
+        container: model.splitter.parentElement,
         direction: "h",
-        resize: 0,
-        auto: 2,
-        beforeMove: (pr, pos) => {
-            if (pr.width - pos <= 250) { // max rpane width
-                return false;
-            }
-            if (pos <= 150) { // max lpane width - 50 (toolbar)
-                // now dock
-                return false;
-            }
-            return true;
+        resizeIndex: 0,
+        autoIndex: 2,
+        dockPosition: Number(model.toolbar.css("width").replace("px", "")),
+        /*
+        events: {
+            docked: () => toolbar.deactivate(),
+            undocked: () => toolbar.activate()
         }
-    });
+        */
+    }).run();
 
     const toolbar = new Toolbar({
         element: model.toolbar, 
-        events: {
-            doc: state => console.log("doc " + (state ? "on": "off")),
-            database: state => console.log("database " + (state ? "on": "off")),
-            search: state => console.log("search " + (state ? "on": "off")),
+        click: {
+            docs: state => model.docs.show(state),
+            db: state => model.db.show(state),
+            search: state => model.search.show(state),
+            off: () => {
+                splitter.dock();
+            },
             terminal: state => console.log("terminal " + (state ? "on": "off")),
             menu: state => console.log("menu " + (state ? "on": "off")),
         }

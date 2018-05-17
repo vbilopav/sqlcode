@@ -35,7 +35,12 @@ define([], () => {
         return this.querySelectorAll(search);
     }
 
-    HTMLElement.prototype.show = function() {
+    HTMLElement.prototype.show = function(state) {
+        if (state !== undefined) {
+            if (!state) {
+                return this.hide();
+            }
+        }
         this.style.display = ""; 
         return this;
     }
