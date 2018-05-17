@@ -34,20 +34,29 @@ define([
         resizeIndex: 0,
         autoIndex: 2,
         dockPosition: Number(model.toolbar.css("width").replace("px", "")),
-        /*
+    
         events: {
             docked: () => toolbar.deactivate(),
-            undocked: () => toolbar.activate()
+            undocked: () => toolbar.restore()
         }
-        */
+        
     }).run();
 
     const toolbar = new Toolbar({
         element: model.toolbar, 
         click: {
-            docs: state => model.docs.show(state),
-            db: state => model.db.show(state),
-            search: state => model.search.show(state),
+            docs: state => {
+                model.docs.show(state);
+                splitter.undock();
+            },
+            db: state => {
+                model.db.show(state);
+                splitter.undock();
+            },
+            search: state => {
+                model.search.show(state);
+                splitter.undock();
+            },
             off: () => {
                 splitter.dock();
             },

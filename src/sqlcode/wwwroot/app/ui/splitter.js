@@ -19,6 +19,7 @@ define([], () => class {
         this._offset = null;
         this._docked = false;
         this._dockTimeout = undefined;
+        this._dockPrev = null;
     }
 
     run (maxDelta=250, min=150) {
@@ -37,7 +38,7 @@ define([], () => class {
             }
             e.preventDefault();
             let pos = this._getPos(e);
-            let values = this._getValuesArray(pos + this._offset + "px");
+            let {values, _} = this._getValuesArray(pos + this._offset + "px");
             let pr = this._container.getBoundingClientRect();
             if (pr.width - pos <= maxDelta) {
                 return false;
@@ -48,10 +49,15 @@ define([], () => class {
                         return false;
                     }
                     this._dockTimeout = setTimeout(() => {
-                        this.dock();
+                        let pos = this._getPos(e);
                         clearTimeout(this._dockTimeout);
                         this._dockTimeout = undefined;
-                    }, 250);
+                        if (pos > min) {
+                            return;
+                        }
+                        this.dock();
+                        this._events.docked();
+                    }, 1);
                     return false;
                 } else {
                     return false;
@@ -59,6 +65,7 @@ define([], () => class {
             } else {
                 if (this._docked) {
                     this.undock(min);
+                    this._events.undocked();
                 }
             }
             this._container.css(this._css, values.join(" "));
@@ -67,17 +74,22 @@ define([], () => class {
     }
 
     dock() {
-        let values = this._getValuesArray(this._dockPos + "px");
+        let {values, prev} = this._getValuesArray(this._dockPos + "px");
+        this._dockPrev = prev;
         this._container.css(this._css, values.join(" "));
         this._docked = true;
-        this._events.docked();
     }
 
     undock(pos) {
-        let values = this._getValuesArray(pos + "px");
+        if (!this._docked) {
+            return;
+        }
+        if (pos === undefined) {
+            pos = this._dockPrev;
+        }
+        let {values, _} = this._getValuesArray(pos + "px");
         this._container.css(this._css, values.join(" "));
         this._docked = false;
-        this._events.undocked();
     }
 
     _getValues() {
@@ -86,9 +98,10 @@ define([], () => class {
 
     _getValuesArray(newPostition) {
         let values = this._getValues();
+        let prev = Number(values[this._resizeIdx].replace("px", ""));
         values[this._resizeIdx] = newPostition;
         values[this._autoIdx] = "auto";
-        return values;
+        return {values, prev};
     }
 
     _getPos(e) {
