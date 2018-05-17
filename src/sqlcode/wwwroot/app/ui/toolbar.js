@@ -1,77 +1,81 @@
 define(["spa/model"], Model => {
 
     const 
-        _cls = "active",
-        _default = "docs";
+        cls = "active",
+        defaultBtn = "docs";
 
-    class Toolbar {
-        constructor ({element, click}) {
+    let 
+        prev = null,
+        active,
+        handlers,
+        buttons
+
+    return {
+        init: ({element, events}) => {
             
-            this._prev = null;
-            this._active = _default;
+            prev = null;
+            active = defaultBtn;
             
-            this._click = click;
-            this._buttons = new Model({
+            handlers = events;
+            buttons = new Model({
                 oncreate: button => {
-                    button.removeClass(_cls).on("click", e => {
+                    button.removeClass(cls).on("click", e => {
                         if (e.target.data("toggle")) {
-                            e.target.toggleClass(_cls);
-                            click[e.target.id](e.target.hasClass(_cls));
+                            e.target.toggleClass(cls);
+                            handlers[e.target.id](e.target.hasClass(cls));
                             return;
                         }
-                        this._buttons.each(button => {
-                            if (button.hasClass(_cls)) {
-                                click[button.id](false);
+                        buttons.each(button => {
+                            if (button.hasClass(cls)) {
+                                handlers[button.id](false);
                             }
-                            button.removeClass(_cls);
+                            button.removeClass(cls);
                         });
-                        if (this._active === e.target.id) {
-                            this._prev = this._active;
-                            this._active = null;
-                            click["off"]();
+                        if (active === e.target.id) {
+                            prev = active;
+                            active = null;
+                            handlers["off"]();
                             return;
                         }
-                        this._prev = this._active;
-                        this._active = e.target.id;
-                        e.target.addClass(_cls);
-                        click[this._active](true);
+                        prev = active;
+                        active = e.target.id;
+                        e.target.addClass(cls);
+                        handlers[active](true);
                     })
                 }
             }).bind(element);
 
-            this._buttons.terminal.data("toggle", true);
-            this._buttons.menu.data("toggle", true);
-            this._buttons[this._active].addClass(_cls);
+            buttons.terminal.data("toggle", true);
+            buttons.menu.data("toggle", true);
+            buttons[active].addClass(cls);
             
-            if (click === undefined) {
-                click = {}
+            if (handlers === undefined) {
+                handlers = {}
             }
-            this._buttons.each((_, name) => {
-                if (click[name] === undefined) {
-                    click[name] = (()=>{});
+            buttons.each((_, name) => {
+                if (handlers[name] === undefined) {
+                    handlers[name] = ()=>{};
                 }
             });
-        }
+        },
 
-        deactivate() {
-            if (!this._active) {
+        deactivate: () => {
+            if (!active) {
                 return;
             }
-            this._prev = this._active;
-            this._active = null;
-            this._buttons[this._prev].removeClass(_cls);
-            this._click[this._prev](false);
-        }
+            prev = active;
+            active = null;
+            buttons[prev].removeClass(cls);
+            handlers[prev](false);
+        },
 
-        restore() {
-            this._active = this._prev;
-            if (!this._active) {
-                this._active = _default;
+        restore: () => {
+            active = prev;
+            if (!active) {
+                active = defaultBtn;
             }
-            this._buttons[this._active].addClass(_cls);
-            this._click[this._active](true);
+            buttons[active].addClass(cls);
+            handlers[active](true);
         }
     }
-    
-    return Toolbar;
 });

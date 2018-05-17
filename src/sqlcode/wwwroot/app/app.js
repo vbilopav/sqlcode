@@ -7,7 +7,7 @@ define([
     layout, 
     Model,
     Splitter, 
-    Toolbar
+    toolbar
 ) => {
 
     document.title = "sql code";
@@ -34,7 +34,6 @@ define([
         resizeIndex: 0,
         autoIndex: 2,
         dockPosition: Number(model.toolbar.css("width").replace("px", "")),
-    
         events: {
             docked: () => toolbar.deactivate(),
             undocked: () => toolbar.restore()
@@ -42,9 +41,9 @@ define([
         
     }).run();
 
-    const toolbar = new Toolbar({
+    toolbar.init({
         element: model.toolbar, 
-        click: {
+        events: {
             docs: state => {
                 model.docs.show(state);
                 splitter.undock();
