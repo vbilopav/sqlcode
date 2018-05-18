@@ -1,6 +1,13 @@
-define([], () => class {
-    constructor (
-        {element, container, direction, resizeIndex, autoIndex, dockPosition, events}
+define(["sys/storage"], () => class {
+    constructor ({
+        name,
+        element,
+        container,
+        direction,
+        resizeIndex,
+        autoIndex,
+        dockPosition,
+        events}
     ) {
         this._element = element || (() => {throw element})();
         this._container = container;

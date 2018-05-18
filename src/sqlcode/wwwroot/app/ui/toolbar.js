@@ -1,21 +1,22 @@
-define(["spa/model"], Model => {
+define(["sys/model", "sys/storage"], (Model, Storage) => {
 
     const 
-        cls = "active",
-        defaultBtn = "docs";
+        defaultBtn = "docs",
+        storage = new Storage({
+            namespace: "toolbar",
+            model: {
+                prev: null,
+                active: null
+            }
+        }),
+        cls = "active";
 
     let 
-        prev = null,
-        active,
         handlers,
         buttons
 
     return {
         init: ({element, events}) => {
-            
-            prev = null;
-            active = defaultBtn;
-            
             handlers = events;
             buttons = new Model({
                 oncreate: button => {
@@ -31,51 +32,60 @@ define(["spa/model"], Model => {
                             }
                             button.removeClass(cls);
                         });
-                        if (active === e.target.id) {
-                            prev = active;
-                            active = null;
+                        if (storage.active === e.target.id) {
+                            storage.prev = storage.active;
+                            storage.active = null;
                             handlers["off"]();
                             return;
                         }
-                        prev = active;
-                        active = e.target.id;
+                        storage.prev = storage.active;
+                        storage.active = e.target.id;
                         e.target.addClass(cls);
-                        handlers[active](true);
+                        handlers[storage.active](true);
                     })
                 }
             }).bind(element);
 
             buttons.terminal.data("toggle", true);
             buttons.menu.data("toggle", true);
-            buttons[active].addClass(cls);
             
-            if (handlers === undefined) {
-                handlers = {}
-            }
-            buttons.each((_, name) => {
-                if (handlers[name] === undefined) {
-                    handlers[name] = ()=>{};
+            buttons.each(button => {
+                if (button.data("toggle")) {
+                    return;
+                }
+                if (button.id === storage.active) {
+                    button.addClass(cls);
+                    handlers[button.id](true);
+                } else {
+                    button.removeClass(cls);
+                    handlers[button.id](false);
                 }
             });
+            if (!storage.active) {
+                handlers["off"]();
+            }
         },
 
         deactivate: () => {
-            if (!active) {
+            if (!storage.active) {
                 return;
             }
-            prev = active;
-            active = null;
-            buttons[prev].removeClass(cls);
-            handlers[prev](false);
+            storage.prev = storage.active;
+            storage.active = null;
+            if (!storage.prev) {
+                return;
+            }
+            buttons[storage.prev].removeClass(cls);
+            handlers[storage.prev](false);
         },
 
         restore: () => {
-            active = prev;
-            if (!active) {
-                active = defaultBtn;
+            storage.active = storage.prev;
+            if (!storage.active) {
+                storage.active = defaultBtn;
             }
-            buttons[active].addClass(cls);
-            handlers[active](true);
+            buttons[storage.active].addClass(cls);
+            handlers[storage.active](true);
         }
     }
 });

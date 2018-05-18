@@ -1,6 +1,6 @@
 define([
     "text!templates/main.html", 
-    "spa/model",
+    "sys/model",
     "ui/splitter",
     "ui/toolbar"
 ], (
@@ -28,6 +28,7 @@ define([
     }).bind(app);
 
     const splitter = new Splitter({
+        name: "main",
         element: model.splitter,
         container: model.splitter.parentElement,
         direction: "h",
