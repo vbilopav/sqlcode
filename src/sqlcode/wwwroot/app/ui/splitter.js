@@ -53,9 +53,11 @@ define(["sys/storage"], Storage => class {
                 return
             }
             e.preventDefault();
-            let pos = this._getPos(e);
-            let {values} = this._getValuesArray(pos + this._offset + "px");
-            let pr = this._container.getBoundingClientRect();
+
+            let pos = this._getPos(e),
+                {values} = this._getValuesArray(pos + this._offset + "px"),
+                pr = this._container.getBoundingClientRect();
+
             if (pr.width - pos <= maxDelta) {
                 return false;
             }
@@ -101,6 +103,9 @@ define(["sys/storage"], Storage => class {
             return;
         }
         if (pos === undefined) {
+            pos = this._storage.position;
+        }
+        if (this._storage.position >= pos) {
             pos = this._storage.position;
         }
         let {values} = this._getValuesArray(pos + "px");

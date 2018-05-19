@@ -2,19 +2,25 @@ define([
     "text!templates/main.html", 
     "sys/model",
     "ui/splitter",
-    "ui/toolbar"
+    "ui/toolbar",
+    "ui/database-pane",
+    "ui/scripts-pane",
+    "ui/search-pane"
 ], (
     layout, 
     Model,
     Splitter, 
-    toolbar
+    toolbar,
+    dbPane,
+    scriptsPane,
+    searchPane,
 ) => {
 
     document.title = "sql code";
 
     const app = document.body.find("#app-container").html(layout);
 
-    const model = new Model({
+    const appModel = new Model({
         model: {
             toolbar: "toolbar",
             docs: e => e.hasClass("docs-panel"),
@@ -29,36 +35,35 @@ define([
 
     const splitter = new Splitter({
         name: "main-splitter",
-        element: model.splitter,
-        container: model.splitter.parentElement,
+        element: appModel.splitter,
+        container: appModel.splitter.parentElement,
         direction: "h",
         resizeIndex: 0,
         autoIndex: 2,
-        dockPosition: Number(model.toolbar.css("width").replace("px", "")),
+        dockPosition: Number(appModel.toolbar.css("width").replace("px", "")),
         events: {
             docked: () => toolbar.deactivate(),
             undocked: () => toolbar.restore()
         }
-        
     }).run();
 
     toolbar.init({
-        element: model.toolbar, 
+        element: appModel.toolbar, 
         events: {
             docs: state => {
-                model.docs.show(state);
-                splitter.undock();
+                appModel.docs.show(state);
+                splitter.undock(220);
             },
             db: state => {
-                model.db.show(state);
-                splitter.undock();
+                appModel.db.show(state);
+                splitter.undock(220);
             },
             search: state => {
-                model.search.show(state);
-                splitter.undock();
+                appModel.search.show(state);
+                splitter.undock(220);
             },
             off: () => {
-                splitter.dock();
+                splitter.dock(220);
             },
             terminal: state => console.log("terminal " + (state ? "on": "off")),
             menu: state => console.log("menu " + (state ? "on": "off")),
