@@ -28,7 +28,7 @@ define([
     }).bind(app);
 
     const splitter = new Splitter({
-        name: "main",
+        name: "main-splitter",
         element: model.splitter,
         container: model.splitter.parentElement,
         direction: "h",

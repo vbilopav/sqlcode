@@ -26,13 +26,17 @@ define([], () => {
             Object.defineProperty(this, name, {
                 get: () => {
                     let value = this._storage.getItem(namespace);
-                    if (defualtValue === null) {
-                        return value;
+                    if (value === null && defualtValue !== undefined) {
+                        return defualtValue;
                     }
-                    return value === null ? defualtValue : value;
+                    return value;
                 },
                 set: value => {
-                    this._storage.setItem(namespace, value)
+                    if (value === null) {
+                        this._storage.removeItem(namespace);
+                    } else {
+                        this._storage.setItem(namespace, value);
+                    }
                 }
             });
             return this;

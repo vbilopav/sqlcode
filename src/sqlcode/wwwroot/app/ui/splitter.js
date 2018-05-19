@@ -1,4 +1,4 @@
-define(["sys/storage"], () => class {
+define(["sys/storage"], Storage => class {
     constructor ({
         name,
         element,
@@ -7,8 +7,8 @@ define(["sys/storage"], () => class {
         resizeIndex,
         autoIndex,
         dockPosition,
-        events}
-    ) {
+        events
+    }) {
         this._element = element || (() => {throw element})();
         this._container = container;
         direction === "h" || direction === "v" || (() => {throw direction})();
@@ -22,11 +22,15 @@ define(["sys/storage"], () => class {
         this._cursor = document.body.css("cursor");
         this._dockPos = dockPosition;
         this._events = events || {docked: ()=>{}, undocked: ()=>{}};
-
+        let storageModel = {position: null};
+        this._storage = name ? new Storage({namespace: name, model: storageModel}) : storageModel;
+        if (this._storage.position) {
+            let {values} = this._getValuesArray(this._storage.position + "px");
+            this._container.css(this._css, values.join(" "));
+        }
         this._offset = null;
         this._docked = false;
         this._dockTimeout = undefined;
-        this._dockPrev = null;
     }
 
     run (maxDelta=250, min=150) {
@@ -38,6 +42,11 @@ define(["sys/storage"], () => class {
         document.on("mouseup", () => {
             this._offset = null;
             document.body.css("cursor", this._cursor);
+            if (this._docked) {
+                return;
+            }
+            let {values, prev} = this._getValuesArray();
+            this._storage.position = prev;
         });
         document.on("mousemove", e => {
             if (this._offset === null) {
@@ -45,7 +54,7 @@ define(["sys/storage"], () => class {
             }
             e.preventDefault();
             let pos = this._getPos(e);
-            let {values, _} = this._getValuesArray(pos + this._offset + "px");
+            let {values} = this._getValuesArray(pos + this._offset + "px");
             let pr = this._container.getBoundingClientRect();
             if (pr.width - pos <= maxDelta) {
                 return false;
@@ -82,7 +91,7 @@ define(["sys/storage"], () => class {
 
     dock() {
         let {values, prev} = this._getValuesArray(this._dockPos + "px");
-        this._dockPrev = prev;
+        this._storage.position = prev;
         this._container.css(this._css, values.join(" "));
         this._docked = true;
     }
@@ -92,9 +101,9 @@ define(["sys/storage"], () => class {
             return;
         }
         if (pos === undefined) {
-            pos = this._dockPrev;
+            pos = this._storage.position;
         }
-        let {values, _} = this._getValuesArray(pos + "px");
+        let {values} = this._getValuesArray(pos + "px");
         this._container.css(this._css, values.join(" "));
         this._docked = false;
     }
@@ -103,11 +112,13 @@ define(["sys/storage"], () => class {
         return this._container.css(this._css).split(" ") 
     }
 
-    _getValuesArray(newPostition) {
+    _getValuesArray(newPos) {
         let values = this._getValues();
         let prev = Number(values[this._resizeIdx].replace("px", ""));
-        values[this._resizeIdx] = newPostition;
-        values[this._autoIdx] = "auto";
+        if (newPos) {
+            values[this._resizeIdx] = newPos;
+            values[this._autoIdx] = "auto";
+        }
         return {values, prev};
     }
 

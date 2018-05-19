@@ -2,10 +2,11 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
 
     const 
         defaultBtn = "docs",
+        
         storage = new Storage({
             namespace: "toolbar",
             model: {
-                prev: null,
+                prev: defaultBtn,
                 active: null
             }
         }),
@@ -13,7 +14,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
 
     let 
         handlers,
-        buttons
+        buttons;
 
     return {
         init: ({element, events}) => {
