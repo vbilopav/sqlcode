@@ -1,15 +1,15 @@
 define([
-    "text!templates/main.html", 
+    "text!app.html",
     "sys/model",
-    "ui/splitter",
+    "controls/splitter",
     "ui/toolbar",
     "ui/database-pane",
     "ui/docs-pane",
     "ui/search-pane"
 ], (
-    layout, 
+    layout,
     Model,
-    Splitter, 
+    Splitter,
     toolbar,
     dbPane,
     docsPane,
