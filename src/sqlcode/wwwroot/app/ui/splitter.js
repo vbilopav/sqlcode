@@ -49,9 +49,10 @@ define(["sys/storage"], Storage => class {
         });
         document.on("mousemove", e => {
             if (this._offset === null) {
-                return
+                return true;
             }
             e.preventDefault();
+            e.stopPropagation();
 
             let pos = this._getPos(e),
                 {values} = this._getValuesArray(pos + this._offset + "px"),
@@ -75,6 +76,7 @@ define(["sys/storage"], Storage => class {
                 }
             }
             this._container.css(this._css, values.join(" "));
+            return false;
         });
         return this;
     }

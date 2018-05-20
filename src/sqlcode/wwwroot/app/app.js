@@ -13,7 +13,7 @@ define([
     toolbar,
     dbPane,
     docsPane,
-    searchPane,
+    searchPane
 ) => {
 
     document.title = "sql code";
