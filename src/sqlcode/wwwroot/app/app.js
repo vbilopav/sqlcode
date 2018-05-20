@@ -4,7 +4,7 @@ define([
     "ui/splitter",
     "ui/toolbar",
     "ui/database-pane",
-    "ui/scripts-pane",
+    "ui/docs-pane",
     "ui/search-pane"
 ], (
     layout, 
@@ -12,7 +12,7 @@ define([
     Splitter, 
     toolbar,
     dbPane,
-    scriptsPane,
+    docsPane,
     searchPane,
 ) => {
 
@@ -68,6 +68,18 @@ define([
             terminal: state => console.log("terminal " + (state ? "on": "off")),
             menu: state => console.log("menu " + (state ? "on": "off")),
         }
+    });
+
+    docsPane.init({
+        container: appModel.docs
+    });
+
+    dbPane.init({
+        container: appModel.db
+    });
+
+    searchPane.init({
+        container: appModel.search
     });
 
     return () => {

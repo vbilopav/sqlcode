@@ -7,19 +7,10 @@
     font-size: 28px;
     padding-top: 10px;
 }
-.btn {
+#toolbar .btn {
     margin: 2px;
-    cursor: pointer;
 }
-.btn:hover {
-    color: white;
-    text-shadow: 0 0 1px
-}
-.btn.active {
-    color: white;
-    text-shadow: 0 0 1px
-}
-.bottom {
+.bottom-btns {
     position: absolute;
     bottom: 24px;
     width: 100%;

@@ -8,7 +8,6 @@
   height: 100%;
   z-index: -1;
 }
-
 .sc-left-pane {
   grid-column: 1;
   padding-left: 50px;
@@ -20,7 +19,6 @@
   grid-column: 3
 }
 
-
 .control {
   color: #ADADAD;
   background-color: #333333;
@@ -30,8 +28,23 @@
   background-color: #252526;
 }
 
-.panel {
-  width: 100%;
-  height: 100%;
-  background-color: #252526;
+.btn {
+  cursor: pointer;
+}
+.btn:hover {
+  color: white;
+  text-shadow: 0 0 1px
+}
+.btn.active {
+  color: white;
+  text-shadow: 0 0 1px
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
