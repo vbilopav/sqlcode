@@ -62,9 +62,6 @@ define(["sys/storage"], Storage => class {
             }
             if (pos <= min) {
                 if (!this._docked) {
-                    if (this._dockTimeout) {
-                        return false;
-                    }
                     this.dock();
                     this._events.docked();
                     return false;
