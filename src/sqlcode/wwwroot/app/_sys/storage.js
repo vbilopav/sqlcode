@@ -10,7 +10,7 @@ define([], () => {
                 this._namespace = this._namespace + ".";
             }
             if (!model) {
-                return;
+                throw new Error("model is required!");
             }
             for(let [name, defualtValue] of Object.entries(model)) {
                 this.create(name, defualtValue);
