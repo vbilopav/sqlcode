@@ -30,7 +30,6 @@ define(["sys/storage"], Storage => class {
         }
         this._offset = null;
         this._docked = false;
-        this._dockTimeout = undefined;
     }
 
     run (maxDelta=250, min=150) {
@@ -66,16 +65,8 @@ define(["sys/storage"], Storage => class {
                     if (this._dockTimeout) {
                         return false;
                     }
-                    this._dockTimeout = setTimeout(() => {
-                        let pos = this._getPos(e);
-                        clearTimeout(this._dockTimeout);
-                        this._dockTimeout = undefined;
-                        if (pos > min) {
-                            return;
-                        }
-                        this.dock();
-                        this._events.docked();
-                    }, 1);
+                    this.dock();
+                    this._events.docked();
                     return false;
                 } else {
                     return false;
