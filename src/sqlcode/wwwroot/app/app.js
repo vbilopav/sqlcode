@@ -72,17 +72,13 @@ define([
         }
     });
 
-    docsPane.init({
-        container: appModel.docs
-    });
+    docsPane.init({container: appModel.docs});
 
-    dbPane.init({
-        container: appModel.db
-    });
+    dbPane.init({container: appModel.db});
 
-    searchPane.init({
-        container: appModel.search
-    });
+    searchPane.init({container: appModel.search});
+
+    mainPane.init({container: appModel.rpane});
 
     return () => {
         document.body.find("#loading-screen-script").remove();

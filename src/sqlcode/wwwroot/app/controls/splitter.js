@@ -38,13 +38,23 @@ define(["sys/storage"], Storage => class {
             this._offset = value - this._getPos(e);
             document.body.css("cursor", this._element.css("cursor"));
         });
-        document.on("mouseup", () => {
+        document.on("mouseup", e => {
+            if (this._offset === null) {
+                return true;
+            }
             this._offset = null;
             document.body.css("cursor", this._cursor);
             if (this._docked) {
-                return;
+                return true;
             }
-            let {values, prev} = this._getValuesArray();
+            let pos = this._getPos(e),
+                {values, prev} = this._getValuesArray(),
+                pr = this._container.getBoundingClientRect();
+                if (pos <= min) {
+                    if (!this._docked) {
+                        this.dock();
+                    }
+                }
             this._storage.position = prev;
         });
         document.on("mousemove", e => {
@@ -55,7 +65,7 @@ define(["sys/storage"], Storage => class {
             e.stopPropagation();
 
             let pos = this._getPos(e),
-                {values} = this._getValuesArray(pos + this._offset + "px"),
+                {values, prev} = this._getValuesArray(pos + this._offset + "px"),
                 pr = this._container.getBoundingClientRect();
 
             if (pr.width - pos <= maxDelta) {
@@ -71,8 +81,9 @@ define(["sys/storage"], Storage => class {
                 }
             } else {
                 if (this._docked) {
-                    this.undock(min);
                     this._events.undocked();
+                    this.undock(min);
+                    return false;
                 }
             }
             this._container.css(this._css, values.join(" "));
