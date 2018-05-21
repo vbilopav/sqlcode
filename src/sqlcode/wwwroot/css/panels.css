@@ -12,8 +12,6 @@
   pointer-events: none;
 }
 .panel-title {
-  font-family: monospace;
-  font-size: smaller;
   margin-left: 10px;
   padding-top: 12px;
   overflow: hidden;

@@ -5,7 +5,7 @@ define([], () => {
 
     return {
         init: ({container}) => {
-            container.html(content);
+            //container.html(content);
         }
     }
 });
