@@ -5,7 +5,8 @@ define([
     "ui/toolbar",
     "ui/database-pane",
     "ui/docs-pane",
-    "ui/search-pane"
+    "ui/search-pane",
+    "ui/main-pane"
 ], (
     layout,
     Model,
@@ -13,7 +14,8 @@ define([
     toolbar,
     dbPane,
     docsPane,
-    searchPane
+    searchPane,
+    mainPane
 ) => {
 
     document.title = "sql code";
