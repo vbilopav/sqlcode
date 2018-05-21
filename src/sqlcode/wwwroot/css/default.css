@@ -5,18 +5,14 @@
 }
 
 html {
-  font-family: "-apple-system","BlinkMacSystemFont","Segoe WPC,Segoe UI","HelveticaNeue-Light","Ubuntu","Droid Sans","sans-serif";
-  font-size: 11px;
+  font-family: "Consolas", 'Courier New', "monospace";
+  font-size: 12px;
   line-height: 1.15;
   -webkit-tap-highlight-color: transparent;
 }
 
 @-ms-viewport {
   width: device-width;
-}
-
-article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, section {
-  display: block;
 }
 
 body {
@@ -26,10 +22,20 @@ body {
   color: #C5C5C5;
   text-align: left;
   background-color: #1E1E1E;
+  font-family: sans-serif;
+  font-size: 14px;
 }
 
 .align-center {
   margin-top: auto;
   margin-bottom: auto;
   text-align: center;
+}
+
+.noselect {
+  -webkit-touch-callout: none; 
+    -webkit-user-select: none; 
+       -moz-user-select: none; 
+        -ms-user-select: none; 
+            user-select: none;
 }

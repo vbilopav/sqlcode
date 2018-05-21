@@ -28,7 +28,6 @@ define([
             docs: e => e.hasClass("docs-panel"),
             db: e => e.hasClass("db-panel"),
             search: e => e.hasClass("search-panel"),
-            lpane: e => e.hasClass("sc-left-pane"),
             splitter: e => e.hasClass("sc-split"),
             rpane: e => e.hasClass("sc-right-pane"),
             footer: "footer",
@@ -73,11 +72,8 @@ define([
     });
 
     docsPane.init({container: appModel.docs});
-
     dbPane.init({container: appModel.db});
-
     searchPane.init({container: appModel.search});
-
     mainPane.init({container: appModel.rpane});
 
     return () => {
