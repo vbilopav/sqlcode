@@ -3,9 +3,9 @@ define([], () => {
     return container => {
         container.html(
             String.html`
-                <div class="editor">editor</div>
-                <div class="control h-split-2"></div>
-                <div class="output"></div>
+                <div id="editor" class="editor">editor</div>
+                <div id="splitter" class="control h-split-2"></div>
+                <div id="output" class="output"></div>
             `
         );
     }

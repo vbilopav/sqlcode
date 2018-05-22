@@ -28,9 +28,13 @@ define([
     document.title = "sql code";
     new Pubsub(_app);
 
-    toolbar(model.toolbar);
     sidebar(model.sidebar, model.splitter, Number(model.toolbar.css("width").replace("px", "")));
+    toolbar(model.toolbar);
     workbench(model.workbench);
+
+    _app
+        .subscribe("terminal/toggle", state => console.log("terminal/toggle = " + state))
+        .subscribe("results/toggle", state => console.log("results/toggle = " + state));
 
     return () => {
         document.body.find("#loading-screen-script").remove();

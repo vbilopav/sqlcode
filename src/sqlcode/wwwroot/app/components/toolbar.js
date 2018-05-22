@@ -9,7 +9,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             </div>
             <div class="bottom-btns">
                 <div id="terminal" data-toggle="true" class="btn align-center icon-terminal"></div>
-                <div id="menu" data-toggle="true" class="btn align-center icon-menu"></div>
+                <div id="results" data-toggle="true" class="btn align-center icon-menu"></div>
             </div>`;
 
     const 
@@ -18,11 +18,8 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
 
     const
         storage = new Storage({
-            namespace: "toolbar",
-            model: {
-                prev: defaultBtn,
-                active: null
-            }
+            namespace: "toolbar", 
+            model: {prev: defaultBtn, active: null}
         });
 
     let buttons;
@@ -30,7 +27,8 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
     const
         onButtonClick = e =>  {
             if (e.target.data("toggle")) {
-                _app.publish("sidebar/toggle", e.target.id, e.target.hasClass(cls), e.target);
+                e.target.toggleClass(cls);
+                _app.publish(`${e.target.id}/toggle`, e.target.hasClass(cls), e.target);
                 return;
             }
             buttons.each(button => {
@@ -57,7 +55,6 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
         };
 
     return container => {
-        buttons = new Model({oncreate: onButtonCreate}).bind(container.html(template));
         _app
             .subscribe("sidebar/toggle", (id, state, sender) => (sender || buttons[id]).toggleClass(cls, state))
             .subscribe("toolbar/restore", () => {
@@ -67,7 +64,6 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
                 }
                 let id = storage.active;
                 _app.publish("sidebar/toggle", id, true, buttons[id]);
-
             })
             .subscribe("toolbar/deactivate", () => {
                 if (!storage.active) {
@@ -80,8 +76,8 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
                 }
                 let id = storage.prev;
                 _app.publish("sidebar/toggle", id, false, buttons[id]);
-
             });
+        buttons = new Model({oncreate: onButtonCreate}).bind(container.html(template));
         if (!storage.active) {
             _app.publish("sidebar/dock", container);
         }
