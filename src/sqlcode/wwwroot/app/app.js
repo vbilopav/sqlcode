@@ -6,7 +6,7 @@ define([
     "ui/database-pane",
     "ui/docs-pane",
     "ui/search-pane",
-    "ui/main-pane"
+    "ui/workbench-pane"
 ], (
     layout,
     Model,
@@ -15,7 +15,7 @@ define([
     dbPane,
     docsPane,
     searchPane,
-    mainPane
+    workbench
 ) => {
 
     document.title = "sql code";
@@ -28,9 +28,9 @@ define([
             docs: e => e.hasClass("docs-panel"),
             db: e => e.hasClass("db-panel"),
             search: e => e.hasClass("search-panel"),
-            splitter: e => e.hasClass("sc-split"),
-            rpane: e => e.hasClass("sc-right-pane"),
-            footer: "footer",
+            splitter: e => e.hasClass("v-split-2"),
+            workbench: e => e.hasClass("workbench"),
+            footer: "footer"
         }
     }).bind(app);
 
@@ -46,7 +46,7 @@ define([
             docked: () => toolbar.deactivate(),
             undocked: () => toolbar.restore()
         }
-    }).run();
+    }).start();
 
     toolbar.init({
         element: appModel.toolbar, 
@@ -74,7 +74,7 @@ define([
     docsPane.init({container: appModel.docs});
     dbPane.init({container: appModel.db});
     searchPane.init({container: appModel.search});
-    mainPane.init({container: appModel.rpane});
+    workbench.init({container: appModel.workbench});
 
     return () => {
         document.body.find("#loading-screen-script").remove();

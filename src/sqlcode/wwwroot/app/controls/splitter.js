@@ -32,7 +32,7 @@ define(["sys/storage"], Storage => class {
         this._docked = false;
     }
 
-    run (maxDelta=250, min=150) {
+    start (maxDelta=250, min=150) {
         this._element.on("mousedown", e => {
             let value = this._getValues()[this._resizeIdx].replace("px", "");
             this._offset = value - this._getPos(e);
