@@ -12,9 +12,10 @@ define(["sys/storage"], Storage => class {
         this._element = element || (() => {throw element})();
         this._container = container;
         direction === "h" || direction === "v" || (() => {throw direction})();
-        this._element.addClass("splitter-" + direction);
-        this._prop = direction === "h" ? "clientX" : "clientY";
-        this._css = direction === "h" ? "grid-template-columns" : "grid-template-rows";
+        this._dir = direction;
+        this._element.addClass("splitter-" + this._dir);
+        this._prop = this._dir === "h" ? "clientX" : "clientY";
+        this._css = this._dir === "h" ? "grid-template-columns" : "grid-template-rows";
         !isNaN(resizeIndex) || (() => {throw resizeIndex})();
         this._resizeIdx = resizeIndex;
         !isNaN(autoIndex) || (() => {throw autoIndex})();
@@ -35,7 +36,7 @@ define(["sys/storage"], Storage => class {
     start (maxDelta=250, min=150) {
         this._element.on("mousedown", e => {
             let value = this._getValues()[this._resizeIdx].replace("px", "");
-            this._offset = value - this._getPos(e);
+            this._offset = (this._dir === "h" ? value - this._getPos(e) : value - this._getPos(e));
             document.body.css("cursor", this._element.css("cursor"));
         });
         document.on("mouseup", e => {
@@ -65,7 +66,7 @@ define(["sys/storage"], Storage => class {
             e.stopPropagation();
 
             let pos = this._getPos(e),
-                {values, prev} = this._getValuesArray(pos + this._offset + "px"),
+                {values, prev} = this._getValuesArray((this._dir === "h" ? pos + this._offset : pos - this._offset) + "px"),
                 pr = this._container.getBoundingClientRect();
 
             if (pr.width - pos <= maxDelta) {
