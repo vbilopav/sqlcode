@@ -3,9 +3,10 @@ define([
     "controls/splitter"
 ], (
     Model,
-    Splitter
+    [_, VSplitter]
 ) => {
-    return container => {
+    return (container, pos) => {
+
         const model = new Model().bind(container.html(
             String.html`
                 <div id="editor" class="editor">editor</div>
@@ -14,21 +15,19 @@ define([
             `
         ));
 
-        const splitter = new Splitter({
-            //name: "workbanch-splitter",
+
+        const splitter = new VSplitter({
+            name: "workbanch-splitter",
             element: model.splitter,
             container: container,
-            direction: "v",
-            resizeIndex: 2,
-            autoIndex: 0,
-            dockPosition: 50,
-            /*
-            events: {
-                docked: () => _app.publish("toolbar/deactivate", splitter),
-                undocked: () => _app.publish("toolbar/restore", splitter)
-            }
-            */
-        }).start();
+            dockPosition: pos,
+            //events: {
+            //    docked: () => _app.publish("toolbar/deactivate", splitter),
+            //    undocked: () => _app.publish("toolbar/restore", splitter)
+            //}
+
+        }).start(maxDelta=50, min=75);
+
     }
     
 });

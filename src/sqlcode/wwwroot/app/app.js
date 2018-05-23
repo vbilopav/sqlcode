@@ -30,7 +30,7 @@ define([
 
     sidebar(model.sidebar, model.splitter, Number(model.toolbar.css("width").replace("px", "")));
     toolbar(model.toolbar);
-    workbench(model.workbench);
+    workbench(model.workbench, Number(model.footer.css("height").replace("px", "")));
 
     _app
         .subscribe("terminal/toggle", state => console.log("terminal/toggle = " + state))

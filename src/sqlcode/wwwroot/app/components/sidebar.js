@@ -6,12 +6,12 @@ define([
     "components/panes/search-pane",
 ], (
     Model,
-    Splitter,
+    [HSplitter],
     dbPane,
     docsPane,
     searchPane
 ) => {
-    return (container, splitterElement, dockPosition) => {
+    return (container, split, pos) => {
         
         const model = new Model().bind(
             container.html(
@@ -22,14 +22,11 @@ define([
             )
         );
 
-        const splitter = new Splitter({
+        const splitter = new HSplitter({
             name: "main-splitter",
-            element: splitterElement,
-            container: splitterElement.parentElement,
-            direction: "h",
-            resizeIndex: 0,
-            autoIndex: 2,
-            dockPosition: dockPosition,
+            element: split,
+            container: split.parentElement,
+            dockPosition: pos,
             events: {
                 docked: () => _app.publish("toolbar/deactivate", splitter),
                 undocked: () => _app.publish("toolbar/restore", splitter)

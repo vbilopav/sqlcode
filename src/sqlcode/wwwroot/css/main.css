@@ -17,7 +17,7 @@
 }
 .workbench {
   grid-column: 3;
-  grid-template-rows: auto 3px 100px;
+  grid-template-rows: auto 3px 200px;
   display: grid;
   left: 0px;
   top: 0px;
