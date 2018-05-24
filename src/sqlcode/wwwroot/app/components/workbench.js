@@ -1,15 +1,19 @@
 define([
     "sys/model",
-    "controls/splitter"
+    "controls/splitter",
+    "components/benches/editor-bench",
+    "components/benches/results-bench"
 ], (
     Model,
-    [_, VSplitter]
+    [_, VSplitter],
+    editorBench,
+    resultsBench
 ) => {
     return (container, pos) => {
 
         const model = new Model().bind(container.html(
             String.html`
-                <div id="editor" class="editor">editor</div>
+                <div id="editor" class="editor"></div>
                 <div id="splitter" class="control h-split-2"></div>
                 <div id="results" class="output"></div>
             `
@@ -34,6 +38,9 @@ define([
                 splitter.dock(220);
             }
         });
+
+        editorBench(model.editor);
+        resultsBench(model.results);
     }
     
 });

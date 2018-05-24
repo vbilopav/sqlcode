@@ -59,3 +59,31 @@
   color: white;
   text-shadow: 0 0 1px
 }
+
+.tabs {
+  grid-row: 1;
+  display: inline-flex;
+}
+
+.tabs-container {
+  grid-row: 2;
+}
+
+.tab {
+  padding-left: 20px;
+  padding-right: 20px;
+  cursor: pointer;
+}
+
+.editor-tab {
+  padding-top: 10px;
+  background-color: #252526;
+}
+
+.editor-tab > span {
+  margin-right: 5px;
+}
+
+.results-tab {
+  font-size: 10px;
+}

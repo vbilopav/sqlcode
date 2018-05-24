@@ -1,18 +1,22 @@
 define([], () => {
 
-    const names = [];
+    const 
+        names = [];
 
     return class {
-        constructor({storage, namespace, model, conversion}) {
-            this._storage = storage || localStorage;
-            this._namespace = namespace || "";
+        constructor({
+            storage=localStorage, 
+            namespace="", 
+            model=(() => {throw new Error("model is required!")})(), 
+            conversion={}
+        }) {
+            this._storage = storage;
+            this._namespace = namespace;
+            this._model = model;
+            this._conversion = conversion;
             if (this._namespace) {
                 this._namespace = this._namespace + ".";
             }
-            if (!model) {
-                throw new Error("model is required!");
-            }
-            this._conversion = conversion || {};
             for(let [name, defualtValue] of Object.entries(model)) {
                 this.create(name, defualtValue);
             }

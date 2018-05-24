@@ -8,10 +8,7 @@ html {
   font-family: "Consolas", 'Courier New', "monospace";
   font-size: 12px;
   line-height: 1.15;
-}
-
-@-ms-viewport {
-  width: device-width;
+  /*height:100%;*/
 }
 
 body {
@@ -23,6 +20,7 @@ body {
   background-color: #1E1E1E;
   font-family: sans-serif;
   font-size: 14px;
+  /*height:100%;*/
 }
 
 .align-center {

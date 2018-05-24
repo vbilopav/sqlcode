@@ -12,7 +12,7 @@ define([
     searchPane
 ) => {
     return (container, split, pos) => {
-        
+
         const model = new Model().bind(
             container.html(
                 String.html`

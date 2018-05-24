@@ -1,14 +1,19 @@
 define(["sys/storage"], Storage => {
 
     class Splitter {
-        constructor({name, element, container, gridTemplate, dockPosition, events}) {
-            this._element = element || (() => {throw element})();
+        constructor({
+            name,
+            element=(() => {throw element})(),
+            container,
+            dockPosition,
+            events={docked: ()=>{}, undocked: ()=>{}}
+        }) {
+            this._element = element;
             this._container = container;
             this._cursor = document.body.css("cursor");
             this._dockPos = dockPosition;
-            this._events = events || {docked: ()=>{}, undocked: ()=>{}};
-            let storageModel = {position: null};
-            this._storage = name ? new Storage({namespace: name, model: storageModel}) : storageModel;
+            this._events = events;
+            this._storage = name ? new Storage({namespace: name, model: {position: null}}) : {position: null};
             this._offset = null;
             this._docked = false;
         }
