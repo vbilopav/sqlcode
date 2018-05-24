@@ -3,7 +3,7 @@ define([], () => {
     const names = [];
 
     return class {
-        constructor({storage, namespace, model}) {
+        constructor({storage, namespace, model, conversion}) {
             this._storage = storage || localStorage;
             this._namespace = namespace || "";
             if (this._namespace) {
@@ -12,6 +12,7 @@ define([], () => {
             if (!model) {
                 throw new Error("model is required!");
             }
+            this._conversion = conversion || {};
             for(let [name, defualtValue] of Object.entries(model)) {
                 this.create(name, defualtValue);
             }
@@ -28,6 +29,10 @@ define([], () => {
                     let value = this._storage.getItem(namespace);
                     if (value === null && defualtValue !== undefined) {
                         return defualtValue;
+                    }
+                    let conversion = this._conversion[name];
+                    if (conversion) {
+                        return conversion(value);
                     }
                     return value;
                 },

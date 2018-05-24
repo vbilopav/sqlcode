@@ -21,8 +21,8 @@ define([
             container: container,
             dockPosition: pos,
             events: {
-                docked: () => _app.publish("results/docked", splitter),
-                undocked: () => _app.publish("results/undocked", splitter)
+                docked: () => _app.publish("results/dock/changed", false, splitter),
+                undocked: () => _app.publish("results/dock/changed", true, splitter)
             }
 
         }).start(maxDelta=50, min=75);
