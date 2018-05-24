@@ -5,10 +5,10 @@ define([], () => {
 
     return class {
         constructor(obj) {
-            if (obj.subscribe || obj.publish) {
+            if (obj.sub || obj.pub) {
                 throw new Error("pubsub already assigned to object!");
             }
-            obj.subscribe = (name, handler) => {
+            obj.sub = (name, handler) => {
                 let entry = entries[name];
                 if (!entry) {
                     entry = entries[name] = [];
@@ -16,7 +16,7 @@ define([], () => {
                 entries[name].push(handler);
                 return obj;
             };
-            obj.publish = (name, ...args) => {
+            obj.pub = (name, ...args) => {
                 let entry = entries[name];
                 if (!entry) {
                     return obj;

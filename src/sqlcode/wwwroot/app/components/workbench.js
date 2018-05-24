@@ -21,13 +21,13 @@ define([
             container: container,
             dockPosition: pos,
             events: {
-                docked: () => _app.publish("results/dock/changed", false, splitter),
-                undocked: () => _app.publish("results/dock/changed", true, splitter)
+                docked: () => _app.pub("results/dock/changed", false, splitter),
+                undocked: () => _app.pub("results/dock/changed", true, splitter)
             }
 
         }).start(maxDelta=50, min=75);
 
-        _app.subscribe("results/toggle", (state, sender) => {
+        _app.sub("results/toggle", (state, sender) => {
             if (state) {
                 splitter.undock(220);
             } else {

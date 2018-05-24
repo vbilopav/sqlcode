@@ -29,17 +29,20 @@ define([
     new Pubsub(_app);
 
     sidebar(
-        model.sidebar, model.splitter, Number(model.toolbar.css("width").replace("px", ""))
+        model.sidebar, 
+        model.splitter,
+        Number(model.toolbar.css("width").replace("px", ""))
     );
     workbench(
-        model.workbench, Number(model.footer.css("height").replace("px", ""))
+        model.workbench, 
+        Number(model.footer.css("height").replace("px", ""))
     );
     toolbar(model.toolbar);
 
     /*
     _app
-        .subscribe("terminal/toggle", state => console.log("terminal/toggle = " + state))
-        .subscribe("results/toggle", state => console.log("results/toggle = " + state));
+        .sub("terminal/toggle", state => console.log("terminal/toggle = " + state))
+        .sub("results/toggle", state => console.log("results/toggle = " + state));
     */
 
     return () => {

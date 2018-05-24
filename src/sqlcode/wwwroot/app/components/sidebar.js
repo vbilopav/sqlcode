@@ -28,8 +28,8 @@ define([
             container: split.parentElement,
             dockPosition: pos,
             events: {
-                docked: () => _app.publish("toolbar/deactivate", splitter),
-                undocked: () => _app.publish("toolbar/restore", splitter)
+                docked: () => _app.pub("toolbar/deactivate", splitter),
+                undocked: () => _app.pub("toolbar/restore", splitter)
             }
         }).start();
 
@@ -38,10 +38,10 @@ define([
         searchPane(model.search);
 
         _app
-            .subscribe("sidebar/toggle", (id, state, sender) => {
+            .sub("sidebar/toggle", (id, state, sender) => {
                 model[id].show(state);
                 splitter.undock(220);
             })
-            .subscribe("sidebar/dock", () => splitter.dock(220));
+            .sub("sidebar/dock", () => splitter.dock(220));
     };
 });
