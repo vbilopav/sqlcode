@@ -7,6 +7,8 @@ define(["controls/tabbed"], Tabbed => {
                 name: "results-tab", 
                 height: 20,
                 tabCreate: e=>e.addClass("results-tab")
-            }).create("RESULTS").create("MESSAGES");
+            })
+            .create({tabHtml: "RESULTS"})
+            .create({tabHtml: "MESSAGES"});
     }
 });

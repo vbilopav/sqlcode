@@ -12,9 +12,6 @@
   grid-column: 1;
   padding-left: 50px;
 }
-.v-split-2 {
-  grid-column: 2;
-}
 .workbench {
   grid-column: 3;
   grid-template-rows: auto 3px 200px;
@@ -28,60 +25,30 @@
 .editor {
   grid-row: 1;
 }
-.h-split-2 {
-  grid-row: 2;
-}
 .output {
   grid-row: 3;
 }
 
-.control {
-  color: #ADADAD;
-  background-color: #333333;
-}
-.splitter-h {
-  cursor: ew-resize;
+.editor-tabs {
   background-color: #252526;
 }
-.splitter-v {
-  cursor: ns-resize;
-  background-color: #252526;
-}
-
-.btn {
-  cursor: pointer;
-}
-.btn:hover {
-  color: white;
-  text-shadow: 0 0 1px
-}
-.btn.active {
-  color: white;
-  text-shadow: 0 0 1px
-}
-
-.tabs {
-  grid-row: 1;
-  display: inline-flex;
-}
-
-.tabs-container {
-  grid-row: 2;
-}
-
-.tab {
-  padding-left: 20px;
-  padding-right: 20px;
-  cursor: pointer;
-}
-
 .editor-tab {
   padding-top: 10px;
   background-color: #252526;
+  border-right: 1px #1E1E1E solid;
 }
-
-.editor-tab > span {
-  margin-right: 5px;
+.editor-tab .icon {
+  font-size: 12px;
+  /*margin-right: 5px;*/
+}
+.editor-tab .close {
+  font-size: 11px;
+  margin-left: 20px;
+  color: #ffffff;
+  /*
+  left: 10px;
+  position: relative;
+  */
 }
 
 .results-tab {

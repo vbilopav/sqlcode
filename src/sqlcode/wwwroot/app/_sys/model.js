@@ -1,6 +1,9 @@
 define([], () => class {
 
-    constructor({model, oncreate=(()=>{})}={}) {
+    constructor({
+        model, 
+        oncreate=(()=>{})
+    }={}) {
         this._model = model;
         this._instance = undefined;
         this._names = [];
