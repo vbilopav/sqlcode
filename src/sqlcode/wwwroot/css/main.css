@@ -39,16 +39,22 @@
 }
 .editor-tab .icon {
   font-size: 12px;
-  /*margin-right: 5px;*/
 }
 .editor-tab .close {
   font-size: 11px;
   margin-left: 20px;
   color: #ffffff;
-  /*
-  left: 10px;
-  position: relative;
-  */
+  float: right;
+}
+.editor-tab.tab-active {
+  background-color: #1E1E1E;
+}
+.editor-tab.tab-inactive .close {
+  visibility: hidden;
+}
+.editor-tab.tab-active .close,
+.editor-tab.tab-inactive:hover .close {
+  visibility: visible;
 }
 
 .results-tab {

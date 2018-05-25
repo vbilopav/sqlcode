@@ -82,4 +82,7 @@ body {
   padding-left: 10px;
   padding-right: 10px;
   cursor: pointer;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
