@@ -21,7 +21,7 @@ define([], () => {
                 if (!entry) {
                     return obj;
                 }
-                entry.forEach(f => f.apply(obj, args));
+                setTimeout(() => entry.forEach(f => f.apply(obj, args)), 0);
                 return obj;
             };
         }

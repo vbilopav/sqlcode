@@ -86,3 +86,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.droptarget {
+  background-color: #3b3e41 !important;
+}

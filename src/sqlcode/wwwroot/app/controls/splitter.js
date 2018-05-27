@@ -23,58 +23,62 @@ define(["sys/storage"], Storage => {
                 this._offset = this._calcOffset(e);
                 document.body.css("cursor", this._element.css("cursor"));
             });
-            document.on("mouseup", e => {
-                if (this._offset === null) {
-                    return true;
-                }
-                this._offset = null;
-                document.body.css("cursor", this._cursor);
-                if (this._docked) {
-                    return true;
-                }
-                let pos = this._getPos(e),
-                    {values, prev} = this._getValuesArray();
-                // weird bug on linux chrome only for vertical
-                if (pos <= min) {
-                    if (!this._docked) {
-                        this.dock();
+            document
+                .on("mouseup", e => {
+                    if (this._offset === null) {
+                        return true;
                     }
-                }
-                this._storage.position = prev;
-            });
-            document.on("mousemove", e => {
-                if (this._offset === null) {
-                    return true;
-                }
-                e.preventDefault();
-                e.stopPropagation();
-    
-                let pos = this._getPos(e),
-                    calc = this._calcPos(pos, e),
-                    {values, prev} = this._getValuesArray(calc + "px"),
-                    rect = this._container.getBoundingClientRect();
-
-                if (this._calcDelta(rect, pos) <= maxDelta) {
-                    return false;
-                }
-                if (this._getMin(pos, calc) <= min) {
-                    if (!this._docked) {
-                        this.dock();
-                        this._events.docked();
-                        return false;
-                    } else {
-                        return false;
-                    }
-                } else {
+                    this._offset = null;
+                    document.body.css("cursor", this._cursor);
                     if (this._docked) {
-                        this._events.undocked();
-                        this.undock(min);
+                        return true;
+                    }
+                    let pos = this._getPos(e),
+                        {values, prev} = this._getValuesArray();
+                    // weird bug on linux chrome only for vertical
+                    /*
+                    if (pos <= min) {
+                        if (!this._docked) {
+                            this.dock();
+                        }
+                    }
+                    */
+                    this._storage.position = prev;
+                })
+                .on("mousemove", e => {
+                    if (this._offset === null) {
+                        return true;
+                    }
+                    e.preventDefault();
+                    e.stopPropagation();
+        
+                    let pos = this._getPos(e),
+                        calc = this._calcPos(pos, e),
+                        {values, prev} = this._getValuesArray(calc + "px"),
+                        rect = this._container.getBoundingClientRect();
+
+                    if (this._calcDelta(rect, pos) <= maxDelta) {
+                        console.log(maxDelta);
                         return false;
                     }
-                }
-                this._container.css(this._css, values.join(" "));
-                return false;
-            });
+                    if (this._getMin(pos, calc) <= min) {
+                        if (!this._docked) {
+                            this.dock();
+                            this._events.docked();
+                            return false;
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        if (this._docked) {
+                            this._events.undocked();
+                            this.undock(min);
+                            return false;
+                        }
+                    }
+                    this._container.css(this._css, values.join(" "));
+                    return false;
+                });
             return this;
         }
     

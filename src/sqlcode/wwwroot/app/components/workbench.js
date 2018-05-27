@@ -29,7 +29,7 @@ define([
                 undocked: () => _app.pub("results/dock/changed", true, splitter)
             }
 
-        }).start(maxDelta=50, min=75);
+        }).start(maxDelta=100, min=75);
 
         _app.sub("results/toggle", (state, sender) => {
             if (state) {

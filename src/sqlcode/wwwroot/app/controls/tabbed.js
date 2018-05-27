@@ -22,14 +22,14 @@ define(["sys/model"], Model => class {
         this._name = name;
         this._tabCreated = tabCreated;
         this._contentCreated = contentCreated;
-        this._current = undefined
+        this._active = undefined
         for(let opts of tabs) {
             this.create(opts); 
         }
     }
 
-    get current() {
-        return this._current;
+    get active() {
+        return this._active;
     }
 
     get tabs() {
@@ -37,10 +37,11 @@ define(["sys/model"], Model => class {
     }
 
     create({tabHtml, contentHtml, active=false}) {
-        let id = this._name + this._id++;
+        let id = this._name + ++this._id;
         
         let content = "div"
             .createElement(id, contentHtml)
+            .data("id", this._id)
             .addClass("tab-content");
         this._contentCreated(
             this._toggleContent(content, active).appendTo(this._model.content)
@@ -50,19 +51,59 @@ define(["sys/model"], Model => class {
             .createElement(id, tabHtml)
             .addClass("tab")
             .data("content-ref", content)
+            .data("id", this._id)
             .on("click", e => this._tabClick(e));
         this._tabCreated(
             this._toggleTab(tab, active).appendTo(this._model.tabs)
         );
 
         if (active) {
-            this._current = content;
+            this._active = tab;
         }
         return this;
     }
 
     closeByTab(tab) {
-        console.log("close tab");
+        let content = tab.data("content-ref");
+        tab.remove();
+        content.remove();
+        let lowest;
+        for(let tab of this.tabs.children) {
+            if (lowest) {
+                if (lowest.data("id") > tab.data("id")) {
+                    lowest = tab;
+                }
+            } else {
+                lowest = tab;
+            }
+        }
+        if (lowest) {
+            this.activate(lowest);
+            this._reveal(lowest);
+        }
+    }
+
+    activate(tab) {
+        if (tab.data("active")) {
+            return this;
+        }
+        this._toggle(this._active, false);
+        this._toggle(tab, true);
+        this._active = tab;
+        return this;
+    }
+
+    _reveal(tab) {
+        if (!this.tabs.overflownX()) {
+            return
+        }
+        //
+        // If tab is in offset, scroll tabs to start posotion. Assuming first tab is awlays most left (no dragging yet)
+        //
+        let r = tab.getClientRects();
+        if (r[0].x - tab.offsetWidth < this.tabs.scrollLeft) {
+            this.tabs.scrollLeft = 0;
+        }
     }
 
     _toggleTab(tab, active) {
@@ -85,6 +126,7 @@ define(["sys/model"], Model => class {
             this._toggleTab(tab, state).data("content-ref"), 
             state
         );
+        return this;
     }
 
     _tabClick(e) {
@@ -95,12 +137,8 @@ define(["sys/model"], Model => class {
             e.target.data("canceled", false);
             return
         }
-        for(let tab of this._model.tabs.findAll(".tab")) {
-            if (tab.data("active")) {
-                this._toggle(tab, false);
-            }
-        }
-        this._toggle(e.currentTarget, true);
+        this.activate(e.currentTarget);
+        return this;
     }
 
 });

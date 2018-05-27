@@ -9,7 +9,7 @@ define([
     Pubsub,
     toolbar,
     sidebar,
-    workbench,
+    workbench
 ) => {
 
     const 

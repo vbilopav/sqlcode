@@ -10,6 +10,6 @@ define(["controls/tabbed"], Tabbed => {
             })
             .create({tabHtml: "RESULTS"})
             .create({tabHtml: "MESSAGES"})
-            .create({tabHtml: "HISTORY"});
+            .create({tabHtml: "LOG"});
     }
 });

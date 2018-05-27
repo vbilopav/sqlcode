@@ -17,7 +17,8 @@ define([], () => {
         "attr",
         "css", "_styles",
         "on", "off",
-        "data", "_data"
+        "data", "_data",
+        "overflownX"
     ]);
 
     HTMLElement.prototype.find = function(search) {
@@ -169,6 +170,10 @@ define([], () => {
         return this._data[key];
     }
 
+    HTMLElement.prototype.overflownX = function() {
+        return this.scrollWidth > this.clientWidth
+    }
+
     test(String, ["hashCode", "createElement", "toCamelCase"]);
 
     String.prototype.toCamelCase = function() {
@@ -206,6 +211,8 @@ define([], () => {
     //
     // lit-html vs code extension support
     //
-    String.html = (pieces, ...args) => String.raw(pieces, ...args)
+    String.html = (pieces, ...args) => String.raw(pieces, ...args);
 
+    navigator.isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    navigator.isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
 });
