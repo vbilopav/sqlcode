@@ -58,7 +58,6 @@ define(["sys/storage"], Storage => {
                         rect = this._container.getBoundingClientRect();
 
                     if (this._calcDelta(rect, pos) <= maxDelta) {
-                        console.log(maxDelta);
                         return false;
                     }
                     if (this._getMin(pos, calc) <= min) {

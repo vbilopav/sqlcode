@@ -26,6 +26,11 @@ define(["sys/model"], Model => class {
         for(let opts of tabs) {
             this.create(opts); 
         }
+        window.on("resize", () => {
+            if (this.active) {
+                this._reveal(this.active);
+            }
+        })
     }
 
     get active() {
@@ -97,12 +102,13 @@ define(["sys/model"], Model => class {
         if (!this.tabs.overflownX()) {
             return
         }
-        //
-        // If tab is in offset, scroll tabs to start posotion. Assuming first tab is awlays most left (no dragging yet)
-        //
-        let r = tab.getClientRects();
-        if (r[0].x - tab.offsetWidth < this.tabs.scrollLeft) {
-            this.tabs.scrollLeft = 0;
+        let tabRect = tab.getClientRects(),
+            tabsRect = this.tabs.getClientRects();
+        if (tabRect[0].x < tabsRect[0].x) {
+            this.tabs.scrollLeft = tabRect[0].x + this.tabs.scrollLeft - tabsRect[0].x;
+        }
+        if (tabRect[0].x + tabRect[0].width > tabsRect[0].x + tabsRect[0].width) {
+            this.tabs.scrollLeft = tabsRect[0].x + tabsRect[0].width + this.tabs.scrollLeft - tabsRect[0].width;
         }
     }
 

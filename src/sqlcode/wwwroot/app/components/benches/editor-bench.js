@@ -2,7 +2,7 @@ define(["controls/tabbed"], Tabbed => {
 
     const 
         tabTmplt = title => String.html`
-            <span class="icon icon-doc"></span>
+            <span class="icon icon-doc-text"></span>
             <span class="title">${title}</span>
             <span class="close" title="Close (Ctrl+F4)">&#10006;</span>
         `,
@@ -42,9 +42,9 @@ define(["controls/tabbed"], Tabbed => {
                     replace.remove();
                     tab.removeClass("droptarget").remove();
 
-                    if (replaceNext.id === tab.id) {
+                    if (replaceNext && replaceNext.id === tab.id) {
                         replaceNext = tabNext;
-                    } else if (tabNext.id === replace.id) {
+                    } else if (tabNext && tabNext.id === replace.id) {
                         tabNext = replaceNext;
                         switchTab();
                         switchReplace();

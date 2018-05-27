@@ -206,7 +206,9 @@ define([], () => {
     test(Document, ["on", "off"]);
     test(Window, ["on", "off"]);
     Document.prototype.on = HTMLElement.prototype.on;
+    Document.prototype.off = HTMLElement.prototype.off;
     Window.prototype.off = HTMLElement.prototype.off;
+    Window.prototype.on = HTMLElement.prototype.on;
 
     //
     // lit-html vs code extension support

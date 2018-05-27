@@ -39,8 +39,10 @@
   /* text-shadow: 1px 1px 1px rgba(127, 127, 127, 0.3); */
 }
  
+
 .icon-doc:before { content: '\e800'; } /* '' */
 .icon-search:before { content: '\e801'; } /* '' */
 .icon-menu:before { content: '\f0c9'; } /* '' */
+.icon-doc-text:before { content: '\f0f6'; } /* '' */
 .icon-terminal:before { content: '\f120'; } /* '' */
 .icon-database:before { content: '\f1c0'; } /* '' */
