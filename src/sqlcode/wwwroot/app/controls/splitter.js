@@ -79,6 +79,10 @@ define(["sys/storage"], Storage => {
             return this;
         }
     
+        get docked() {
+            return this._docked;
+        }
+        
         dock() {
             let {values, prev} = this._getValuesArray(this._dockPos + "px");
             this._storage.position = prev;

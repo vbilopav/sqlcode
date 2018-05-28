@@ -43,5 +43,12 @@ define([
                 splitter.undock(220);
             })
             .sub("sidebar/dock", () => splitter.dock(220));
+
+        window.on("resize", e => {
+            if (window.innerWidth < 300 && !splitter.docked) {
+                splitter.dock(220);
+                _app.pub("toolbar/deactivate", splitter);
+            }
+        })
     };
 });
