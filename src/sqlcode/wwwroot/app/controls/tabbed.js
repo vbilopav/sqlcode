@@ -108,7 +108,7 @@ define(["sys/model"], Model => class {
             this.tabs.scrollLeft = tabRect[0].x + this.tabs.scrollLeft - tabsRect[0].x;
         }
         if (tabRect[0].x + tabRect[0].width > tabsRect[0].x + tabsRect[0].width) {
-            this.tabs.scrollLeft = tabsRect[0].x + tabsRect[0].width + this.tabs.scrollLeft - tabsRect[0].width;
+            this.tabs.scrollLeft = tabsRect[0].x + tabsRect[0].width + this.tabs.scrollLeft + tabsRect[0].width;
         }
     }
 
