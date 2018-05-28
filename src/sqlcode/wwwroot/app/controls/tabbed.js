@@ -105,10 +105,10 @@ define(["sys/model"], Model => class {
         let tabRect = tab.getClientRects(),
             tabsRect = this.tabs.getClientRects();
         if (tabRect[0].x < tabsRect[0].x) {
-            this.tabs.scrollLeft = tabRect[0].x + this.tabs.scrollLeft - tabsRect[0].x;
+            tab.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"})
         }
         if (tabRect[0].x + tabRect[0].width > tabsRect[0].x + tabsRect[0].width) {
-            this.tabs.scrollLeft = tabsRect[0].x + tabsRect[0].width + this.tabs.scrollLeft + tabsRect[0].width;
+            tab.scrollIntoView({behavior: "smooth", block: "nearest", inline: "nearest"});
         }
     }
 
