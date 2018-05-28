@@ -217,4 +217,5 @@ define([], () => {
 
     navigator.isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
     navigator.isEdge = window.navigator.userAgent.indexOf("Edge") > -1;
+    navigator.onLinux = window.navigator.platform.indexOf("Linux") > -1;
 });

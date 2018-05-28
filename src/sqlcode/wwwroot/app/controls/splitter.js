@@ -35,14 +35,6 @@ define(["sys/storage"], Storage => {
                     }
                     let pos = this._getPos(e),
                         {values, prev} = this._getValuesArray();
-                    // weird bug on linux chrome only for vertical
-                    /*
-                    if (pos <= min) {
-                        if (!this._docked) {
-                            this.dock();
-                        }
-                    }
-                    */
                     this._storage.position = prev;
                 })
                 .on("mousemove", e => {
@@ -60,10 +52,15 @@ define(["sys/storage"], Storage => {
                     if (this._calcDelta(rect, pos) <= maxDelta) {
                         return false;
                     }
+
                     if (this._getMin(pos, calc) <= min) {
                         if (!this._docked) {
-                            this.dock();
                             this._events.docked();
+                            this.dock();
+                            // weird bug only on linux chrome and only for vertical splitter
+                            if (navigator.isChrome && navigator.onLinux && this._dir === "v" && pos <= min) {
+                                setTimeout(() => this.dock(), 50);
+                            }
                             return false;
                         } else {
                             return false;
@@ -75,6 +72,7 @@ define(["sys/storage"], Storage => {
                             return false;
                         }
                     }
+
                     this._container.css(this._css, values.join(" "));
                     return false;
                 });
@@ -135,10 +133,11 @@ define(["sys/storage"], Storage => {
 
     return [
 
-        class Horizontal extends Splitter {
+        class Vertical extends Splitter {
             constructor(options) {
                 super(options);
-                this._element.addClass("splitter-h");
+                this._dir = "v";
+                this._element.addClass("splitter-v");
                 this._prop = "clientX";
                 this._css = "grid-template-columns";
                 this._resizeIdx = 0;
@@ -164,10 +163,11 @@ define(["sys/storage"], Storage => {
             }
         },
 
-        class Vertical extends Splitter {
+        class Horizontal extends Splitter {
             constructor(options) {
                 super(options);
-                this._element.addClass("splitter-v");
+                this._dir = "h";
+                this._element.addClass("splitter-h");
                 this._prop = "clientY";
                 this._css = "grid-template-rows";
                 this._resizeIdx = 2;

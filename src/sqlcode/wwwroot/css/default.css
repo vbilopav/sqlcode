@@ -60,11 +60,11 @@ body {
   color: #ADADAD;
   background-color: #333333;
 }
-.splitter-h {
+.splitter-v {
   cursor: ew-resize;
   background-color: #252526;
 }
-.splitter-v {
+.splitter-h {
   cursor: ns-resize;
   background-color: #252526;
 }

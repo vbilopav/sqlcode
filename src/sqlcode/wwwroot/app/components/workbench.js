@@ -5,7 +5,7 @@ define([
     "components/benches/results-bench"
 ], (
     Model,
-    [_, VSplitter],
+    [_, HSplitter],
     editorBench,
     resultsBench
 ) => {
@@ -19,7 +19,7 @@ define([
             `
         ));
 
-        const splitter = new VSplitter({
+        const splitter = new HSplitter({
             name: "workbanch-splitter",
             element: model.splitter,
             container: container,

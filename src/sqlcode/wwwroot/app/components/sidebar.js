@@ -6,7 +6,7 @@ define([
     "components/panes/search-pane",
 ], (
     Model,
-    [HSplitter],
+    [VSplitter],
     dbPane,
     docsPane,
     searchPane
@@ -22,7 +22,7 @@ define([
             )
         );
 
-        const splitter = new HSplitter({
+        const splitter = new VSplitter({
             name: "main-splitter",
             element: split,
             container: split.parentElement,
