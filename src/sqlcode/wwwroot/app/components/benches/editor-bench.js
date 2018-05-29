@@ -115,7 +115,7 @@ define(["controls/tabbed"], Tabbed => {
                 }
             });
 
-        _app.sub("sidebar/position/changed", () => {
+        _app.sub("sidebar/changed", () => {
             if (tabbed.active) {
                 tabbed.reveal(tabbed.active);
             }

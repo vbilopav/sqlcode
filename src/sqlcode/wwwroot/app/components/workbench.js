@@ -25,13 +25,13 @@ define([
             container: container,
             dockPosition: pos,
             events: {
-                docked: () => _app.pub("results/dock/changed", false, splitter),
-                undocked: () => _app.pub("results/dock/changed", true, splitter)
+                docked: () => _app.pub(["workbench/docked", "workbench/dock"], false, splitter),
+                undocked: () => _app.pub(["workbench/undocked", "workbench/dock"], true, splitter),
             }
 
         }).start(maxDelta=100, min=75);
 
-        _app.sub("results/toggle", (state, sender) => {
+        _app.sub("state/toggle/results", (id, state, sender) => {
             if (state) {
                 splitter.undock(220);
             } else {

@@ -38,23 +38,23 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             if (btn.id === "results") {
                 storage.results = active;
             }
-            _app.pub(`${btn.id}/toggle`, active, btn);
+            _app.pub("state/toggle/" + btn.id, btn.id, active, btn);
         },
         onMutexBtnClick = btn =>  {
             buttons.each(button => {
                 if (button.hasClass(cls) && !button.data("toggle")) {
-                    _app.pub("sidebar/toggle", button.id, false, button);
+                    _app.pub("state/toggle", button.id, false, button);
                 }
             });
             if (storage.active === btn.id) {
                 storage.prev = storage.active;
                 storage.active = null;
-                _app.pub("sidebar/dock", btn);
+                _app.pub("state/off", "toolbar", btn);
                 return;
             }
             storage.prev = storage.active;
             storage.active = btn.id;
-            _app.pub("sidebar/toggle", btn.id, true, btn);
+            _app.pub("state/toggle", btn.id, true, btn);
         },
         onClick = e =>  {
             if (e.target.data("toggle")) {
@@ -67,26 +67,26 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             btn.removeClass(cls).on("click", onClick);
             if (btn.id === "results") {
                 btn.toggleClass(cls, storage.results);
-                _app.pub("results/toggle", storage.results, btn);
+                _app.pub("state/toggle/results", storage.results, btn);
             }
             if (btn.data("toggle")) {
                 return;
             }
-            _app.pub("sidebar/toggle", btn.id, btn.id === storage.active, btn);
+            _app.pub("state/toggle", btn.id, btn.id === storage.active, btn);
         };
 
     return container => {
         _app
-            .sub("sidebar/toggle", (id, state, sender) => (sender || buttons[id]).toggleClass(cls, state))
-            .sub("toolbar/restore", () => {
+            .sub("state/toggle", (id, state, sender) => (sender || buttons[id]).toggleClass(cls, state))
+            .sub("sidebar/undocked", () => {
                 storage.active = storage.prev;
                 if (!storage.active) {
                     storage.active = defaultBtn;
                 }
                 let id = storage.active;
-                _app.pub("sidebar/toggle", id, true, buttons[id]);
+                _app.pub("state/toggle", id, true, buttons[id]);
             })
-            .sub("toolbar/deactivate", () => {
+            .sub("sidebar/docked", () => {
                 if (!storage.active) {
                     return;
                 }
@@ -96,16 +96,16 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
                     return;
                 }
                 let id = storage.prev;
-                _app.pub("sidebar/toggle", id, false, buttons[id]);
+                _app.pub("state/toggle", id, false, buttons[id]);
             })
-            .sub("results/dock/changed", state => {
+            .sub("workbench/dock", state => {
                 storage.results = state;
                 buttons.results.toggleClass(cls, state);
             });
 
         buttons = new Model({oncreate: onCreate}).bind(container.html(template));
         if (!storage.active) {
-            _app.pub("sidebar/dock", container);
+            _app.pub("state/off", "toolbar", container);
         }
     }
 });

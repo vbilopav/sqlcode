@@ -1,18 +1,20 @@
 define(["sys/storage"], Storage => {
 
+    let defaultEvents = {docked: ()=>{}, undocked: ()=>{}, changed: ()=>{}};
+
     class Splitter {
         constructor({
             name,
             element=(() => {throw element})(),
             container,
             dockPosition,
-            events={docked: ()=>{}, undocked: ()=>{}, changed: ()=>{}}
+            events=defaultEvents
         }) {
             this._element = element;
             this._container = container;
             this._cursor = document.body.css("cursor");
             this._dockPos = dockPosition;
-            this._events = events;
+            this._events = Object.assign(defaultEvents, events);
             this._storage = name ? new Storage({namespace: name, model: {position: null}}) : {position: null};
             this._offset = null;
             this._docked = false;

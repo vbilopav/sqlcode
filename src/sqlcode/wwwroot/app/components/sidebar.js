@@ -28,9 +28,9 @@ define([
             container: split.parentElement,
             dockPosition: pos,
             events: {
-                docked: () => _app.pub("toolbar/deactivate", splitter),
-                undocked: () => _app.pub("toolbar/restore", splitter),
-                changed: () => _app.pub("sidebar/position/changed", splitter)
+                docked: () => _app.pub("sidebar/docked", splitter),
+                undocked: () => _app.pub("sidebar/undocked", splitter),
+                changed: () => _app.pub("sidebar/changed", splitter)
             }
         }).start();
 
@@ -39,16 +39,17 @@ define([
         searchPane(model.search);
 
         _app
-            .sub("sidebar/toggle", (id, state, sender) => {
+            .sub("state/toggle", (id, state, sender) => {
                 model[id].show(state);
                 splitter.undock(220);
             })
-            .sub("sidebar/dock", () => splitter.dock(220));
+            .sub("state/off", () => splitter.dock(220));
 
+        // unnecessray after complete migration to css grid
         window.on("resize", e => {
             if (window.innerWidth < 300 && !splitter.docked) {
                 splitter.dock(220);
-                _app.pub("toolbar/deactivate", splitter);
+                _app.pub("sidebar/docked", splitter);
             }
         })
     };
