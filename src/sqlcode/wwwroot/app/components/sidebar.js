@@ -29,7 +29,8 @@ define([
             dockPosition: pos,
             events: {
                 docked: () => _app.pub("toolbar/deactivate", splitter),
-                undocked: () => _app.pub("toolbar/restore", splitter)
+                undocked: () => _app.pub("toolbar/restore", splitter),
+                changed: () => _app.pub("sidebar/position/changed", splitter)
             }
         }).start();
 

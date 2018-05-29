@@ -6,7 +6,7 @@ define(["sys/storage"], Storage => {
             element=(() => {throw element})(),
             container,
             dockPosition,
-            events={docked: ()=>{}, undocked: ()=>{}}
+            events={docked: ()=>{}, undocked: ()=>{}, changed: ()=>{}}
         }) {
             this._element = element;
             this._container = container;
@@ -74,6 +74,7 @@ define(["sys/storage"], Storage => {
                     }
 
                     this._container.css(this._css, values.join(" "));
+                    this._events.changed(...this._css, values);
                     return false;
                 });
             return this;

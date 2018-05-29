@@ -114,5 +114,11 @@ define(["controls/tabbed"], Tabbed => {
                     tabbed.tabs.css("overflow-x", "scroll");
                 }
             });
+
+        _app.sub("sidebar/position/changed", () => {
+            if (tabbed.active) {
+                tabbed.reveal(tabbed.active);
+            }
+        })
     }
 });

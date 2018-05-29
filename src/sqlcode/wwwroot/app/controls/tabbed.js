@@ -28,7 +28,7 @@ define(["sys/model"], Model => class {
         }
         window.on("resize", () => {
             if (this.active) {
-                this._reveal(this.active);
+                this.reveal(this.active);
             }
         })
     }
@@ -84,7 +84,7 @@ define(["sys/model"], Model => class {
         }
         if (lowest) {
             this.activate(lowest);
-            this._reveal(lowest);
+            this.reveal(lowest);
         }
     }
 
@@ -95,10 +95,11 @@ define(["sys/model"], Model => class {
         this._toggle(this._active, false);
         this._toggle(tab, true);
         this._active = tab;
+        this.reveal(tab);
         return this;
     }
 
-    _reveal(tab) {
+    reveal(tab) {
         if (!this.tabs.overflownX()) {
             return
         }
