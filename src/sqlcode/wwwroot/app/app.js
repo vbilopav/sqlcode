@@ -39,12 +39,6 @@ define([
     );
     toolbar(model.toolbar);
 
-    /*
-    _app
-        .sub("terminal/toggle", state => console.log("terminal/toggle = " + state))
-        .sub("results/toggle", state => console.log("results/toggle = " + state));
-    */
-
     return () => {
         document.body.find("#loading-screen-script").remove();
         document.body.find("#loading-screen").remove();
