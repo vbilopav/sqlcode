@@ -1,13 +1,6 @@
 define(["sys/model"], Model => class {
 
-    constructor({
-        container, 
-        name="", 
-        height=40, 
-        tabCreated=(()=>{}),
-        contentCreated=(()=>{}),
-        tabs=[]
-    }) {
+    constructor({container, name="", height=40}) {
         this._model = new Model().bind(
             container
                 .css("display", "grid")
@@ -19,13 +12,16 @@ define(["sys/model"], Model => class {
                 )
         );
         this._id = 0;
+        this._count = 0;
         this._name = name;
-        this._tabCreated = tabCreated;
-        this._contentCreated = contentCreated;
-        this._active = undefined
-        for(let opts of tabs) {
-            this.create(opts); 
-        }
+        this._active = undefined;
+
+        this.beforeCreate = (()=>true);
+        this.afterCreate = (()=>{});
+
+        this.beforeClose = (()=>true);
+        this.afterClose = (()=>{});
+
         window.on("resize", () => {
             if (this.active) {
                 this.reveal(this.active);
@@ -41,16 +37,20 @@ define(["sys/model"], Model => class {
         return this._model.tabs;
     }
 
+    createTabs(tabs=[]) {
+        for(let opts of tabs) {
+            this.create(opts); 
+        }
+    }
+
     create({tabHtml, contentHtml, active=false}) {
         let id = this._name + ++this._id;
-        
+        this._count++;
+
         let content = "div"
             .createElement(id, contentHtml)
             .data("id", this._id)
             .addClass("tab-content");
-        this._contentCreated(
-            this._toggleContent(content, active).appendTo(this._model.content)
-        );
 
         let tab = "span"
             .createElement(id, tabHtml)
@@ -58,20 +58,32 @@ define(["sys/model"], Model => class {
             .data("content-ref", content)
             .data("id", this._id)
             .on("click", e => this._tabClick(e));
-        this._tabCreated(
-            this._toggleTab(tab, active).appendTo(this._model.tabs)
-        );
+        
+        if (!this.beforeCreate({tab: tab, content: content, count: this._count})) {
+            this._id--;
+            this._count--;
+            return;
+        }
+
+        this._toggleContent(content, active).appendTo(this._model.content);
+        this._toggleTab(tab, active).appendTo(this._model.tabs)
 
         if (active) {
             this._active = tab;
         }
+        this.afterCreate({tab: tab, content: content, count: this._count});
         return this;
     }
 
     closeByTab(tab) {
         let content = tab.data("content-ref");
+        if (!this.beforeClose({tab: tab, content: content, count: this._count})) {
+            return;
+        }
         tab.remove();
         content.remove();
+        this._count--;
+        this.afterClose({tab: tab, content: content, count: this._count});
         let lowest;
         for(let tab of this.tabs.children) {
             if (lowest) {
@@ -84,7 +96,6 @@ define(["sys/model"], Model => class {
         }
         if (lowest) {
             this.activate(lowest);
-            this.reveal(lowest);
         }
     }
 

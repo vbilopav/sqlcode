@@ -11,8 +11,24 @@ define(["controls/tabbed"], Tabbed => {
     return container => {
 
         const 
-            tabCreated = tab => tab
-                .addClass(cls)
+            tabbed = 
+                new Tabbed({container, name: "editor-tab"});
+
+        tabbed.tabs
+            .addClass("editor-tabs")
+            .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
+            .on("mouseenter", () => {
+                if (tabbed.tabs.overflownX()) {
+                    tabbed.tabs.css("overflow-x", "scroll");
+                }
+            });
+        
+        tabbed.afterCreate = event => {
+            if (event.count !== 0) {
+                tabbed.tabs.show();
+            }
+            let tab = event.tab;
+            tab.addClass(cls)
                 .attr("draggable", "true")
                 .on("dragstart", e => {
                     tabbed.activate(e.target);
@@ -65,60 +81,54 @@ define(["controls/tabbed"], Tabbed => {
                     e.target.data("canceled", true);
                     e.target.css("font-weight", "");
                     tabbed.closeByTab(tab);
-                }),
-            tabbed = 
-                new Tabbed({
-                    container, 
-                    name: "editor-tab", 
-                    tabCreated: tabCreated,
-                    tabs: [{
-                            tabHtml: tabTmplt("vedran@vedran-ThinkPad-L570:~/Documents/vs/sqlcode/src/sqlcode/wwwroot$ http-server"),
-                            contentHtml: String.html`<span style="margin: 50px">content1</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 2"),
-                            contentHtml: String.html`<span style="margin: 50px">content2</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 3"),
-                            contentHtml: String.html`<span style="margin: 50px">content3</span>` ,
-                            active: true
-                        }, {
-                            tabHtml: tabTmplt("script 4"),
-                            contentHtml: String.html`<span style="margin: 50px">content4</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 5"),
-                            contentHtml: String.html`<span style="margin: 50px">content5</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 6"),
-                            contentHtml: String.html`<span style="margin: 50px">content6</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 7"),
-                            contentHtml: String.html`<span style="margin: 50px">content7</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 8"),
-                            contentHtml: String.html`<span style="margin: 50px">content8</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 9"),
-                            contentHtml: String.html`<span style="margin: 50px">content9</span>` 
-                        }, {
-                            tabHtml: tabTmplt("script 10"),
-                            contentHtml: String.html`<span style="margin: 50px">content10</span>` 
-                        }
-                    ]
                 });
-
-        tabbed.tabs
-            .addClass("editor-tabs")
-            .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
-            .on("mouseenter", () => {
-                if (tabbed.tabs.overflownX()) {
-                    tabbed.tabs.css("overflow-x", "scroll");
-                }
-            });
+        };
+        tabbed.afterClose = e => {
+            if (e.count === 0) {
+                tabbed.tabs.hide();
+            }
+        };
 
         _app.sub("sidebar/changed", () => {
             if (tabbed.active) {
                 tabbed.reveal(tabbed.active);
             }
-        })
+        });
+        
+        //testing tabs
+        tabbed.createTabs([
+            {
+                tabHtml: tabTmplt("vedran@vedran-ThinkPad-L570:~/Documents/vs/sqlcode/src/sqlcode/wwwroot$ http-server"),
+                contentHtml: String.html`<span style="margin: 50px">content1</span>` 
+            }, {
+                tabHtml: tabTmplt("script 2"),
+                contentHtml: String.html`<span style="margin: 50px">content2</span>` 
+            }, {
+                tabHtml: tabTmplt("script 3"),
+                contentHtml: String.html`<span style="margin: 50px">content3</span>` ,
+                active: true
+            }, {
+                tabHtml: tabTmplt("script 4"),
+                contentHtml: String.html`<span style="margin: 50px">content4</span>` 
+            }, {
+                tabHtml: tabTmplt("script 5"),
+                contentHtml: String.html`<span style="margin: 50px">content5</span>` 
+            }, {
+                tabHtml: tabTmplt("script 6"),
+                contentHtml: String.html`<span style="margin: 50px">content6</span>` 
+            }, {
+                tabHtml: tabTmplt("script 7"),
+                contentHtml: String.html`<span style="margin: 50px">content7</span>` 
+            }, {
+                tabHtml: tabTmplt("script 8"),
+                contentHtml: String.html`<span style="margin: 50px">content8</span>` 
+            }, {
+                tabHtml: tabTmplt("script 9"),
+                contentHtml: String.html`<span style="margin: 50px">content9</span>` 
+            }, {
+                tabHtml: tabTmplt("script 10"),
+                contentHtml: String.html`<span style="margin: 50px">content10</span>` 
+            }
+        ]);
     }
 });

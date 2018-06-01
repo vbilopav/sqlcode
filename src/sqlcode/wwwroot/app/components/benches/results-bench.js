@@ -1,15 +1,14 @@
 define(["controls/tabbed"], Tabbed => {
     return container => {
 
-        const tabs = 
-            new Tabbed({
-                container, 
-                name: "results-tab", 
-                height: 20,
-                tabCreated: e => e.addClass("results-tab")
-            })
-            .create({tabHtml: "RESULTS", active: true})
-            .create({tabHtml: "MESSAGES"})
-            .create({tabHtml: "LOG"});
+        const 
+            tabbed = new Tabbed({container, name: "results-tab", height: 20});
+            
+        tabbed.afterCreate = e => e.tab.addClass("results-tab");
+        tabbed.createTabs([
+            {tabHtml: "RESULTS", active: true},
+            {tabHtml: "MESSAGES"},
+            {tabHtml: "LOG"}
+        ]);
     }
 });
