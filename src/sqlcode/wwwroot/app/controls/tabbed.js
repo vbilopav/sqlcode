@@ -37,6 +37,10 @@ define(["sys/model"], Model => class {
         return this._model.tabs;
     }
 
+    get tabCount() {
+        return this._count;
+    }
+
     createTabs(tabs=[]) {
         for(let opts of tabs) {
             this.create(opts); 
@@ -69,6 +73,9 @@ define(["sys/model"], Model => class {
         this._toggleTab(tab, active).appendTo(this._model.tabs)
 
         if (active) {
+            if (this._active) {
+                this._toggle(this._active, false);
+            }
             this._active = tab;
         }
         this.afterCreate({tab: tab, content: content, count: this._count});

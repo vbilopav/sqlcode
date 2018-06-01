@@ -13,9 +13,7 @@ define(["sys/model",], Model => {
                     </div>
                 </div>`
             )
-        ).add.on("click", () => {
-            console.log("Add new script");
-        });
+        ).add.on("click", e => _app.pub("docs/create", e.target));
     }
     
 });

@@ -67,7 +67,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             btn.removeClass(cls).on("click", onClick);
             if (btn.id === "results") {
                 btn.toggleClass(cls, storage.results);
-                _app.pub("state/toggle/results", storage.results, btn);
+                _app.pub("state/toggle/results", "results", storage.results, btn);
             }
             if (btn.data("toggle")) {
                 return;

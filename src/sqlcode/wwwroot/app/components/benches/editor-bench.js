@@ -3,16 +3,37 @@ define(["controls/tabbed"], Tabbed => {
     const 
         tabTmplt = title => String.html`
             <span class="icon icon-doc-text"></span>
-            <span class="title">${title}</span>
+            <span class="title" 
+                contenteditable="true" 
+                autocorrect="off" 
+                autocapitalize="off" 
+                spellcheck="false" 
+                autocomplete="off">${title}</span>
             <span class="close" title="Close (Ctrl+F4)">&#10006;</span>
         `,
         cls = "editor-tab";
+        
+    let 
+        tabbed = null,
+        tabRibbon = undefined,
+        editorNoTabs = () => {
+            if (tabRibbon !== undefined && !tabRibbon) {
+                return
+            }
+            tabRibbon = false;
+            tabbed.tabs.hide();
+        }
+        editorHaveTabs = () => {
+            if (tabRibbon) {
+                return
+            }
+            tabRibbon = true;
+            tabbed.tabs.show();
+        }
 
     return container => {
 
-        const 
-            tabbed = 
-                new Tabbed({container, name: "editor-tab"});
+        tabbed = new Tabbed({container, name: "editor-tab"});
 
         tabbed.tabs
             .addClass("editor-tabs")
@@ -22,10 +43,10 @@ define(["controls/tabbed"], Tabbed => {
                     tabbed.tabs.css("overflow-x", "scroll");
                 }
             });
-        
+
         tabbed.afterCreate = event => {
             if (event.count !== 0) {
-                tabbed.tabs.show();
+                editorHaveTabs();
             }
             let tab = event.tab;
             tab.addClass(cls)
@@ -64,7 +85,7 @@ define(["controls/tabbed"], Tabbed => {
                         tabNext = replaceNext;
                         switchTab();
                         switchReplace();
-                        return
+                        return;
                     }
                     switchReplace();
                     switchTab();
@@ -73,19 +94,25 @@ define(["controls/tabbed"], Tabbed => {
                 .on("dragenter", e => e.target.closest("."+cls).addClass("droptarget"))
                 .on("dragleave", e => e.target.closest("."+cls).removeClass("droptarget"))
                 .find(".close")
-                .on("mousedown", e => e.target.css("font-weight", "900").data("up", true))
+                .on("mousedown", e => e.target.css("font-weight", "900").css("font-size", "12px").data("up", true))
                 .on("mouseup", e => {
                     if (!e.target.data("up")) {
                         return;
                     }
-                    e.target.data("canceled", true);
-                    e.target.css("font-weight", "");
+                    e.target.data("canceled", true).css("font-weight", "").css("font-size", "");
                     tabbed.closeByTab(tab);
                 });
+                
+                /*
+            tab.find(".title")
+                .on("focus", e => e.target.addClass("focus"))
+                .on("blur", e => e.target.removeClass("focus"))
+                */
+                
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
-                tabbed.tabs.hide();
+                editorNoTabs();
             }
         };
 
@@ -94,41 +121,16 @@ define(["controls/tabbed"], Tabbed => {
                 tabbed.reveal(tabbed.active);
             }
         });
-        
-        //testing tabs
-        tabbed.createTabs([
-            {
-                tabHtml: tabTmplt("vedran@vedran-ThinkPad-L570:~/Documents/vs/sqlcode/src/sqlcode/wwwroot$ http-server"),
-                contentHtml: String.html`<span style="margin: 50px">content1</span>` 
-            }, {
-                tabHtml: tabTmplt("script 2"),
-                contentHtml: String.html`<span style="margin: 50px">content2</span>` 
-            }, {
-                tabHtml: tabTmplt("script 3"),
-                contentHtml: String.html`<span style="margin: 50px">content3</span>` ,
+
+        _app.sub("docs/create", () => {
+            let c = tabbed.tabCount + 1;
+            tabbed.create({
+                tabHtml: tabTmplt("new script " + c),
+                contentHtml: String.html`<span style="margin: 50px">content ${c}.</span>`,
                 active: true
-            }, {
-                tabHtml: tabTmplt("script 4"),
-                contentHtml: String.html`<span style="margin: 50px">content4</span>` 
-            }, {
-                tabHtml: tabTmplt("script 5"),
-                contentHtml: String.html`<span style="margin: 50px">content5</span>` 
-            }, {
-                tabHtml: tabTmplt("script 6"),
-                contentHtml: String.html`<span style="margin: 50px">content6</span>` 
-            }, {
-                tabHtml: tabTmplt("script 7"),
-                contentHtml: String.html`<span style="margin: 50px">content7</span>` 
-            }, {
-                tabHtml: tabTmplt("script 8"),
-                contentHtml: String.html`<span style="margin: 50px">content8</span>` 
-            }, {
-                tabHtml: tabTmplt("script 9"),
-                contentHtml: String.html`<span style="margin: 50px">content9</span>` 
-            }, {
-                tabHtml: tabTmplt("script 10"),
-                contentHtml: String.html`<span style="margin: 50px">content10</span>` 
-            }
-        ]);
+            });
+        });
+
+        editorNoTabs();
     }
 });

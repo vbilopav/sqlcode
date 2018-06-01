@@ -85,3 +85,11 @@ body {
 .droptarget {
   background-color: #3b3e41 !important;
 }
+/*
+.focus {
+  border: blue 1px solid;
+}
+*/
+[contenteditable]:focus {
+  outline: 0px solid transparent;
+}

@@ -12,11 +12,21 @@ define([], () => {
                 //if (_app.dev) {
                 //    console.log(`subscribed: ${name}`)
                 //}
-                let entry = entries[name];
-                if (!entry) {
-                    entry = entries[name] = [];
-                } 
-                entries[name].push(handler);
+                let doSub = n => {
+                    let entry = entries[n];
+                    if (!entry) {
+                        entry = entries[n] = [];
+                    }
+                    entries[n].push(handler);
+                }
+                if (name instanceof Array) {
+                    for(let i of name) {
+                        doSub(i);
+                    }
+                } else {
+                    doSub(name);
+                }
+
                 return obj;
             };
             obj.pub = (name, ...args) => {
