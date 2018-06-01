@@ -1,28 +1,32 @@
 .panel {
-  width: 100%;
-  height: 100%;
-  background-color: #252526;
+    background-color: #252526;
+    pointer-events: none;
+    margin-right: -3px;
+    z-index: 1;
+}
+.panel-h {
+    display: grid;
+    grid-template-rows: 40px auto;
 }
 .panel-header {
-  pointer-events: initial;
-  height: 40px;
-  background-color: #1E1E1E;
-  margin-right: -3px;
-  position: relative;
-  pointer-events: none;
-  font-size: 10px;
+    background-color: #1E1E1E;
+    font-size: 10px;
+    grid-row: 1;
+}
+.panel-header-b {
+    display: grid; 
+    grid-template-columns: auto auto; 
+    justify-content: space-between;
 }
 .panel-title {
-  margin-left: 10px;
-  padding-top: 12px;
-  overflow: hidden;
-  white-space: nowrap;
+    margin-left: 10px;
+    padding-top: 12px;
+    overflow: hidden;
+    white-space: nowrap;
 }
-.panel-title-btn {
-  float: right;
-  margin-right: 20px;
-  pointer-events: initial;
-  font-size: 16px;
-  position: relative;
-  top: -5px;
+.panel-title-btns {
+    pointer-events: initial;
+    font-size: 16px;
+    padding-top: 6px;
+    margin-right: 10px;
 }

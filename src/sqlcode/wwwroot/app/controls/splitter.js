@@ -5,7 +5,11 @@ define(["sys/storage"], Storage => {
             name,
             element=(() => {throw element})(),
             container,
-            dockPosition,
+            dockPosition = 0,
+            resizeIdx,
+            autoIdx,
+            maxDelta=250, 
+            min=150,
             events={docked: ()=>{}, undocked: ()=>{}, changed: ()=>{}}
         }) {
             this._element = element;
@@ -17,9 +21,13 @@ define(["sys/storage"], Storage => {
             this._storage = name ? new Storage({namespace: name, model: {position: null}}) : {position: null};
             this._offset = null;
             this._docked = false;
+            this._resizeIdx = resizeIdx;
+            this._autoIdx = autoIdx;
+            this._maxDelta = maxDelta;
+            this._min = min;
         }
     
-        start(maxDelta=250, min=150) {
+        start() {
             this._element.on("mousedown", e => {
                 this._offset = this._calcOffset(e);
                 document.body.css("cursor", this._element.css("cursor"));
@@ -50,26 +58,20 @@ define(["sys/storage"], Storage => {
                         {values, prev} = this._getValuesArray(calc + "px"),
                         rect = this._container.getBoundingClientRect();
 
-                    if (this._calcDelta(rect, pos) <= maxDelta) {
+                    if (this._calcDelta(rect, pos) <= this._maxDelta) {
                         return false;
                     }
 
-                    if (this._getMin(pos, calc) <= min) {
+                    if (this._getMin(pos, calc) <= this._min) {
                         if (!this._docked) {
-                            this._events.docked();
                             this.dock();
-                            // weird bug only on linux chrome and only for vertical splitter
-                            if (navigator.isChrome && navigator.onLinux && this._dir === "v" && pos <= min) {
-                                setTimeout(() => this.dock(), 50);
-                            }
                             return false;
                         } else {
                             return false;
                         }
                     } else {
                         if (this._docked) {
-                            this._events.undocked();
-                            this.undock(min);
+                            this.undock(false, this._min);
                             return false;
                         }
                     }
@@ -85,14 +87,18 @@ define(["sys/storage"], Storage => {
             return this._docked;
         }
         
-        dock() {
+        dock(noevent=false) {
             let {values, prev} = this._getValuesArray(this._dockPos + "px");
             this._storage.position = prev;
             this._container.css(this._css, values.join(" "));
             this._docked = true;
+            if (noevent) {
+                return
+            }
+            this._events.docked();
         }
     
-        undock(pos) {
+        undock(noevent=false, pos=this._maxDelta) {
             if (!this._docked) {
                 return;
             }
@@ -105,6 +111,25 @@ define(["sys/storage"], Storage => {
             let {values} = this._getValuesArray(pos + "px");
             this._container.css(this._css, values.join(" "));
             this._docked = false;
+            if (noevent) {
+                return
+            }
+            this._events.undocked();
+        }
+
+        getValues(newPos) {
+            return this. _getValuesArray(newPos);
+        }
+
+        move(delta, values) {
+            values = values || this. _getValuesArray();
+            if (values.prev <= this._min) {
+                return false;
+            }
+            let p = values.prev + delta;
+            this._storage.position = p;
+            values.values[this._resizeIdx] = p + "px";
+            this._container.css(this._css, values.values.join(" "));
         }
 
         _adjust() {
@@ -146,8 +171,6 @@ define(["sys/storage"], Storage => {
                 this._element.addClass("splitter-v");
                 this._prop = "clientX";
                 this._css = "grid-template-columns";
-                this._resizeIdx = 0;
-                this._autoIdx = 2;
                 this._adjust();
             }
 
@@ -176,8 +199,6 @@ define(["sys/storage"], Storage => {
                 this._element.addClass("splitter-h");
                 this._prop = "clientY";
                 this._css = "grid-template-rows";
-                this._resizeIdx = 2;
-                this._autoIdx = 0;
                 this._adjust();
             }
 

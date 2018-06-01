@@ -24,15 +24,15 @@ define([], () => {
                 //    console.log(`published: ${name}`)
                 //}
                 let doPub = n => {
-                    let entry = entries[name];
+                    let entry = entries[n];
                     if (!entry) {
                         return obj;
                     }
                     setTimeout(() => entry.forEach(f => f.apply(obj, args)), 0);
                 }
                 if (name instanceof Array) {
-                    for(let n of name) {
-                        doPub(name);
+                    for(let i of name) {
+                        doPub(i);
                     }
                 } else {
                     doPub(name);

@@ -15,28 +15,21 @@ define([
     const 
         app = document.body.find(".app").html(
             String.html`
-                <div id="toolbar" class="control"></div>
                 <div class="container">
+                    <div id="toolbar" class="control"></div>
                     <div id="sidebar" class="sidebar"></div>
-                    <div id="splitter" class="control v-split-2"></div>
+                    <div id="splitter" class="control"></div>
                     <div id="workbench" class="workbench"></div>
+                    <div id="footer"></div>
                 </div>
-                <div id="footer"></div>`
-        ),
+            `),
         model = new Model().bind(app);
 
     document.title = "sql code";
     new Pubsub(_app);
 
-    sidebar(
-        model.sidebar, 
-        model.splitter,
-        Number(model.toolbar.css("width").replace("px", ""))
-    );
-    workbench(
-        model.workbench, 
-        Number(model.footer.css("height").replace("px", ""))
-    );
+    sidebar(model.sidebar, model.splitter);
+    workbench(model.workbench);
     toolbar(model.toolbar);
 
     return () => {

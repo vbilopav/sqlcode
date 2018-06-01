@@ -7,7 +7,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
                 <div id="db" class="btn align-center icon-database"></div>
                 <div id="search" class="btn align-center icon-search"></div>
             </div>
-            <div class="bottom-btns">
+            <div>
                 <div id="terminal" data-toggle="true" class="btn align-center icon-terminal"></div>
                 <div id="results" data-toggle="true" class="btn align-center icon-menu"></div>
             </div>`;
@@ -29,7 +29,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
                 results: value => value === "true" || value === true
             }
         });
-
+    
     let buttons;
 
     const

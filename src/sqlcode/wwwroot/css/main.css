@@ -1,89 +1,103 @@
 .container {
-  position: absolute;
-  grid-template-columns: 200px 3px auto;
-  display: grid;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: -1;
-}
-.sidebar {
-  grid-column: 1;
-  padding-left: 50px;
-}
-.workbench {
-  grid-column: 3;
-  grid-template-rows: auto 3px 200px;
-  display: grid;
-  left: 0px;
-  top: 0px;
-  width: 100%;
-  height: 100%;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+
+    grid-template-columns: 50px 200px 3px auto;
+    grid-template-rows: auto 20px;
+    
+    display: grid;
+  }
+
+#footer {
+    background-color: #007ACC;
+    grid-row: 2;
+    grid-column: 1 / 5;
 }
 
-.editor {
-  grid-row: 1;
+#toolbar {
+    grid-column: 1;
+    font-size: 28px;
+    padding-top: 10px;
+    grid-template-rows: auto 100px;
+    display: grid;
 }
-.output {
-  grid-row: 3;
+
+#sidebar {
+    grid-column: 2;
+    display: grid;
+}
+
+#workbench {
+    grid-column: 4;
+    grid-template-rows: auto 3px 200px;
+    display: grid;
+}  
+#editor {
+    grid-row: 1;
+}
+#workbench > #splitter {
+    grid-row: 2;
+}
+#output {
+    grid-row: 3;
 }
 
 .editor-tabs {
-  background-color: #2525268a;
+    background-color: #2525268a;
 }
 .editor-tabs::-webkit-scrollbar {
-  height: 3px;
+    height: 3px;
 }
 .editor-tabs::-webkit-scrollbar-track {
-  border-radius: 2px;
-  background: transparent;
+    border-radius: 2px;
+    background: transparent;
 }
 .editor-tabs::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 5px #7a7a7a; 
-  border-radius: 2px;
-}
-
+    box-shadow: inset 0 0 5px #7a7a7a; 
+    border-radius: 2px;
+} 
 .editor-tab {
-  background-color: #252526;
-  border-right: 1px #1E1E1E solid;
-  min-width: 140px;
-  display: grid;
-  grid-template-columns: auto auto auto;
+    background-color: #252526;
+    border-right: 1px #1E1E1E solid;
+    min-width: 140px;
+    display: grid;
+    grid-template-columns: auto auto auto;
 }
 .editor-tab .icon {
-  font-size: 12px;
-  grid-column: 1;
-  padding-right: 5px;
-  padding-top: 12px;
+    font-size: 12px;
+    grid-column: 1;
+    padding-right: 5px;
+    padding-top: 12px;
 }
 .editor-tab .close {
-  font-size: 11px;
-  color: #ffffff;
-  float: right;
-  grid-column: 3;
-  padding-top: 12px;
+    font-size: 11px;
+    color: #ffffff;
+    float: right;
+    grid-column: 3;
+    padding-top: 12px;
 }
 .editor-tab .title {
-  grid-column: 2;
-  min-width: 80px;
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-top: 10px;
+    grid-column: 2;
+    min-width: 80px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-top: 10px;
 }
 .editor-tab.tab-active {
-  background-color: #1E1E1E;
+    background-color: #1E1E1E;
 }
 .editor-tab.tab-inactive .close {
-  visibility: hidden;
+    visibility: hidden;
 }
 .editor-tab.tab-active .close,
 .editor-tab.tab-inactive:hover .close {
-  visibility: visible;
+    visibility: visible;
 }
-
 .results-tab {
-  font-size: 10px;
+    font-size: 10px;
 }

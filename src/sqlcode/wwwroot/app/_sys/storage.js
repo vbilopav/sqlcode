@@ -5,7 +5,7 @@ define([], () => {
 
     return class {
         constructor({
-            storage=localStorage, 
+            storage=localStorage,
             namespace="", 
             model=(() => {throw new Error("model is required!")})(), 
             conversion={}
