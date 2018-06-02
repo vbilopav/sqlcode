@@ -29,27 +29,8 @@ define(["controls/tabbed"], Tabbed => {
             }
             tabRibbon = true;
             tabbed.tabs.show();
-        };
-
-    return container => {
-
-        tabbed = new Tabbed({container, name: "editor-tab"});
-
-        tabbed.tabs
-            .addClass("editor-tabs")
-            .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
-            .on("mouseenter", () => {
-                if (tabbed.tabs.overflownX()) {
-                    tabbed.tabs.css("overflow-x", "scroll");
-                }
-            });
-
-        tabbed.afterCreate = event => {
-            let tab = event.tab;
-
-            if (event.count !== 0) {
-                editorHaveTabs();
-            }
+        },
+        initializeTab = tab => {
             tab.addClass(cls)
                 .attr("draggable", "true")
                 .on("dragstart", e => {
@@ -103,13 +84,32 @@ define(["controls/tabbed"], Tabbed => {
                     e.target.data("canceled", true).css("font-weight", "").css("font-size", "");
                     tabbed.closeByTab(tab);
                 });
-
             tab.find(".title")
                 .on("click", e => {
                     if (tab.data("active")) {
                         e.target.attr("contenteditable", "true");
                     }
                 });
+        }
+
+    return container => {
+
+        tabbed = new Tabbed({container, name: "editor-tab"});
+
+        tabbed.tabs
+            .addClass("editor-tabs")
+            .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
+            .on("mouseenter", () => {
+                if (tabbed.tabs.overflownX()) {
+                    tabbed.tabs.css("overflow-x", "scroll");
+                }
+            });
+
+        tabbed.afterCreate = event => {
+            if (event.count !== 0) {
+                editorHaveTabs();
+            }
+            initializeTab(event.tab);
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
