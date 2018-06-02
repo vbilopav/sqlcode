@@ -1,12 +1,14 @@
 define([
     "sys/model",
     "sys/pubsub",
+    "sys/storage", 
     "components/toolbar",
     "components/sidebar",
     "components/workbench"
 ], (
     Model,
     Pubsub,
+    Storage,
     toolbar,
     sidebar,
     workbench
@@ -27,14 +29,17 @@ define([
 
     document.title = "sql code";
     new Pubsub(_app);
+    
+    Storage.setStorage(sessionStorage).setNamespace("sqlcode").transferFrom(localStorage);
+    window.on("unload",  e => Storage.transferTo(localStorage));
 
     sidebar(model.sidebar, model.splitter);
     workbench(model.workbench);
     toolbar(model.toolbar);
 
-    return () => {
+    return () => setTimeout(() => {
         document.body.find("#loading-screen-script").remove();
         document.body.find("#loading-screen").remove();
         app.show();
-    }
+    }, 0);
 });

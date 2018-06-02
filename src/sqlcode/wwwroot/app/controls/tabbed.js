@@ -117,6 +117,10 @@ define(["sys/model"], Model => class {
         return this;
     }
 
+    revealActive() {
+        this.reveal(this._active);
+    }
+
     reveal(tab) {
         if (!this.tabs.overflownX()) {
             return

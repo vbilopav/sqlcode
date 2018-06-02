@@ -87,9 +87,6 @@
     text-overflow: ellipsis;
     padding-top: 10px;
 }
-.editor-tab .title:focus {
-    border: 1px inset #3b3e41;
-}
 .editor-tab.tab-active {
     background-color: #1E1E1E;
 }

@@ -9,9 +9,6 @@ define([], () => {
                 throw new Error("pubsub already assigned to object!");
             }
             obj.sub = (name, handler) => {
-                //if (_app.dev) {
-                //    console.log(`subscribed: ${name}`)
-                //}
                 let doSub = n => {
                     let entry = entries[n];
                     if (!entry) {
@@ -30,9 +27,6 @@ define([], () => {
                 return obj;
             };
             obj.pub = (name, ...args) => {
-                //if (_app.dev) {
-                //    console.log(`published: ${name}`)
-                //}
                 let doPub = n => {
                     let entry = entries[n];
                     if (!entry) {

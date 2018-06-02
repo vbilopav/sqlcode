@@ -15,22 +15,8 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
     const 
         defaultBtn = "docs",
         cls = "active";
-
-    const
-        storage = new Storage({
-            namespace: "toolbar", 
-            model: {
-                prev: defaultBtn, 
-                active: null,
-                results: false
-            },
-            conversion: {
-                // local storage stores only strings
-                results: value => value === "true" || value === true
-            }
-        });
     
-    let buttons;
+    var buttons, storage;
 
     const
         onToggleBtnClick = btn => {
@@ -76,6 +62,18 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
         };
 
     return container => {
+        storage = new Storage({
+            namespace: "toolbar", 
+            model: {
+                prev: defaultBtn, 
+                active: null,
+                results: false
+            },
+            conversion: {
+                // local storage stores only strings
+                results: value => value === "true" || value === true
+            }
+        });
         _app
             .sub("state/toggle", (id, state, sender) => (sender || buttons[id]).toggleClass(cls, state))
             .sub("sidebar/undocked", () => {

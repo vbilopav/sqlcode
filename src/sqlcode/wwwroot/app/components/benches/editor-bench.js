@@ -3,8 +3,8 @@ define(["controls/tabbed"], Tabbed => {
     const 
         tabTmplt = title => String.html`
             <span class="icon icon-doc-text"></span>
-            <span class="title" 
-                contenteditable="true" 
+            <span class="title editable" 
+                contenteditable="false" 
                 autocorrect="off" 
                 autocapitalize="off" 
                 spellcheck="false" 
@@ -13,7 +13,7 @@ define(["controls/tabbed"], Tabbed => {
         `,
         cls = "editor-tab";
         
-    let 
+    var 
         tabbed = null,
         tabRibbon = undefined,
         editorNoTabs = () => {
@@ -29,7 +29,7 @@ define(["controls/tabbed"], Tabbed => {
             }
             tabRibbon = true;
             tabbed.tabs.show();
-        }
+        };
 
     return container => {
 
@@ -45,10 +45,11 @@ define(["controls/tabbed"], Tabbed => {
             });
 
         tabbed.afterCreate = event => {
+            let tab = event.tab;
+
             if (event.count !== 0) {
                 editorHaveTabs();
             }
-            let tab = event.tab;
             tab.addClass(cls)
                 .attr("draggable", "true")
                 .on("dragstart", e => {
@@ -102,13 +103,13 @@ define(["controls/tabbed"], Tabbed => {
                     e.target.data("canceled", true).css("font-weight", "").css("font-size", "");
                     tabbed.closeByTab(tab);
                 });
-                
-                /*
+
             tab.find(".title")
-                .on("focus", e => e.target.addClass("focus"))
-                .on("blur", e => e.target.removeClass("focus"))
-                */
-                
+                .on("click", e => {
+                    if (tab.data("active")) {
+                        e.target.attr("contenteditable", "true");
+                    }
+                });
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
@@ -128,7 +129,7 @@ define(["controls/tabbed"], Tabbed => {
                 tabHtml: tabTmplt("new script " + c),
                 contentHtml: String.html`<span style="margin: 50px">content ${c}.</span>`,
                 active: true
-            });
+            }).revealActive();
         });
 
         editorNoTabs();

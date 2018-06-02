@@ -2,26 +2,83 @@ define([], () => {
 
     const 
         names = [];
+    
+    var
+        defaultStorage,
+        defaultNs;
 
-    return class {
+    class Storage {
         constructor({
-            storage=localStorage,
+            storage=defaultStorage,
             namespace="", 
             model=(() => {throw new Error("model is required!")})(), 
             conversion={}
         }) {
-            this._storage = storage;
-            this._namespace = namespace;
+            this._storage = Storage._check(storage);
+            if (!defaultNs) {
+                throw new Exception("default namespace cannot be empty or null");
+            }
+            this._ns = namespace;
             this._model = model;
             this._conversion = conversion;
-            if (this._namespace) {
-                this._namespace = this._namespace + ".";
+            if (this._ns) {
+                this._ns = this._ns + ".";
             }
             for(let [name, defualtValue] of Object.entries(model)) {
                 this.create(name, defualtValue);
             }
         }
-    
+
+        static setStorage(storage) {
+            defaultStorage = Storage._check(storage);
+            return Storage;
+        }
+
+        static setNamespace(ns) {
+            if (!ns) {
+                ns = "";
+            } else {
+                ns = ns + "."
+            }
+            defaultNs = ns;
+            return Storage;
+        }
+
+        static transferTo(storage) {
+            Storage._check(storage);
+            Storage._transfer(defaultStorage, storage);
+            return Storage;
+        }
+
+        static transferFrom(storage) {
+            Storage._check(storage);
+            Storage._transfer(storage, defaultStorage);
+            return Storage;
+        }
+
+        static _transfer(source, target) {
+            for (let i=0, l=target.length; i<l; i++) {
+                let key = target.key(i);
+                if (!key) {
+                    continue;
+                }
+                if (key.startsWith(defaultNs)) {
+                    target.removeItem(key);
+                }
+            }
+            for (let i=0, l=source.length; i<l; i++) {
+                let key = source.key(i)
+                target.setItem(key, source.getItem(key));
+            }
+        }
+
+        static _check(storage) {
+            if (!storage.getItem || !storage.setItem || !storage.removeItem) {
+                throw new Error("missing proeprty on storage object")
+            }
+            return storage;
+        }
+
         create(name, defualtValue) {
             let namespace = this._getNamespace(name);
             if (names.indexOf(namespace) !== -1) {
@@ -52,12 +109,13 @@ define([], () => {
         }
 
         _getNamespace(name) {
-            if (this._namespace) {
-                return this._namespace + name;
+            if (this._ns) {
+                return defaultNs + this._ns + name;
             } else {
-                return name;
+                return defaultNs + name;
             }
         }
     }
 
+    return Storage;
 });

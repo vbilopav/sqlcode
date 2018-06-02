@@ -136,7 +136,7 @@ define([], () => {
         if (value !== undefined) {
             this._styles[property] = value;
             this.style[property] = value;
-            return this
+            return this;
         }
         let result = this._styles[property];
         if (result === undefined) {
