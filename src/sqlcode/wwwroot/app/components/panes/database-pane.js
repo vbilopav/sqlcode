@@ -7,6 +7,9 @@ define([], () => {
                     <div class="panel-title noselect">
                         DATABASE EXPLORER
                     </div>
+                </div>
+                <div id="content" class="panel-content">
+                    <div class="shadow-line"></div>
                 </div>`
         );
     }

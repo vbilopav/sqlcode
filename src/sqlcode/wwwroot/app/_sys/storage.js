@@ -74,7 +74,7 @@ define([], () => {
 
         static _check(storage) {
             if (!storage.getItem || !storage.setItem || !storage.removeItem) {
-                throw new Error("missing proeprty on storage object")
+                throw new Error("missing property on storage object")
             }
             return storage;
         }

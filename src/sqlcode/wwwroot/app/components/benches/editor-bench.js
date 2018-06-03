@@ -84,6 +84,7 @@ define(["controls/tabbed"], Tabbed => {
                     e.target.data("canceled", true).css("font-weight", "").css("font-size", "");
                     tabbed.closeByTab(tab);
                 });
+
             tab.find(".title")
                 .on("click", e => {
                     if (tab.data("active")) {
@@ -95,7 +96,6 @@ define(["controls/tabbed"], Tabbed => {
     return container => {
 
         tabbed = new Tabbed({container, name: "editor-tab"});
-
         tabbed.tabs
             .addClass("editor-tabs")
             .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
@@ -104,7 +104,6 @@ define(["controls/tabbed"], Tabbed => {
                     tabbed.tabs.css("overflow-x", "scroll");
                 }
             });
-
         tabbed.afterCreate = event => {
             if (event.count !== 0) {
                 editorHaveTabs();
