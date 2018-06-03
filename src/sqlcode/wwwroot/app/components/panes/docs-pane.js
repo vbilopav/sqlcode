@@ -19,7 +19,7 @@ define(["sys/model",], Model => {
                 <span>&#11208;</span>
                 <span class="icon icon-doc-text"></span>
                 <span class="panel-item-title">${title}</span>
-            </div>`.htmlTemplate();
+            </div>`.element();
 
     /*
             <div class="panel-item">
