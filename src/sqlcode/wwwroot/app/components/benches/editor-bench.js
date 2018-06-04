@@ -1,7 +1,7 @@
 define(["controls/tabbed"], Tabbed => {
 
     const 
-        tabTmplt = title => String.html`
+        tabTemplate = title => String.html`
             <span class="icon icon-doc-text"></span>
             <span class="title editable" 
                 contenteditable="false" 
@@ -109,6 +109,7 @@ define(["controls/tabbed"], Tabbed => {
                 editorHaveTabs();
             }
             initializeTab(event.tab);
+            _app.pub("editor/created", event.tab.find(".title").html(), event.tab, event.content);
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
@@ -125,7 +126,7 @@ define(["controls/tabbed"], Tabbed => {
         _app.sub("docs/create", () => {
             let c = tabbed.tabCount + 1;
             tabbed.create({
-                tabHtml: tabTmplt("new script " + c),
+                tabHtml: tabTemplate("new script " + c),
                 contentHtml: String.html`<span style="margin: 50px">content ${c}.</span>`,
                 active: true
             }).revealActive();

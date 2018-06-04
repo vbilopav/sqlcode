@@ -8,18 +8,20 @@ define(["sys/model",], Model => {
                     <span id="addbtn" class="btn" title="Add new script (Ctrl+N)">&#10133;</span>
                 </div>
             </div>
-            <div id="content" class="panel-content">
+            <div class="panel-content">
                 <div class="shadow-line"></div>
+                <div id="content" class="docs-content">
+                </div>
             </div>`,
 
-        directionArrows = Object.freeze({right: "&#11208;",  down: "&#11206;"}),
+        dir = Object.freeze({right: "&#11208;",  down: "&#11206;"}),
 
         item = title => String.html`
             <div class="panel-item">
                 <span>&#11208;</span>
                 <span class="icon icon-doc-text"></span>
                 <span class="panel-item-title">${title}</span>
-            </div>`.element();
+            </div>`.toElement();
 
     /*
             <div class="panel-item">
@@ -44,10 +46,19 @@ define(["sys/model",], Model => {
         const 
             model = new Model().bind(container.html(paneTemplate));
 
-        model.addbtn.on("click", e => _app.pub("docs/create", e.target));
+        model.addbtn
+            .on("mousedown", e => e.target.css("font-weight", "900").css("font-size", "16px").data("up", true))
+            .on("mouseup", e => {
+                if (!e.target.data("up")) {
+                    return;
+                }
+                e.target.css("font-weight", "").css("font-size", "");
+                _app.pub("docs/create", e.target);
+            });
         
-        model.content.append(item("Script 1")).append(item("Script 2")).append(item("Script 3"))
-
+        _app.sub("editor/created", title => {
+            model.content.append(item(title));
+        });
     }
     
 });

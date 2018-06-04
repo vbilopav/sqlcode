@@ -8,7 +8,7 @@ define(["controls/tabbed"], Tabbed => {
         tabbed.createTabs([
             {tabHtml: "RESULTS", active: true},
             {tabHtml: "MESSAGES"},
-            {tabHtml: "LOG"}
+            {tabHtml: "CONSOLE"}
         ]);
     }
 });

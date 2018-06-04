@@ -174,7 +174,7 @@ define([], () => {
         return this.scrollWidth > this.clientWidth
     }
 
-    test(String, ["hashCode", "createElement", "toCamelCase", "element", "elements"]);
+    test(String, ["hashCode", "createElement", "toCamelCase", "toElement", "toElements"]);
 
     String.prototype.toCamelCase = function() {
         return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
@@ -193,16 +193,18 @@ define([], () => {
         return e;
     }
 
-    String.prototype.element = function() {
+    const _getTemplate = str => {
         let template = document.createElement('template');
-        template.innerHTML = this.trim();
-        return template.content.firstChild;
+        template.innerHTML = str.trim();
+        return template;
     }
 
-    String.prototype.elements = function() {
-        let template = document.createElement('template');
-        template.innerHTML = this.trim();
-        return template.content.childNodes;
+    String.prototype.toElement = function() {
+        return _getTemplate(this).content.firstChild;
+    }
+
+    String.prototype.toElements = function() {
+        return _getTemplate(this).content.childNodes;
     }
 
     String.prototype.hashCode = function() {
