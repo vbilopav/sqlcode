@@ -47,11 +47,13 @@ body {
 
 .btn {
   cursor: pointer;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  color: white;
+  text-shadow: 0 0 1px
 }
 .btn:hover {
   color: white;
@@ -95,4 +97,17 @@ body {
 }
 [contenteditable]:focus {
   outline: 0px solid transparent;
+}
+
+button:focus {
+  outline: none;
+}
+.shadow-line {
+  background-color: #1E1E1E;
+  height: 1px;
+  box-shadow: 0px 0px 8px 1px #000000;
+}
+
+.panel-item.active {
+  background-color: #1E1E1E;
 }

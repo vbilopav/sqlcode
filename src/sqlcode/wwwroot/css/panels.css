@@ -1,62 +1,73 @@
 .panel {
+    height: 100%;
     background-color: #252526;
-    pointer-events: none;
-    margin-right: -3px;
-    z-index: 1;
-}
-.panel-h {
-    display: grid;
-    grid-template-rows: 40px auto;
 }
 .panel-header {
     background-color: #1E1E1E;
     font-size: 10px;
-    grid-row: 1;
-
-}
-.panel-header-b {
-    display: grid; 
-    grid-template-columns: auto auto; 
-    justify-content: space-between;
-}
-.panel-title {
-    margin-left: 10px;
-    padding-top: 12px;
-    overflow: hidden;
-    white-space: nowrap;
-}
-.panel-title-btns {
-    pointer-events: initial;
-    font-size: 16px;
-    padding-top: 6px;
-    margin-right: 10px;
-}
-.shadow-line {
-    background-color: #1E1E1E;
-    height: 1px;
-    box-shadow: 0px 0px 8px 1px #000000;
+    height: 40px;
+    position: relative;
+    margin-right: -3px;
+    pointer-events: none;
 }
 .panel-content {
+    white-space: nowrap;
     overflow-x: hidden;
     text-overflow: ellipsis;
+    overflow-y: auto;
+
+    position: relative;
+    margin-right: -3px;
+    pointer-events: none;
+}
+.panel-item {
     white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+.panel-title {
+    padding-left: 6px;
+    padding-top: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.panel-title > span {
+    padding-left: 6px;
+    font-style: italic;
+    font-size: 0.9em;
+}
+.panel-commands {
+    padding-left: 6px;
+    padding-top: 2px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.panel-header button {
+    border-radius: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+    pointer-events: initial;
+    font-size: 0.9em;
+    background-color: #252526;
+    border: 1px #5f5f5f outset;
 }
 .panel-item {
     font-size: 12px;
-    padding-left: 4px;
-    margin-top: 4px;
-    margin-bottom: 4px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    
+    padding: 4px;
+}
+.panel-shadow-line {
+    background-color: #1E1E1E;
+    height: 1px;
+    box-shadow: 0px 0px 8px 1px #000000;
+    margin-bottom: 6px;
+    position: relative;
+    margin-right: -3px;
+    pointer-events: none;
 }
 /*
-.panel-item-title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.panel-content {
+  
 }
 */

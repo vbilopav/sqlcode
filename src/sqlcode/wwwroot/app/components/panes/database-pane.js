@@ -1,6 +1,7 @@
 define([], () => {
 
     return container => {
+        
         container.html(
             String.html`
                 <div class="panel-header">
@@ -12,6 +13,7 @@ define([], () => {
                     <div class="shadow-line"></div>
                 </div>`
         );
+        
     }
 
 });

@@ -22,6 +22,9 @@ define(["sys/model"], Model => class {
         this.beforeClose = (()=>true);
         this.afterClose = (()=>{});
 
+        this.beforeActivate = (()=>true);
+        this.afterActivate = (()=>{});
+
         window.on("resize", () => {
             if (this.active) {
                 this.reveal(this.active);
@@ -63,7 +66,8 @@ define(["sys/model"], Model => class {
             .data("id", this._id)
             .on("click", e => this._tabClick(e));
         
-        if (!this.beforeCreate({tab: tab, content: content, count: this._count})) {
+        let eventArgs = {tab: tab, content: content, count: this._count, active};
+        if (!this.beforeCreate(eventArgs)) {
             this._id--;
             this._count--;
             return;
@@ -78,7 +82,7 @@ define(["sys/model"], Model => class {
             }
             this._active = tab;
         }
-        this.afterCreate({tab: tab, content: content, count: this._count});
+        this.afterCreate(eventArgs);
         return this;
     }
 
@@ -110,10 +114,16 @@ define(["sys/model"], Model => class {
         if (tab.data("active")) {
             return this;
         }
+        if (!this.beforeActivate({tab: tab, content: content, count: this._count})) {
+            return this;
+        }
+        
         this._toggle(this._active, false);
         this._toggle(tab, true);
         this._active = tab;
         this.reveal(tab);
+
+        this.afterActivate({tab: tab, content: content, count: this._count});
         return this;
     }
 

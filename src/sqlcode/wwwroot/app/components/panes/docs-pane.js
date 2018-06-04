@@ -2,16 +2,24 @@ define(["sys/model",], Model => {
 
     const 
         paneTemplate = String.html`
-            <div class="panel-header panel-header-b">
-                <div class="panel-title noselect">SCRIPTS</div>
-                <div class="panel-title-btns">
-                    <span id="addbtn" class="btn" title="Add new script (Ctrl+N)">&#10133;</span>
+            <div class="panel-header noselect">
+                <div class="panel-title">
+                    SCRIPTS
+                    <span id="count">count=20</span>
                 </div>
+                
+                <div class="panel-commands">
+                    <button id="new" title="Create new script (Ctrl+N)" class="control">new</button>                    
+                    <!--
+                    <button id="filter" title="Filter script view" class="control">filter</button>
+                    <button id="clear" class="control">clear</button>
+                    <button id="download" class="control">download</button>
+                    -->
+                </div>
+                
             </div>
-            <div class="panel-content">
-                <div class="shadow-line"></div>
-                <div id="content" class="docs-content">
-                </div>
+            <div id="content" class="panel-content noselect">
+                <div class="panel-shadow-line"></div>
             </div>`,
 
         dir = Object.freeze({right: "&#11208;",  down: "&#11206;"}),
@@ -23,42 +31,23 @@ define(["sys/model",], Model => {
                 <span class="panel-item-title">${title}</span>
             </div>`.toElement();
 
-    /*
-            <div class="panel-item">
-                <span>&#11208;</span> &#11206;
-                <span class="icon icon-doc-text"></span>
-                <span class="panel-item-title">Script 1 blah blah some text long text blah</span>
-            </div>
-            <div class="panel-item" style="background-color: #1E1E1E;">
-                <span>&#11208;</span>
-                <span class="icon icon-doc-text"></span>
-                <span class="panel-item-title">Script 2</span>
-            </div>
-            <div class="panel-item">
-                <span>&#11208;</span>
-                <span class="icon icon-doc-text"></span>
-                <span class="panel-item-title">Script 3</span>
-            </div>
-        </div>
-    */
-
     return container => {
-        const 
-            model = new Model().bind(container.html(paneTemplate));
 
-        model.addbtn
-            .on("mousedown", e => e.target.css("font-weight", "900").css("font-size", "16px").data("up", true))
-            .on("mouseup", e => {
-                if (!e.target.data("up")) {
-                    return;
-                }
-                e.target.css("font-weight", "").css("font-size", "");
-                _app.pub("docs/create", e.target);
-            });
+        const model = new Model().bind(container.html(paneTemplate));
         
-        _app.sub("editor/created", title => {
-            model.content.append(item(title));
+        model.new.on("click", e => _app.pub("docs/create", e.target));
+        _app.sub("editor/created", data => {
+            let element = item(data.title)
+            element.data("id", data.id).addClass("item-" + data.id);
+            model.content.append(element)
         });
+        _app.sub("editor/activated", data => {
+            model.content.findAll(".panel-item.active").removeClass("active");
+            model.content.find(".item-" + data.id).addClass("active");
+        });
+        window
+            .on("resize", () => model.content.css("height", (window.innerHeight - 60) + "px"))
+            .trigger("resize");
     }
-    
+
 });

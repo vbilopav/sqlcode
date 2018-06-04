@@ -28,7 +28,7 @@
 
 #sidebar {
     grid-column: 2;
-    display: grid;
+    /*display: grid;*/
 }
 
 #workbench {

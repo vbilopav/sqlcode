@@ -16,10 +16,14 @@ define([], () => {
         "addClass", "removeClass", "hasClass", "toggleClass",
         "attr",
         "css", "_styles",
-        "on", "off",
+        "on", "off", "trigger",
         "data", "_data",
         "overflownX"
     ]);
+    test(String, ["html", "hashCode", "createElement", "toCamelCase", "toElement", "toElements"]);
+    test(NodeList, ["addClass", "removeClass", "toggleClass"]);
+    test(Document, ["on", "off", "trigger"]);
+    test(Window, ["on", "off", "trigger"]);
 
     HTMLElement.prototype.find = function(search) {
         let e = this.querySelector(search);
@@ -159,6 +163,13 @@ define([], () => {
         return this;
     }
 
+    HTMLElement.prototype.trigger = function(eventName) {
+        for(let e of eventName.split(" ")) {
+            this.dispatchEvent(new Event(e));
+        }
+        return this;
+    }
+
     HTMLElement.prototype.data = function(key, value) {
         if (!this._data) {
             this._data = Object.assign({}, this.dataset);
@@ -173,8 +184,6 @@ define([], () => {
     HTMLElement.prototype.overflownX = function() {
         return this.scrollWidth > this.clientWidth
     }
-
-    test(String, ["hashCode", "createElement", "toCamelCase", "toElement", "toElements"]);
 
     String.prototype.toCamelCase = function() {
         return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
@@ -217,12 +226,33 @@ define([], () => {
         return h;
     }
 
-    test(Document, ["on", "off"]);
-    test(Window, ["on", "off"]);
+    NodeList.prototype.addClass = function(className) {
+        for(let e of this) {
+            e.addClass(className);
+        }
+        return this;
+    }
+
+    NodeList.prototype.removeClass = function(className) {
+        for(let e of this) {
+            e.removeClass(className);
+        }
+        return this;
+    }
+
+    NodeList.prototype.toggleClass = function(className, state) {
+        for(let e of this) {
+            e.toggleClass(className, state);
+        }
+        return this;
+    }
+
     Document.prototype.on = HTMLElement.prototype.on;
     Document.prototype.off = HTMLElement.prototype.off;
+    Document.prototype.trigger = HTMLElement.prototype.trigger;
     Window.prototype.off = HTMLElement.prototype.off;
     Window.prototype.on = HTMLElement.prototype.on;
+    Window.prototype.trigger = HTMLElement.prototype.trigger;
 
     //
     // lit-html vs code extension support

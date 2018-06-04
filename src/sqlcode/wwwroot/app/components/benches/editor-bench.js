@@ -109,13 +109,31 @@ define(["controls/tabbed"], Tabbed => {
                 editorHaveTabs();
             }
             initializeTab(event.tab);
-            _app.pub("editor/created", event.tab.find(".title").html(), event.tab, event.content);
+            _app.pub("editor/created", {
+                title: event.tab.find(".title").html(), 
+                id: event.tab.data("id"), 
+                element: event.content
+            });
+            if (event.active) {
+                _app.pub("editor/activated", {
+                    title: event.tab.find(".title").html(), 
+                    id: event.tab.data("id"), 
+                    element: event.content
+                });
+            }
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
                 editorNoTabs();
             }
         };
+        tabbed.afterActivate = event => {
+            _app.pub("editor/activated", {
+                title: event.tab.find(".title").html(), 
+                id: event.tab.data("id"), 
+                element: event.content
+            });
+        }
 
         _app.sub("sidebar/changed", () => {
             if (tabbed.active) {
