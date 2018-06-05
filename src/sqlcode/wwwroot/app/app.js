@@ -13,7 +13,7 @@ define([
     sidebar,
     workbench
 ) => {
-
+    
     const 
         app = document.body.find(".app").html(
             String.html`

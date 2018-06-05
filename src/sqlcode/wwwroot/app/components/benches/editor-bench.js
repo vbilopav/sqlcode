@@ -1,4 +1,7 @@
-define(["controls/tabbed"], Tabbed => {
+define([
+    "controls/tabbed",
+    "vs/editor/editor.main"
+], Tabbed => {
 
     const 
         tabTemplate = title => String.html`
@@ -143,11 +146,25 @@ define(["controls/tabbed"], Tabbed => {
         })
         .sub("docs/create", () => {
             let c = tabbed.nextId;
-            tabbed.create({
-                tabHtml: tabTemplate("new script " + c),
-                contentHtml: String.html`<span style="margin: 50px">content ${c}.</span>`,
+            let {tab, content} = tabbed.create({
+                tabHtml: tabTemplate("New script " + c),
+                contentHtml: "",
                 active: true
-            }).revealActive();
+            })
+            
+            tabbed.revealActive();
+            if (content) {
+
+                let editor = monaco.editor.create(content, {
+                    value: "",
+                    language: 'pgsql',
+                    theme: "vs-dark"
+                });
+
+
+            }
+
+            //'vs/editor/editor.main'
         })
         .sub("docs/selected", id => tabbed.activate(tabbed.tabs.find("#" + name + id)));
 

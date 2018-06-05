@@ -75,7 +75,9 @@
                 configure = function () {
                     window.requirejs.config({
                         paths: {
-                            libs: libs,spa: sysUrl,sys: sysUrl
+                            libs: libs,
+                            sys: sysUrl,
+                            "vs": libs + "/monaco-editor/dev/vs"
                         }
                     });
                 }

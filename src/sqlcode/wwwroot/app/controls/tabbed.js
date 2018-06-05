@@ -88,7 +88,7 @@ define(["sys/model"], Model => class {
             this._active = tab;
         }
         this.afterCreate(eventArgs);
-        return this;
+        return {tab, content};
     }
 
     closeByTab(tab) {

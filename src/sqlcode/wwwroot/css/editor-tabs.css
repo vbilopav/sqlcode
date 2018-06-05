@@ -58,3 +58,8 @@
 .results-tab {
     font-size: 10px;
 }
+
+
+.tab-content {
+    height: 100%;
+}
