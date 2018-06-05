@@ -28,10 +28,16 @@
     padding-top: 12px;
 }
 .editor-tab .close {
-    font-size: 11px;
+    font-size: 0.9em;
+    border-radius: 4px;
     color: #ffffff;
     grid-column: 3;
-    padding-top: 12px;
+    border: 1px #5f5f5f;
+    background-color: transparent;
+    width: 20px;
+    height: 20px;
+    padding: 0px;
+    margin-top: 10px;
 }
 .editor-tab .title {
     grid-column: 2;

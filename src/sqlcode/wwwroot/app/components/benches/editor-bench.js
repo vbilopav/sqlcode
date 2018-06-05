@@ -9,13 +9,14 @@ define(["controls/tabbed"], Tabbed => {
                 autocapitalize="off" 
                 spellcheck="false" 
                 autocomplete="off">${title}</span>
-            <span class="close" title="Close (Ctrl+F4)">&#10006;</span>
-        `,
-        cls = "editor-tab";
-        
+            <button class="close" title="Close (Ctrl+F4)">&#10006;</button>`,
+        name = "editor-tab";
+
     var 
         tabbed = null,
-        tabRibbon = undefined,
+        tabRibbon = undefined;
+
+    const
         editorNoTabs = () => {
             if (tabRibbon !== undefined && !tabRibbon) {
                 return
@@ -31,7 +32,8 @@ define(["controls/tabbed"], Tabbed => {
             tabbed.tabs.show();
         },
         initializeTab = tab => {
-            tab.addClass(cls)
+            tab
+                .addClass(name)
                 .attr("draggable", "true")
                 .on("dragstart", e => {
                     tabbed.activate(e.target);
@@ -73,29 +75,27 @@ define(["controls/tabbed"], Tabbed => {
                     switchTab();
                 })
                 .on("dragover", e => e.preventDefault())
-                .on("dragenter", e => e.target.closest("."+cls).addClass("droptarget"))
-                .on("dragleave", e => e.target.closest("."+cls).removeClass("droptarget"))
+                .on("dragenter", e => e.target.closest("."+name).addClass("droptarget"))
+                .on("dragleave", e => e.target.closest("."+name).removeClass("droptarget"))
                 .find(".close")
-                .on("mousedown", e => e.target.css("font-weight", "900").css("font-size", "12px").data("up", true))
-                .on("mouseup", e => {
-                    if (!e.target.data("up")) {
-                        return;
-                    }
-                    e.target.data("canceled", true).css("font-weight", "").css("font-size", "");
+                .on("click", e => {
+                    e.target.data("canceled", true);
                     tabbed.closeByTab(tab);
                 });
 
+            /*
             tab.find(".title")
                 .on("click", e => {
                     if (tab.data("active")) {
                         e.target.attr("contenteditable", "true");
                     }
                 });
+            */
         }
 
     return container => {
 
-        tabbed = new Tabbed({container, name: "editor-tab"});
+        tabbed = new Tabbed({container, name: name});
         tabbed.tabs
             .addClass("editor-tabs")
             .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
@@ -111,27 +111,28 @@ define(["controls/tabbed"], Tabbed => {
             initializeTab(event.tab);
             _app.pub("editor/created", {
                 title: event.tab.find(".title").html(), 
-                id: event.tab.data("id"), 
-                element: event.content
+                id: event.id,
+                count: event.count
+            })
+            .pub("editor/activated", {
+                id: event.id,
+                state: event.active
             });
-            if (event.active) {
-                _app.pub("editor/activated", {
-                    title: event.tab.find(".title").html(), 
-                    id: event.tab.data("id"), 
-                    element: event.content
-                });
-            }
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
                 editorNoTabs();
+                _app.pub("editor/activated", {
+                    id: e.id,
+                    state: false
+                });
             }
         };
+
         tabbed.afterActivate = event => {
             _app.pub("editor/activated", {
-                title: event.tab.find(".title").html(), 
-                id: event.tab.data("id"), 
-                element: event.content
+                id: event.id,
+                state: event.state
             });
         }
 
@@ -139,16 +140,16 @@ define(["controls/tabbed"], Tabbed => {
             if (tabbed.active) {
                 tabbed.reveal(tabbed.active);
             }
-        });
-
-        _app.sub("docs/create", () => {
-            let c = tabbed.tabCount + 1;
+        })
+        .sub("docs/create", () => {
+            let c = tabbed.nextId;
             tabbed.create({
                 tabHtml: tabTemplate("new script " + c),
                 contentHtml: String.html`<span style="margin: 50px">content ${c}.</span>`,
                 active: true
             }).revealActive();
-        });
+        })
+        .sub("docs/selected", id => tabbed.activate(tabbed.tabs.find("#" + name + id)));
 
         editorNoTabs();
     }

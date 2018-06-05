@@ -44,6 +44,10 @@ define(["sys/model"], Model => class {
         return this._count;
     }
 
+    get nextId() {
+        return this._id + 1;
+    }
+    
     createTabs(tabs=[]) {
         for(let opts of tabs) {
             this.create(opts); 
@@ -67,6 +71,7 @@ define(["sys/model"], Model => class {
             .on("click", e => this._tabClick(e));
         
         let eventArgs = this._getEventArgs(tab, content);
+        eventArgs.active = active;
         if (!this.beforeCreate(eventArgs)) {
             this._id--;
             this._count--;
@@ -95,6 +100,7 @@ define(["sys/model"], Model => class {
         tab.remove();
         content.remove();
         this._count--;
+        eventArgs.count = this._count;
         this.afterClose(eventArgs);
         let lowest;
         for(let tab of this.tabs.children) {
@@ -115,17 +121,10 @@ define(["sys/model"], Model => class {
         if (tab.data("active")) {
             return this;
         }
-        let eventArgs = this._getEventArgs(tab, content);
-        if (!this.beforeActivate(eventArgs)) {
-            return this;
-        }
-        
         this._toggle(this._active, false);
         this._toggle(tab, true);
         this._active = tab;
         this.reveal(tab);
-
-        this.afterActivate(eventArgs);
         return this;
     }
 
@@ -161,7 +160,7 @@ define(["sys/model"], Model => class {
         return tab
             .toggleClass("tab-active", active)
             .toggleClass("tab-inactive", !active)
-            .data("active", active)
+            .data("active", active);
     }
 
     _toggleContent(content, active) {
@@ -169,14 +168,21 @@ define(["sys/model"], Model => class {
             .toggleClass("tab-content-active", active)
             .toggleClass("tab-content-inactive", !active)
             .data("active", active)
-            .show(active)
+            .show(active);
     }
 
     _toggle(tab, state) {
+        let eventArgs = this._getEventArgs(tab, content);
+        eventArgs.state = state;
+        if (!this.beforeActivate(eventArgs)) {
+            return this;
+        }
+
         this._toggleContent(
             this._toggleTab(tab, state).data("content-ref"), 
             state
         );
+        this.afterActivate(eventArgs);
         return this;
     }
 

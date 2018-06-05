@@ -29,8 +29,8 @@ define([
 
     document.title = "sql code";
     new Pubsub(_app);
-    
-    Storage.setStorage(sessionStorage).setNamespace("sqlcode").transferFrom(localStorage);
+
+    Storage.setNamespace("sqlcode").setStorage(sessionStorage).transferFrom(localStorage);
     window.on("unload",  e => Storage.transferTo(localStorage));
 
     sidebar(model.sidebar, model.splitter);
@@ -42,4 +42,5 @@ define([
         document.body.find("#loading-screen").remove();
         app.show();
     }, 0);
+
 });
