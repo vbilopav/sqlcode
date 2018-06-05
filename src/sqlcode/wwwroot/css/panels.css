@@ -59,12 +59,9 @@
 }
 .panel-shadow-line {
     background-color: #1E1E1E;
-    height: 1px;
     box-shadow: 0px 0px 8px 1px #000000;
-    margin-bottom: 6px;
+    padding-bottom: 6px;
     position: relative;
-    margin-right: -3px;
-    pointer-events: none;
 }
 /*
 .panel-content {

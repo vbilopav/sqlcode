@@ -66,7 +66,7 @@ define(["sys/model"], Model => class {
             .data("id", this._id)
             .on("click", e => this._tabClick(e));
         
-        let eventArgs = {tab: tab, content: content, count: this._count, active};
+        let eventArgs = this._getEventArgs(tab, content);
         if (!this.beforeCreate(eventArgs)) {
             this._id--;
             this._count--;
@@ -87,14 +87,15 @@ define(["sys/model"], Model => class {
     }
 
     closeByTab(tab) {
-        let content = tab.data("content-ref");
-        if (!this.beforeClose({tab: tab, content: content, count: this._count})) {
+        let content = tab.data("content-ref"),
+            eventArgs = this._getEventArgs(tab, content);
+        if (!this.beforeClose(eventArgs)) {
             return;
         }
         tab.remove();
         content.remove();
         this._count--;
-        this.afterClose({tab: tab, content: content, count: this._count});
+        this.afterClose(eventArgs);
         let lowest;
         for(let tab of this.tabs.children) {
             if (lowest) {
@@ -114,7 +115,8 @@ define(["sys/model"], Model => class {
         if (tab.data("active")) {
             return this;
         }
-        if (!this.beforeActivate({tab: tab, content: content, count: this._count})) {
+        let eventArgs = this._getEventArgs(tab, content);
+        if (!this.beforeActivate(eventArgs)) {
             return this;
         }
         
@@ -123,7 +125,7 @@ define(["sys/model"], Model => class {
         this._active = tab;
         this.reveal(tab);
 
-        this.afterActivate({tab: tab, content: content, count: this._count});
+        this.afterActivate(eventArgs);
         return this;
     }
 
@@ -142,6 +144,16 @@ define(["sys/model"], Model => class {
         }
         if (tabRect[0].x + tabRect[0].width > tabsRect[0].x + tabsRect[0].width) {
             tab.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
+        }
+    }
+
+    _getEventArgs(tab, content) {
+        return {
+            id: tab.data("id"),
+            active: tab.data("active"),
+            tab: tab, 
+            content: content, 
+            count: this._count
         }
     }
 

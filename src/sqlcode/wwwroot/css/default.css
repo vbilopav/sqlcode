@@ -51,17 +51,25 @@ body {
 button {
   cursor: pointer;
 }
+/*wtf*/
+button:active {
+  border-style: inset;
+  background-color: yellow;
+}
+
+button:focus {
+  outline: none;
+}
+/*
 button:hover {
   color: white;
-  text-shadow: 0 0 1px
 }
+*/
 .btn:hover {
   color: white;
-  text-shadow: 0 0 1px
 }
 .btn.active {
   color: white;
-  text-shadow: 0 0 1px
 }
 .splitter-v {
   cursor: ew-resize;
@@ -98,16 +106,6 @@ button:hover {
 [contenteditable]:focus {
   outline: 0px solid transparent;
 }
-
-button:focus {
-  outline: none;
-}
-.shadow-line {
-  background-color: #1E1E1E;
-  height: 1px;
-  box-shadow: 0px 0px 8px 1px #000000;
-}
-
 .panel-item.active {
   background-color: #1E1E1E;
 }
