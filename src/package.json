@@ -6,7 +6,6 @@
   },
   "devDependencies": {
     "requirejs": "2.3.5",
-    "requirejs-text": "2.0.12",
     "monaco-editor": "0.13.1"
   }
 }
