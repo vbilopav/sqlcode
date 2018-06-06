@@ -1,5 +1,7 @@
 define(["sys/model",], Model => {
 
+    var model;
+
     const 
         paneTemplate = String.html`
 
@@ -11,11 +13,12 @@ define(["sys/model",], Model => {
                 
                 <div class="panel-commands">
                     <button id="new" title="Create new script (Ctrl+N)" class="control">new</button>
+                    <button id="filter" title="Filter scripts (Ctrl+?)" class="control">filter</button>
                 </div>
                 
             </div>
+            <div id="shadow" class="panel-shadow-line" style="visibility: hidden;"></div>
             <div id="content" class="panel-content noselect">
-                <div class="panel-shadow-line"></div>
             </div>
             
             `,
@@ -47,25 +50,45 @@ define(["sys/model",], Model => {
                 e.target.data("dir", dir).html(dirEnum[dir]);
             });
             return element;
+        },
+
+        updateShadowLine = () => {
+            if (model.content.overflownY()) {
+                model.shadow.css("visibility", "visible");
+            } else {
+                model.shadow.css("visibility", "hidden");
+            }
+        },
+
+        activate = (item, state) => {
+            if (!item.length) {
+                return;
+            }
+            item.toggleClass("active", state);
+            if (state) {
+                item.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
+            }
         }
 
     return container => {
 
-        const model = new Model().bind(container.html(paneTemplate));
+        model = new Model().bind(container.html(paneTemplate));
         model.new.on("click", e => _app.pub("docs/create", e.target));
         
         _app
             .sub("editor/created", data => {
                 model.content.append(createItem(data.id, data.title));
+                updateShadowLine();
                 model.info = "created...";
-                setTimeout(()=>{
-                    model.info = "count=" + data.count;
-                }, 1000)
+                setTimeout(() => model.info = data.count, 1000);
             })
-            .sub("editor/activated", data => model.content.find(".item-" + data.id).toggleClass("active", data.state));
+            .sub("editor/activated", data => activate(model.content.find(".item-" + data.id), data.state));
 
         window
-            .on("resize", () => model.content.css("height", (window.innerHeight - 60) + "px"))
+            .on("resize", () => {
+                model.content.css("height", (window.innerHeight - 60) + "px");
+                updateShadowLine();
+            })
             .trigger("resize");
     }
 

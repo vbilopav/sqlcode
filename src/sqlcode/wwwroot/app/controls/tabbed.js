@@ -36,6 +36,12 @@ define(["sys/model"], Model => class {
         return this._active;
     }
 
+    get content() {
+        if (this._active) {
+            return this._active.data("content-ref");
+        }
+    }
+
     get tabs() {
         return this._model.tabs;
     }

@@ -87,6 +87,7 @@ button:hover {
 }
 .tabs-container {
   grid-row: 2;
+  margin-top: 1px;
 }
 .tab {
   padding-left: 10px;

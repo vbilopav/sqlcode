@@ -28,7 +28,6 @@
 
 #sidebar {
     grid-column: 2;
-    /*display: grid;*/
 }
 
 #workbench {
@@ -45,9 +44,12 @@
 #output {
     grid-row: 3;
 }
-
-
-
+/*
+.monaco-editor {
+    width: 100% !important;
+    height: 100% !important;
+}
+*/
 .results-tab {
     font-size: 10px;
 }

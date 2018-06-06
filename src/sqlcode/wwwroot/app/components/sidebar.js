@@ -61,5 +61,18 @@ define([
                 splitter.move(delta, v);
             }
         });
+
+        container.find(".panel-content")
+            .on("mouseleave", e => {
+                e.target.css("overflow-y", "hidden")
+                split.css("z-index", "");
+            })
+            .on("mouseenter", e => {
+                if (e.target.overflownY()) {
+                    e.target.css("overflow-y", "scroll");
+                    split.css("z-index", "1");
+                }
+            });
+            
     };
 });

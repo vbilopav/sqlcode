@@ -18,7 +18,7 @@ define([], () => {
         "css", "_styles",
         "on", "off", "trigger",
         "data", "_data",
-        "overflownX"
+        "overflownX", "overflownY"
     ]);
     test(String, ["html", "hashCode", "createElement", "toCamelCase", "toElement", "toElements"]);
     test(NodeList, ["addClass", "removeClass", "toggleClass"]);
@@ -183,6 +183,10 @@ define([], () => {
 
     HTMLElement.prototype.overflownX = function() {
         return this.scrollWidth > this.clientWidth
+    }
+
+    HTMLElement.prototype.overflownY = function() {
+        return this.scrollHeight > this.clientHeight
     }
 
     String.prototype.toCamelCase = function() {

@@ -20,7 +20,7 @@ define([
                 <div class="container">
                     <div id="toolbar" class="control"></div>
                     <div id="sidebar" class="sidebar"></div>
-                    <div id="splitter" class="control"></div>
+                    <div id="splitter" class=""></div>
                     <div id="workbench" class="workbench"></div>
                     <div id="footer"></div>
                 </div>

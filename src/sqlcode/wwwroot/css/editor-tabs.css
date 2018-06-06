@@ -47,6 +47,7 @@
 }
 .editor-tab.tab-active {
     background-color: #1E1E1E;
+    color: #fff;
 }
 .editor-tab.tab-inactive .close {
     visibility: hidden;
@@ -62,4 +63,13 @@
 
 .tab-content {
     height: 100%;
+    width: 100%;
+    overflow: auto;
+    display: inline-flex;
 }
+
+/*
+.tab-content-active {
+    border: 1px red solid;
+}
+*/

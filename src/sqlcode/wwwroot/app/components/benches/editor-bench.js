@@ -1,7 +1,7 @@
 define([
     "controls/tabbed",
-    "vs/editor/editor.main"
-], Tabbed => {
+    "components/editor"
+], (Tabbed, Editor) => {
 
     const 
         tabTemplate = title => String.html`
@@ -11,8 +11,13 @@ define([
                 autocorrect="off" 
                 autocapitalize="off" 
                 spellcheck="false" 
-                autocomplete="off">${title}</span>
-            <button class="close" title="Close (Ctrl+F4)">&#10006;</button>`,
+                autocomplete="off"
+                title="${title}">
+                    ${title}
+            </span>
+            <button class="close" title="Close (Ctrl+F4)">
+                &#10006;
+            </button>`,
         name = "editor-tab";
 
     var 
@@ -99,6 +104,8 @@ define([
     return container => {
 
         tabbed = new Tabbed({container, name: name});
+        Editor.setTabControl(tabbed);
+        
         tabbed.tabs
             .addClass("editor-tabs")
             .on("mouseleave", () => tabbed.tabs.css("overflow", "hidden").css("overflow-x", "hidden"))
@@ -154,17 +161,9 @@ define([
             
             tabbed.revealActive();
             if (content) {
-
-                let editor = monaco.editor.create(content, {
-                    value: "",
-                    language: 'pgsql',
-                    theme: "vs-dark"
-                });
-
-
+                //!!!!
+                new Editor(content);
             }
-
-            //'vs/editor/editor.main'
         })
         .sub("docs/selected", id => tabbed.activate(tabbed.tabs.find("#" + name + id)));
 
