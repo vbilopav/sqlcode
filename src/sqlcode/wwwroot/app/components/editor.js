@@ -2,8 +2,6 @@ define([
     "vs/editor/editor.main"
 ], () => {
 
-    //box-shadow: 0px 0px 2px 1px #000000;
-
     var 
         tabbed,
         resizeTimeout;
@@ -17,54 +15,53 @@ define([
             if (!container) {
                 return;
             }
-            console.log(container.clientWidth);
-            /*
-            let container = tabbed.content;
-            if (!container) {
-                return;
-            }
-            let instance = container.data("editor-ref"),
-                newDeltaWidth = window.innerWidth - container.clientWidth;
-
-            if (newDeltaWidth !== instance._deltaWidth) {
-                console.log(container.clientWidth);
-                console.log(container.clientWidth - (instance._deltaWidth - newDeltaWidth));
-
-                instance.editor.layout({
-                    height: container.clientHeight, 
-                    width: container.clientWidth - (instance._deltaWidth - newDeltaWidth)
-                })
-                
-                //instance._deltaWidth = newDeltaWidth;
-            }  
-            */
-            
-        }, 250);
+            let instance = container.data("editor-ref");
+            instance.editor.layout({
+                height:  container.clientHeight - 10, 
+                width:  container.clientWidth - 10
+            });
+        }, 50);
     
     });
-    
 
     return class {
         
         constructor(container) {
-            this.editor = monaco.editor.create(container, {
+            container.data("editor-ref", this);
+            container.html(
+                String.html`
+                    <div class="wrap" style="position: fixed;">
+                    </div>
+            `);
+
+            this.wrap = container.find(".wrap");
+            this.editor = monaco.editor.create(this.wrap, {
                 value: "",
                 language: 'pgsql',
                 theme: "vs-dark",
                 renderWhitespace: "all",
-                automaticLayout: true
+                automaticLayout: false
             });
-            this._deltaWidth = window.innerWidth - container.clientWidth;
-            this._initialWidth = container.clientWidth;
-            
-            this._intialHeight = container.clientHeight;
-            container.data("editor-ref", this);
-            
-            //this.editor.layout({height: container.clientHeight, width: container.clientWidth})
+            this.editor.layout({
+                height:  container.clientHeight - 10, 
+                width:  container.clientWidth - 10
+            });
         }
 
-        static setTabControl(control) {
+        static init(control) {
             tabbed = control;
+            _app
+                .sub([
+                    "sidebar/docked", 
+                    "sidebar/undocked", 
+                    "sidebar/changed"
+                ], () => window.trigger("resize"))
+                .sub([
+                    "workbench/docked", 
+                    "workbench/undocked", 
+                    "workbench/changed", 
+                    "state/toggle/results"
+                ], () => window.trigger("resize"));
         }
     }
 

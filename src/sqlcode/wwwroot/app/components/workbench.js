@@ -31,6 +31,7 @@ define([
                 events: {
                     docked: () => _app.pub(["workbench/docked", "workbench/dock"], false, splitter),
                     undocked: () => _app.pub(["workbench/undocked", "workbench/dock"], true, splitter),
+                    changed: () => _app.pub("workbench/changed", splitter)
                 }
             }).start();
 

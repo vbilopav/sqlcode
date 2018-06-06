@@ -59,17 +59,8 @@
 .results-tab {
     font-size: 10px;
 }
-
-
-.tab-content {
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-    display: inline-flex;
-}
-
 /*
-.tab-content-active {
-    border: 1px red solid;
+.editor .tab-content {
+    padding: 5px;
 }
 */

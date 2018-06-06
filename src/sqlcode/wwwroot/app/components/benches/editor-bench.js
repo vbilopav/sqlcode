@@ -104,7 +104,7 @@ define([
     return container => {
 
         tabbed = new Tabbed({container, name: name});
-        Editor.setTabControl(tabbed);
+        Editor.init(tabbed);
         
         tabbed.tabs
             .addClass("editor-tabs")
