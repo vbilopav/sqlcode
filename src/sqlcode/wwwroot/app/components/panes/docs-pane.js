@@ -17,7 +17,7 @@ define(["sys/model",], Model => {
                 </div>
                 
             </div>
-            <div id="shadow" class="panel-shadow-line" style="visibility: hidden;"></div>
+            <div id="shadow" class="panel-shadow-line" style="display: none;"></div>
             <div id="content" class="panel-content noselect">
             </div>
             
@@ -54,9 +54,9 @@ define(["sys/model",], Model => {
 
         updateShadowLine = () => {
             if (model.content.overflownY()) {
-                model.shadow.css("visibility", "visible");
+                model.shadow.css("display", "");
             } else {
-                model.shadow.css("visibility", "hidden");
+                model.shadow.css("display", "none");
             }
         },
 
