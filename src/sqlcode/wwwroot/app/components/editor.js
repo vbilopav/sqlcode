@@ -1,35 +1,42 @@
 define([
+    "services/script-service",
     "vs/editor/editor.main"
-], () => {
+], 
+    scriptService => {
 
     var
         tabbed,
-        resizeTimeout;
+        resizeTimeout,
+        updateContentTimeout;
 
     const 
-        updateSizeOfActiveEditor = () => {
+        updateSize = (monaco, container) => {
+            monaco.layout({
+                height:  container.clientHeight - 10, 
+                width:  container.clientWidth - 10
+            });
+        },
+        updateSizeAndFocusOnActiveEditor = () => {
             let container = tabbed.activeContent;
-                if (!container) {
-                    return;
-                }
-                let instance = container.data("editor-ref");
-                instance.monaco.layout({
-                    height:  container.clientHeight - 10, 
-                    width:  container.clientWidth - 10
-                });
-        }
+            if (!container) {
+                return;
+            }
+            let instance = container.data("editor-ref");
+            updateSize(instance.monaco, container);
+            instance.focus();
+        };
 
     window.on("resize", () => {
         if (resizeTimeout) {
             clearTimeout(resizeTimeout);
         } 
-        resizeTimeout = setTimeout(updateSizeOfActiveEditor, 50);
+        resizeTimeout = setTimeout(updateSizeAndFocusOnActiveEditor, 50);
     });
 
     return class {
-        
         constructor({
             id=(() => {throw "id is required"})(),
+            title=(() => {throw "title is required"})(),
             container=(() => {throw "container is required"})(),
             tab=(() => {throw "tab is required"})(),
             type=(() => {throw "type is required"})()
@@ -40,6 +47,7 @@ define([
             this.id = id;
             this.tab = tab;
             this.type = type;
+            this.title = title;
             this.monaco = monaco.editor.create(container.find(".wrap"), {
                 value: "",
                 language: type,
@@ -47,16 +55,23 @@ define([
                 renderWhitespace: "all",
                 automaticLayout: false
             });
-            this.monaco.layout({
-                height:  container.clientHeight - 10, 
-                width:  container.clientWidth - 10
-            });
+            updateSize(this.monaco, container);
             this.focus();
-            /*
-            this.monaco.model.onDidChangeContent(e => {
-                console.log(e);
+            
+            this.monaco.model.onDidChangeContent(() => {
+                if (updateContentTimeout) {
+                    clearTimeout(updateContentTimeout);
+                } 
+                updateContentTimeout = setTimeout(() => {
+
+                    scriptService.saveById(this.id, {
+                        viewState: this.monaco.saveViewState(), 
+                        content: this.monaco.model.getValue(), 
+                        title: this.title
+                    });
+
+                }, 1000);
             });
-            */
         }
 
         focus() {
@@ -70,12 +85,14 @@ define([
                     "sidebar/docked",
                     "sidebar/undocked",
                     "sidebar/changed",
+                    "state/toggle",
+                    "state/off",
                     "workbench/docked",
                     "workbench/undocked",
                     "workbench/changed",
                     "state/toggle/results",
                     "editor/activated"
-                ], updateSizeOfActiveEditor);
+                ], updateSizeAndFocusOnActiveEditor);
         }
     }
 

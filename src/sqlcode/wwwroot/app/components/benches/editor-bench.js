@@ -161,13 +161,15 @@ define([
                 contentHtml: "",
                 active: true
             });
-            let editor = new Editor({id: id, container: content, tab: tab, type: type});
+            let editor = new Editor({id: id, title: title, container: content, tab: tab, type: type});
             tab.addClass(type + "-" + id);
             tabbed.revealActive();
             args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
             
-            _app.pub(["editor/created", "editor/created/" + editor.type], args);
+            _app
+                .pub(["editor/created", "editor/created/" + editor.type], args)
+                .pub(["editor/activated", "editor/activated/" + editor.type], args);
         })
         .sub("scripts/selected", (id, type) => tabbed.activate(tabbed.tabs.find("." + type + "-" + id)));
 
