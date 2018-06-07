@@ -6,76 +6,76 @@ define([
         tabbed,
         resizeTimeout;
 
+    const 
+        updateSizeOfActiveEditor = () => {
+            let container = tabbed.activeContent;
+                if (!container) {
+                    return;
+                }
+                let instance = container.data("editor-ref");
+                instance.monaco.layout({
+                    height:  container.clientHeight - 10, 
+                    width:  container.clientWidth - 10
+                });
+        }
+
     window.on("resize", () => {
         if (resizeTimeout) {
             clearTimeout(resizeTimeout);
         } 
-        resizeTimeout = setTimeout(() => {
-            let container = tabbed.activeContent;
-            if (!container) {
-                return;
-            }
-            let instance = container.data("editor-ref");
-            instance.editor.layout({
-                height:  container.clientHeight - 10, 
-                width:  container.clientWidth - 10
-            });
-        }, 50);
-    
+        resizeTimeout = setTimeout(updateSizeOfActiveEditor, 50);
     });
 
     return class {
         
         constructor({
+            id=(() => {throw "id is required"})(),
             container=(() => {throw "container is required"})(),
             tab=(() => {throw "tab is required"})(),
-            type="pgsql"
+            type=(() => {throw "type is required"})()
         }) {
             container.data("editor-ref", this).html(
                 String.html`<div class="wrap" style="position: fixed;"></div>`
             );
+            this.id = id;
             this.tab = tab;
-            this.tab.data("type", type);
-
-            this.wrap = container.find(".wrap");
-            this.editor = monaco.editor.create(this.wrap, {
+            this.type = type;
+            this.monaco = monaco.editor.create(container.find(".wrap"), {
                 value: "",
                 language: type,
                 theme: "vs-dark",
                 renderWhitespace: "all",
                 automaticLayout: false
             });
-            this.editor.layout({
+            this.monaco.layout({
                 height:  container.clientHeight - 10, 
                 width:  container.clientWidth - 10
             });
             this.focus();
-
             /*
-            this.editor.model.onDidChangeContent(e => {
+            this.monaco.model.onDidChangeContent(e => {
                 console.log(e);
             });
             */
         }
 
         focus() {
-            this.editor.focus();
+            this.monaco.focus();
         }
 
         static init(control) {
             tabbed = control;
             _app
                 .sub([
-                    "sidebar/docked", 
-                    "sidebar/undocked", 
-                    "sidebar/changed"
-                ], () => window.trigger("resize"))
-                .sub([
-                    "workbench/docked", 
-                    "workbench/undocked", 
-                    "workbench/changed", 
-                    "state/toggle/results"
-                ], () => window.trigger("resize"));
+                    "sidebar/docked",
+                    "sidebar/undocked",
+                    "sidebar/changed",
+                    "workbench/docked",
+                    "workbench/undocked",
+                    "workbench/changed",
+                    "state/toggle/results",
+                    "editor/activated"
+                ], updateSizeOfActiveEditor);
         }
     }
 

@@ -99,7 +99,19 @@ define([
                     }
                 });
             */
-        }
+        };
+
+    const
+        mapEventToPubSub = (event, editor) => {
+            return {
+                tab: event.tab,
+                count: event.count,
+                editor: editor,
+                state: event.state,
+                id: (editor ? editor.id : null),
+                type: (editor ? editor.type : null)
+            }
+    };
 
     return container => {
 
@@ -119,35 +131,23 @@ define([
                 editorHaveTabs();
             }
             initializeTab(event.tab);
-            _app.pub("editor/created", {
-                title: event.tab.find(".title").html(), 
-                id: event.id,
-                count: event.count
-            })
-            .pub("editor/activated", {
-                id: event.id,
-                state: event.active
-            });
         };
         tabbed.afterClose = e => {
             if (e.count === 0) {
                 editorNoTabs();
-                _app.pub("editor/activated", {
-                    id: e.id,
-                    state: false
-                });
+                let editor = event.content.data("editor-ref"),
+                    args = mapEventToPubSub(event, editor);
+                _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
             }
         };
 
         tabbed.afterActivate = event => {
-            let editor = event.content.data("editor-ref");
-            if (editor) {
+            let editor = event.content.data("editor-ref"),
+                args = mapEventToPubSub(event, editor);
+            if (event.state) {
                 editor.focus();
             }
-            _app.pub("editor/activated", {
-                id: event.id,
-                state: event.state
-            });
+            _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
         }
 
         _app.sub("sidebar/changed", () => {
@@ -155,20 +155,21 @@ define([
                 tabbed.reveal(tabbed.active);
             }
         })
-        .sub("docs/create", () => {
-            let c = tabbed.nextId;
+        .sub("scripts/create", (id, title, type) => {
             let {tab, content} = tabbed.create({
-                tabHtml: tabTemplate("New script " + c),
+                tabHtml: tabTemplate(title),
                 contentHtml: "",
                 active: true
-            })
-            
+            });
+            let editor = new Editor({id: id, container: content, tab: tab, type: type});
+            tab.addClass(type + "-" + id);
             tabbed.revealActive();
-            if (content) {
-                new Editor({container: content, tab: tab, type: "pgsql"});
-            }
+            args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
+            args.title = title;
+            
+            _app.pub(["editor/created", "editor/created/" + editor.type], args);
         })
-        .sub("docs/selected", id => tabbed.activate(tabbed.tabs.find("#" + name + id)));
+        .sub("scripts/selected", (id, type) => tabbed.activate(tabbed.tabs.find("." + type + "-" + id)));
 
         // inital state... load previous scripts here
         editorNoTabs();

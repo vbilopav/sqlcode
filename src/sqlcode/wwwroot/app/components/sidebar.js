@@ -2,13 +2,13 @@ define([
     "sys/model",
     "controls/splitter",
     "components/panes/database-pane",
-    "components/panes/docs-pane",
+    "components/panes/scripts-pane",
     "components/panes/search-pane",
 ], (
     Model,
     [VSplitter],
     dbPane,
-    docsPane,
+    scriptsPane,
     searchPane
 ) => {
     return (container, split) => {
@@ -17,7 +17,7 @@ define([
             model = new Model().bind(
                 container.html(
                     String.html`
-                    <div id="docs" class="panel panel-h docs-panel"></div>
+                    <div id="scripts" class="panel panel-h scripts-panel"></div>
                     <div id="db" class="panel panel-h db-panel"></div>
                     <div id="search" class="panel panel-h search-panel"></div>`
                 )
@@ -35,7 +35,7 @@ define([
                 }
             }).start();
 
-        docsPane(model.docs);
+        scriptsPane(model.scripts);
         dbPane(model.db);
         searchPane(model.search);
 

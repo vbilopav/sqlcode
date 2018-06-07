@@ -3,6 +3,7 @@ define(["sys/model",], Model => {
     var model;
 
     const 
+        type = "pgsql",
         paneTemplate = String.html`
 
             <div class="panel-header noselect">
@@ -43,7 +44,7 @@ define(["sys/model",], Model => {
                 if (element.hasClass("active")) {
                     return;
                 }
-                _app.pub("docs/selected", id);
+                _app.pub("scripts/selected", id, type);
             });
             element.find(".expand").on("click", e => {
                 let dir = e.target.data("dir") === "right" ? "down" : "right";
@@ -70,19 +71,36 @@ define(["sys/model",], Model => {
             }
         }
 
+    const 
+        scripts = [],
+        scriptItem = (id, title, unnamed=true) => {
+            return {id: id, title: title, unnamed: unnamed}
+        };
+
     return container => {
 
         model = new Model().bind(container.html(paneTemplate));
-        model.new.on("click", e => _app.pub("docs/create", e.target));
+        model.new.on("click", e => {
+            let getName = (n => n ? `New script ${n+1}` : "New script"), 
+                unnamed = scripts.filter(s => s.unnamed),
+                suggestion = getName(unnamed.length);
+            _app.pub("scripts/create", scripts.length + 1, suggestion, type);
+        });
         
         _app
-            .sub("editor/created", data => {
-                model.content.append(createItem(data.id, data.title));
+            .sub("editor/created/" + type, data => {
+                model.content.append(createItem(data.editor.id, data.title));
+                scripts.push(scriptItem(data.editor.id, data.title));
                 updateShadowLine();
                 model.info = "created...";
-                setTimeout(() => model.info = data.count, 1000);
+                setTimeout(() => {
+                    model.info = "total=" + data.count
+                    setTimeout(() => model.info = "", 5000);
+                }, 1000);
             })
-            .sub("editor/activated", data => activate(model.content.find(".item-" + data.id), data.state));
+            .sub("editor/activated/" + type, data => {
+                activate(model.content.find(".item-" + data.id), data.state);
+            });
 
         window
             .on("resize", () => {

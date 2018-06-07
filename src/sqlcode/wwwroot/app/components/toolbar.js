@@ -3,7 +3,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
     const 
         template = String.html`
             <div>
-                <div id="docs" class="btn align-center icon-doc-text"></div>
+                <div id="scripts" class="btn align-center icon-doc-text"></div>
                 <div id="db" class="btn align-center icon-database"></div>
                 <div id="search" class="btn align-center icon-search"></div>
             </div>
@@ -13,7 +13,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             </div>`;
 
     const 
-        defaultBtn = "docs",
+        defaultBtn = "scripts",
         cls = "active";
     
     var buttons, storage;
