@@ -2,7 +2,7 @@ define([
     "vs/editor/editor.main"
 ], () => {
 
-    var 
+    var
         tabbed,
         resizeTimeout;
 
@@ -11,7 +11,7 @@ define([
             clearTimeout(resizeTimeout);
         } 
         resizeTimeout = setTimeout(() => {
-            let container = tabbed.content;
+            let container = tabbed.activeContent;
             if (!container) {
                 return;
             }
@@ -26,18 +26,21 @@ define([
 
     return class {
         
-        constructor(container) {
-            container.data("editor-ref", this);
-            container.html(
-                String.html`
-                    <div class="wrap" style="position: fixed;">
-                    </div>
-            `);
+        constructor({
+            container=(() => {throw "container is required"})(),
+            tab=(() => {throw "tab is required"})(),
+            type="pgsql"
+        }) {
+            container.data("editor-ref", this).html(
+                String.html`<div class="wrap" style="position: fixed;"></div>`
+            );
+            this.tab = tab;
+            this.tab.data("type", type);
 
             this.wrap = container.find(".wrap");
             this.editor = monaco.editor.create(this.wrap, {
                 value: "",
-                language: 'pgsql',
+                language: type,
                 theme: "vs-dark",
                 renderWhitespace: "all",
                 automaticLayout: false
@@ -46,6 +49,17 @@ define([
                 height:  container.clientHeight - 10, 
                 width:  container.clientWidth - 10
             });
+            this.focus();
+
+            /*
+            this.editor.model.onDidChangeContent(e => {
+                console.log(e);
+            });
+            */
+        }
+
+        focus() {
+            this.editor.focus();
         }
 
         static init(control) {

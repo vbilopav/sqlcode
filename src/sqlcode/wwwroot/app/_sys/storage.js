@@ -11,7 +11,7 @@ define([], () => {
         constructor({
             storage=defaultStorage,
             namespace="", 
-            model=(() => {throw new Error("model is required!")})(), 
+            model=(() => {throw "model is required!"})(), 
             conversion={}
         }) {
             this._storage = Storage._check(storage);

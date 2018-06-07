@@ -3,7 +3,7 @@ define(["sys/storage"], Storage => {
     class Splitter {
         constructor({
             name,
-            element=(() => {throw element})(),
+            element=(() => {throw "element is required"})(),
             container,
             dockPosition = 0,
             resizeIdx,

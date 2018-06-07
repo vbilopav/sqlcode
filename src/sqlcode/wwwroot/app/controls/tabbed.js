@@ -36,7 +36,7 @@ define(["sys/model"], Model => class {
         return this._active;
     }
 
-    get content() {
+    get activeContent() {
         if (this._active) {
             return this._active.data("content-ref");
         }
@@ -178,16 +178,14 @@ define(["sys/model"], Model => class {
     }
 
     _toggle(tab, state) {
-        let eventArgs = this._getEventArgs(tab, content);
+        let content = tab.data("content-ref"),
+            eventArgs = this._getEventArgs(tab, content);
         eventArgs.state = state;
         if (!this.beforeActivate(eventArgs)) {
             return this;
         }
-
-        this._toggleContent(
-            this._toggleTab(tab, state).data("content-ref"), 
-            state
-        );
+        this._toggleTab(tab, state);
+        this._toggleContent(content, state);
         this.afterActivate(eventArgs);
         return this;
     }

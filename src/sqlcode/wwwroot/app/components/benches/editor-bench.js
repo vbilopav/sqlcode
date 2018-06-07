@@ -140,6 +140,10 @@ define([
         };
 
         tabbed.afterActivate = event => {
+            let editor = event.content.data("editor-ref");
+            if (editor) {
+                editor.focus();
+            }
             _app.pub("editor/activated", {
                 id: event.id,
                 state: event.state
@@ -161,12 +165,12 @@ define([
             
             tabbed.revealActive();
             if (content) {
-                //!!!!
-                new Editor(content);
+                new Editor({container: content, tab: tab, type: "pgsql"});
             }
         })
         .sub("docs/selected", id => tabbed.activate(tabbed.tabs.find("#" + name + id)));
 
+        // inital state... load previous scripts here
         editorNoTabs();
     }
 });
