@@ -44,7 +44,7 @@ define(["sys/model",], Model => {
                 if (element.hasClass("active")) {
                     return;
                 }
-                _app.pub("scripts/selected", id, type);
+                _app.pub("scripts/selected", id, type, title);
             });
             element.find(".expand").on("click", e => {
                 let dir = e.target.data("dir") === "right" ? "down" : "right";

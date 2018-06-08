@@ -6,11 +6,11 @@ define([
     const 
         tabTemplate = title => String.html`
             <span class="icon icon-doc-text"></span>
-            <span class="title editable" 
-                contenteditable="false" 
-                autocorrect="off" 
-                autocapitalize="off" 
-                spellcheck="false" 
+            <span class="title editable"
+                contenteditable="false"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 autocomplete="off"
                 title="${title}">
                     ${title}
@@ -111,7 +111,23 @@ define([
                 id: (editor ? editor.id : null),
                 type: (editor ? editor.type : null)
             }
-    };
+        },
+        createActiveNewTab = (id, title, type) => {
+            let 
+                {tab, content} = tabbed.create({
+                    tabHtml: tabTemplate(title),
+                    contentHtml: "",
+                    active: true
+                }),
+                editor = new Editor({
+                    id: id, 
+                    title: title, 
+                    container: content, 
+                    tab: tab, 
+                    type: type
+                });
+            return {tab, editor};
+        }
 
     return container => {
 
@@ -135,14 +151,14 @@ define([
         tabbed.afterClose = e => {
             if (e.count === 0) {
                 editorNoTabs();
-                let editor = event.content.data("editor-ref"),
-                    args = mapEventToPubSub(event, editor);
+                let editor = Editor.editorByContainer(e.content),
+                    args = mapEventToPubSub(e, editor);
                 _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
             }
         };
 
         tabbed.afterActivate = event => {
-            let editor = event.content.data("editor-ref"),
+            let editor = Editor.editorByContainer(event.content),
                 args = mapEventToPubSub(event, editor);
             if (event.state) {
                 editor.focus();
@@ -156,22 +172,44 @@ define([
             }
         })
         .sub("scripts/create", (id, title, type) => {
-            let {tab, content} = tabbed.create({
-                tabHtml: tabTemplate(title),
-                contentHtml: "",
-                active: true
-            });
-            let editor = new Editor({id: id, title: title, container: content, tab: tab, type: type});
-            tab.addClass(type + "-" + id);
+            let {tab, editor} = createActiveNewTab(id, title, type),
+                scriptClass = type + "-" + id;
+
+            tab.addClass(scriptClass).data("script-class", scriptClass);
             tabbed.revealActive();
-            args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
+            let args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
-            
+            args.state = true;
             _app
-                .pub(["editor/created", "editor/created/" + editor.type], args)
-                .pub(["editor/activated", "editor/activated/" + editor.type], args);
+                .pub(["editor/created", "editor/created/" + type], args)
+                .pub(["editor/activated", "editor/activated/" + type], args);
         })
-        .sub("scripts/selected", (id, type) => tabbed.activate(tabbed.tabs.find("." + type + "-" + id)));
+        .sub("scripts/selected", (id, type, title) => {
+
+            let tab = tabbed.tabs.find("." + type + "-" + id);
+            if (tab.length) { 
+                tabbed.activate(tab);
+                return;
+            }
+            let 
+                editor,
+                sticky = tabbed.tabs.find(".sticky");
+
+            if (sticky.length) {
+                sticky.removeClass(sticky.data("script-class"));
+                editor = Editor.editorByContainer(Tabbed.contentByTab(sticky));
+            } else {
+                let r = createActiveNewTab(id, title, type);
+                sticky = r.tab;
+                editor = r.editor;
+                sticky.addClass("sticky");
+            }
+            let scriptClass = type + "-" + id;
+            sticky.addClass(scriptClass).data("script-class", scriptClass); 
+            editor.restore(id, type);
+            tabbed.activate(sticky);
+            editor.focus();
+        });
 
         // inital state... load previous scripts here
         editorNoTabs();

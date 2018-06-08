@@ -45,6 +45,9 @@
     text-overflow: ellipsis;
     padding-top: 10px;
 }
+.editor-tab.sticky .title {
+    font-style: italic;
+}
 .editor-tab.tab-active {
     background-color: #1E1E1E;
     color: #fff;

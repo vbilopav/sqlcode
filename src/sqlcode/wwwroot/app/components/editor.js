@@ -1,13 +1,15 @@
 define([
     "services/script-service",
     "vs/editor/editor.main"
-], 
-    scriptService => {
+], service => {
 
     var
         tabbed,
         resizeTimeout,
         updateContentTimeout;
+    
+    const
+        _editorId = "editor-ref";
 
     const 
         updateSize = (monaco, container) => {
@@ -21,7 +23,10 @@ define([
             if (!container) {
                 return;
             }
-            let instance = container.data("editor-ref");
+            let instance = Editor.editorByContainer(container);
+            if (!instance) {
+                return;
+            }
             updateSize(instance.monaco, container);
             instance.focus();
         };
@@ -33,7 +38,7 @@ define([
         resizeTimeout = setTimeout(updateSizeAndFocusOnActiveEditor, 50);
     });
 
-    return class {
+    class Editor {
         constructor({
             id=(() => {throw "id is required"})(),
             title=(() => {throw "title is required"})(),
@@ -41,7 +46,7 @@ define([
             tab=(() => {throw "tab is required"})(),
             type=(() => {throw "type is required"})()
         }) {
-            container.data("editor-ref", this).html(
+            container.data(_editorId, this).html(
                 String.html`<div class="wrap" style="position: fixed;"></div>`
             );
             this.id = id;
@@ -64,7 +69,7 @@ define([
                 } 
                 updateContentTimeout = setTimeout(() => {
 
-                    scriptService.saveById(this.id, {
+                    service.save(this.id, this.type, {
                         viewState: this.monaco.saveViewState(), 
                         content: this.monaco.model.getValue(), 
                         title: this.title
@@ -72,6 +77,18 @@ define([
 
                 }, 1000);
             });
+        }
+
+        restore(id, type) {
+            let data = service.retreive(id, type);
+            if (!data) {
+                return false;
+            }
+            this.id = id;
+            this.type = type;
+            this.title = data.title;
+            this.monaco.setValue(data.content);
+            this.monaco.restoreViewState(data.viewState);
         }
 
         focus() {
@@ -94,6 +111,14 @@ define([
                     "editor/activated"
                 ], updateSizeAndFocusOnActiveEditor);
         }
+
+        static editorByContainer(container) {
+            if (!container) {
+                return;
+            }
+            return container.data(_editorId);
+        }
     }
 
+    return Editor;
 });
