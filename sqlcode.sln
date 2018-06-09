@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "npgsqlcode", "src\sqlcode\npgsqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sqlcode", "src\sqlcode\sqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
