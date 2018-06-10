@@ -15,7 +15,7 @@
 .editor-tab {
     background-color: #252526;
     border-right: 1px #1E1E1E solid;
-    min-width: 140px;
+    min-width: 150px;
     max-width: 400px;
     display: grid;
     grid-template-columns: auto auto auto;
@@ -44,6 +44,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding-top: 10px;
+    padding-right: 5px;
 }
 .editor-tab.sticky .title {
     font-style: italic;

@@ -40,7 +40,7 @@
 }
 #workbench > #splitter {
     grid-row: 2;
-    position: relative;
+    /*position: relative;*/
 }
 #output {
     grid-row: 3;
