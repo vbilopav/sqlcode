@@ -85,6 +85,7 @@ define([
                 .on("dragover", e => e.preventDefault())
                 .on("dragenter", e => e.target.closest("."+name).addClass("droptarget"))
                 .on("dragleave", e => e.target.closest("."+name).removeClass("droptarget"))
+                .on("dblclick", e => tab.removeClass("sticky"))
                 .find(".close")
                 .on("click", e => {
                     e.target.data("canceled", true);
@@ -121,9 +122,8 @@ define([
                 }),
                 editor = new Editor({
                     id: id, 
-                    title: title, 
-                    container: content, 
-                    tab: tab, 
+                    container: content,
+                    title: title,
                     type: type
                 });
             return {tab, editor};
@@ -132,7 +132,7 @@ define([
     return container => {
 
         tabbed = new Tabbed({container, name: name});
-        Editor.init(tabbed);
+        Editor.init(() => tabbed.activeContent);
         
         tabbed.tabs
             .addClass("editor-tabs")
@@ -175,7 +175,7 @@ define([
             let {tab, editor} = createActiveNewTab(id, title, type),
                 scriptClass = type + "-" + id;
 
-            tab.addClass(scriptClass).data("script-class", scriptClass);
+            tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type);
             tabbed.revealActive();
             let args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
@@ -198,6 +198,10 @@ define([
             if (sticky.length) {
                 sticky.removeClass(sticky.data("script-class"));
                 editor = Editor.editorByContainer(Tabbed.contentByTab(sticky));
+                sticky.find(".title").attr("title", title).html(title);
+                let oldId = sticky.data("script-id");
+                let oldType = sticky.data("script-type");
+                _app.pub(["editor/activated", "editor/activated/" + oldType], {id: oldId, type: oldType, state: false});
             } else {
                 let r = createActiveNewTab(id, title, type);
                 sticky = r.tab;
@@ -205,11 +209,14 @@ define([
                 sticky.addClass("sticky");
             }
             let scriptClass = type + "-" + id;
-            sticky.addClass(scriptClass).data("script-class", scriptClass); 
+            sticky.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type);
             editor.restore(id, type);
             tabbed.activate(sticky);
             editor.focus();
-        });
+
+            _app.pub(["editor/activated", "editor/activated/" + type], {id: id, type: type, state: true});
+        })
+        .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"));
 
         // inital state... load previous scripts here
         editorNoTabs();

@@ -4,7 +4,7 @@ define([
 ], service => {
 
     var
-        tabbed,
+        getActiveContentFunc,
         resizeTimeout,
         updateContentTimeout;
     
@@ -19,7 +19,7 @@ define([
             });
         },
         updateSizeAndFocusOnActiveEditor = () => {
-            let container = tabbed.activeContent;
+            let container = getActiveContentFunc();
             if (!container) {
                 return;
             }
@@ -27,7 +27,7 @@ define([
             if (!instance) {
                 return;
             }
-            updateSize(instance.monaco, container);
+            updateSize(instance._monaco, container);
             instance.focus();
         };
 
@@ -41,41 +41,35 @@ define([
     class Editor {
         constructor({
             id=(() => {throw "id is required"})(),
-            title=(() => {throw "title is required"})(),
             container=(() => {throw "container is required"})(),
-            tab=(() => {throw "tab is required"})(),
-            type=(() => {throw "type is required"})()
+            type=(() => {throw "type is required"})(),
+            title=(() => {throw "title is required"})()
         }) {
-            container.data(_editorId, this).html(
-                String.html`<div class="wrap" style="position: fixed;"></div>`
-            );
+            this.element = String.html`<div class="wrap" style="position: fixed;"></div>`.toElement();
+            container.data(_editorId, this).append(this.element);
             this.id = id;
-            this.tab = tab;
             this.type = type;
             this.title = title;
-            this.monaco = monaco.editor.create(container.find(".wrap"), {
+            this._monaco = monaco.editor.create(this.element, {
                 value: "",
-                language: type,
+                language: this.type,
                 theme: "vs-dark",
                 renderWhitespace: "all",
                 automaticLayout: false
             });
-            updateSize(this.monaco, container);
-            this.focus();
-            
-            this.monaco.model.onDidChangeContent(() => {
+            updateSize(this._monaco, container);
+            this._monaco.model.onDidChangeContent(() => {
                 if (updateContentTimeout) {
                     clearTimeout(updateContentTimeout);
                 } 
-                updateContentTimeout = setTimeout(() => {
+                updateContentTimeout = setTimeout(() => this._save(), 1000);
+            });
+        }
 
-                    service.save(this.id, this.type, {
-                        viewState: this.monaco.saveViewState(), 
-                        content: this.monaco.model.getValue(), 
-                        title: this.title
-                    });
-
-                }, 1000);
+        _save() {
+            service.save(this.id, this.type, {
+                viewState: this._monaco.saveViewState(),
+                content: this._monaco.model.getValue(),
             });
         }
 
@@ -84,19 +78,22 @@ define([
             if (!data) {
                 return false;
             }
+            clearTimeout(updateContentTimeout);
+            this._save();
             this.id = id;
             this.type = type;
-            this.title = data.title;
-            this.monaco.setValue(data.content);
-            this.monaco.restoreViewState(data.viewState);
+            this._monaco.setValue(data.content);
+            this._monaco.restoreViewState(data.viewState);
         }
 
         focus() {
-            this.monaco.focus();
+            if (!this._monaco.isFocused() && document.contains(this.element)) {
+                this._monaco.focus();
+            }
         }
 
-        static init(control) {
-            tabbed = control;
+        static init(getActiveContent) {
+            getActiveContentFunc = getActiveContent;
             _app
                 .sub([
                     "sidebar/docked",

@@ -40,12 +40,22 @@ define(["sys/model",], Model => {
 
         createItem = (id, title) => {
             let element = item(title).data("id", id).addClass("item-" + id);
-            element.find(".text").on("click", () => {
-                if (element.hasClass("active")) {
-                    return;
-                }
-                _app.pub("scripts/selected", id, type, title);
-            });
+            element.find(".text")
+                .on("click", () => {
+                    if (element.hasClass("active")) {
+                        return;
+                    }
+                    _app.pub("scripts/selected", id, type, title);
+                })
+                .on("dblclick", () => _app.pub("scripts/keep-open", id, type));
+                /*
+                .on("dblclick", () => {
+                    if (element.hasClass("active")) {
+                        return;
+                    }
+                    _app.pub("scripts/selected", id, type, title, true);
+                });
+                */
             element.find(".expand").on("click", e => {
                 let dir = e.target.data("dir") === "right" ? "down" : "right";
                 e.target.data("dir", dir).html(dirEnum[dir]);
