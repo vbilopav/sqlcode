@@ -37,6 +37,10 @@ define([
     workbench(model.workbench);
     toolbar(model.toolbar);
 
+    document.body.on("contextmenu", e => {
+        e.preventDefault();
+    });
+
     return () => setTimeout(() => {
         document.body.find("#loading-screen-script").remove();
         document.body.find("#loading-screen").remove();

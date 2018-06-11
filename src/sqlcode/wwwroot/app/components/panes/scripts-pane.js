@@ -1,4 +1,7 @@
-define(["sys/model",], Model => {
+define([
+    "sys/model",
+    "controls/monaco-menu"
+], (Model, Menu) => {
 
     var model;
 
@@ -79,6 +82,18 @@ define(["sys/model",], Model => {
             if (state) {
                 item.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
             }
+        },
+
+        createMenus = scriptItem => {
+            new Menu({
+                target: scriptItem, 
+                items: [
+                    {text: "Rename", click: ()=>console.log("Rename")},
+                    {splitter: true},
+                    {text: "Download", click: ()=>console.log("Download")},
+                    {text: "Remove", click: ()=>console.log("Remove")}
+                ]
+            });
         }
 
     const 
@@ -99,7 +114,11 @@ define(["sys/model",], Model => {
         
         _app
             .sub("editor/created/" + type, data => {
-                model.content.append(createItem(data.editor.id, data.title));
+                
+                let item = createItem(data.editor.id, data.title);
+                model.content.append(item);
+                createMenus(item);
+
                 scripts.push(scriptItem(data.editor.id, data.title));
                 updateShadowLine();
                 model.info = "created...";

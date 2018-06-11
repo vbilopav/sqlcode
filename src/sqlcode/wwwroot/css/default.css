@@ -73,10 +73,13 @@ button:hover {
 .splitter-v {
   cursor: ew-resize;
   background-color: #252526;
+  border: 1px #333333 dashed;
+
 }
 .splitter-h {
   cursor: ns-resize;
   background-color: #252526;
+  border: 1px #333333 dashed;
 }
 
 .tabs {
