@@ -42,6 +42,7 @@ define([], () => {
             }
             document.body.append(this.element);
             target.on("contextmenu", e => {
+                _app.pubSync("monaco/context-menu/open");
                 this.element.css("top", e.y + "px").css("left", e.x + "px").show();
                 e.preventDefault();
             });
@@ -50,6 +51,7 @@ define([], () => {
                     this.element.hide();
                 }
             });
+            _app.sub("monaco/context-menu/open", () => this.element.hide())
         }
     }
 

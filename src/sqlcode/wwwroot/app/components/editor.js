@@ -64,6 +64,7 @@ define([
                 } 
                 updateContentTimeout = setTimeout(() => this._save(), 1000);
             });
+            this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
         }
 
         _save() {
