@@ -46,7 +46,7 @@ define([], () => {
                 this.element.css("top", e.y + "px").css("left", e.x + "px").show();
                 e.preventDefault();
             });
-            window.on("resize click", () => this.element.hide()).on("keyup", e => {
+            window.on("resize mousedown", () => this.element.hide()).on("keyup", e => {
                 if (e.keyCode === 27) {
                     this.element.hide();
                 }
