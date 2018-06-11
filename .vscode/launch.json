@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/sqlcode/bin/Debug/netcoreapp2.0/npgsqlcode.dll",
+            "program": "${workspaceFolder}/src/sqlcode/bin/Debug/netcoreapp2.1/sqlcode.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/sqlcode",
             "stopAtEntry": false,

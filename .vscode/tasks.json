@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/sqlcode/npgsqlcode.csproj"
+                "${workspaceFolder}/src/sqlcode/sqlcode.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
