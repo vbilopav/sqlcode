@@ -45,6 +45,14 @@ define([
         resizeTimeout = setTimeout(updateSizeAndFocusOnActiveEditor, 50);
     });
 
+    const dirtyStates = {
+        _states: {},
+        setState: (instance, state) => {
+            dirtyStates._states[instance.id + "-" + instance.type] = state;
+        },
+        getState: instance => dirtyStates._states[instance.id + "-" + instance.type]
+    };
+
     class Editor {
         constructor({
             id=(() => {throw "id is required"})(),
@@ -64,18 +72,24 @@ define([
                 renderWhitespace: "all",
                 automaticLayout: false
             });
-            this._save();
             updateSize(this._monaco, container);
             this._monaco.model.onDidChangeContent(() => {
+                dirtyStates.setState(this, true);
                 if (updateContentTimeout) {
                     clearTimeout(updateContentTimeout);
                 } 
-                updateContentTimeout = setTimeout(() => this._save(), 1000);
+                updateContentTimeout = setTimeout(() => {
+                    this.save();
+                    dirtyStates.setState(this, false);
+                }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
         }
 
-        _save() {
+        save() {
+            if (dirtyStates.getState(this) === false) {
+                return;
+            }
             service.save(this.id, this.type, {
                 viewState: this._monaco.saveViewState(),
                 content: this._monaco.model.getValue(),
@@ -89,10 +103,11 @@ define([
                 return false;
             }
             clearTimeout(updateContentTimeout);
-            this._save();
+            this.save();
             this.id = id;
             this.type = type;
             this._monaco.setValue(data.content);
+            dirtyStates.setState(this, false);
             this._monaco.restoreViewState(data.viewState);
         }
 
@@ -100,6 +115,10 @@ define([
             if (!this._monaco.isFocused() && document.contains(this.element)) {
                 this._monaco.focus();
             }
+        }
+
+        dispose() {
+            this._monaco.dispose();
         }
 
         static init(getActiveContent) {

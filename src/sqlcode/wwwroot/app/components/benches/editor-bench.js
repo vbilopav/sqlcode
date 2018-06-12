@@ -154,7 +154,14 @@ define([
                 let editor = Editor.editorByContainer(e.content),
                     args = mapEventToPubSub(e, editor);
                 _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
+                editor.dispose();
             }
+        };
+
+        tabbed.beforeClose = event => {
+            let editor = Editor.editorByContainer(event.content);
+            editor.save();
+            return true;
         };
 
         tabbed.afterActivate = event => {
@@ -164,7 +171,7 @@ define([
                 editor.focus();
             }
             _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
-        }
+        };
 
         _app.sub("sidebar/changed", () => {
             if (tabbed.active) {
@@ -180,6 +187,7 @@ define([
             let args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
             args.state = true;
+            editor.focus();
             _app
                 .pub(["editor/created", "editor/created/" + type], args)
                 .pub(["editor/activated", "editor/activated/" + type], args);

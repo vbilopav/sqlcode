@@ -42,8 +42,7 @@ define(["sys/storage"], Storage => {
                     if (this._docked) {
                         return true;
                     }
-                    let pos = this._getPos(e),
-                        {values, prev} = this._getValuesArray();
+                    let {_, prev} = this._getValuesArray();
                     this._storage.position = prev;
                 })
                 .on("mousemove", e => {

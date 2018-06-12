@@ -5,6 +5,7 @@ define([], () => {
 
     return {
         save: (id, type, {viewState, content, title}) => {
+            console.log("Saving... ", id, type, title);
             store[type + id] = {
                 type: type,
                 viewState: viewState,

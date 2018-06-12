@@ -61,7 +61,7 @@ define([
                     if (element.hasClass("active")) {
                         return;
                     }
-                    _app.pub("scripts/selected", {id: id, type: type, title: title});
+                    _app.pub("scripts/selected", {id: id, type: type, title: title, dontFocus: true});
                 })
                 .on("dblclick", () => _app.pub("scripts/keep-open", id, type));
             
@@ -112,7 +112,7 @@ define([
                     // expand
                 } else if (e.key === "ArrowLeft") {
                     // collapse
-                } else if (e.key === "Tab") {
+                } else if (e.key === "Tab" || e.key === "Enter") {
                     _app.pub("monaco/active-editor/focus");
                 } else if (e.key === "F2") {
                     menu.triggerById("rename", {element: element});
