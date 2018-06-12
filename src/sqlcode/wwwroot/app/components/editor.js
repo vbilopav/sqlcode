@@ -35,7 +35,7 @@ define([
                 return;
             }
             updateSize(editor._monaco, container);
-            editor.focus();
+            //editor.focus();
         };
 
     window.on("resize", () => {
@@ -114,8 +114,8 @@ define([
                     "workbench/docked",
                     "workbench/undocked",
                     "workbench/changed",
-                    "state/toggle/results"
-                    //"editor/activated"
+                    "state/toggle/results",
+                    "editor/activated"
                 ], updateSizeAndFocusOnActiveEditor)
                 .sub("monaco/active-editor/focus", () => {
                     let {container, editor} = getActiveEditor();
