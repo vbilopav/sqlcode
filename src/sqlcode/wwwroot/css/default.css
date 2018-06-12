@@ -57,11 +57,13 @@ button:active {
 }
 
 button:focus {
-  outline: none !important;;
+  outline: none !important;
 }
-
+div:focus {
+  outline: #bee0eb93 1px dashed !important;
+}
 button:hover {
-  color: white !important;;
+  color: white !important;
 }
 
 .btn:hover {

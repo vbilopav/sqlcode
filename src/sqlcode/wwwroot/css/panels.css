@@ -78,6 +78,9 @@
     padding-top: 4px;
     padding-bottom: 4px;
 }
+.panel-item-title {
+    padding: 2px;
+}
 .panel-item.active {
     background-color: #1E1E1E;
     color: #fff;

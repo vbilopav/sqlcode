@@ -83,8 +83,8 @@ define([
                     switchTab();
                 })
                 .on("dragover", e => e.preventDefault())
-                .on("dragenter", e => e.target.closest("."+name).addClass("droptarget"))
-                .on("dragleave", e => e.target.closest("."+name).removeClass("droptarget"))
+                .on("dragenter", e => e.target.closest("." + name).addClass("droptarget"))
+                .on("dragleave", e => e.target.closest("." + name).removeClass("droptarget"))
                 .on("dblclick", e => tab.removeClass("sticky"))
                 .find(".close")
                 .on("click", e => {
@@ -160,7 +160,7 @@ define([
         tabbed.afterActivate = event => {
             let editor = Editor.editorByContainer(event.content),
                 args = mapEventToPubSub(event, editor);
-            if (event.state) {
+            if (event.state && !event.dontFocus) {
                 editor.focus();
             }
             _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
@@ -184,11 +184,11 @@ define([
                 .pub(["editor/created", "editor/created/" + type], args)
                 .pub(["editor/activated", "editor/activated/" + type], args);
         })
-        .sub("scripts/selected", (id, type, title) => {
+        .sub("scripts/selected", ({id, type, title, dontFocus}) => {
 
             let tab = tabbed.tabs.find("." + type + "-" + id);
             if (tab.length) { 
-                tabbed.activate(tab);
+                tabbed.activate(tab, {dontFocus: dontFocus});
                 return;
             }
             let 
@@ -212,8 +212,9 @@ define([
             sticky.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type);
             editor.restore(id, type);
             tabbed.activate(sticky);
-            editor.focus();
-
+            if (!dontFocus) {
+                editor.focus();
+            }
             _app.pub(["editor/activated", "editor/activated/" + type], {id: id, type: type, state: true});
         })
         .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"));

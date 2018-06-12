@@ -133,12 +133,12 @@ define(["sys/model"], Model => {
             }
         }
 
-        activate(tab) {
+        activate(tab, args={}) {
             if (tab.data("active")) {
                 return this;
             }
-            this._toggle(this._active, false);
-            this._toggle(tab, true);
+            this._toggle(this._active, false, args);
+            this._toggle(tab, true, args);
             this._active = tab;
             this.reveal(tab);
             return this;
@@ -187,9 +187,9 @@ define(["sys/model"], Model => {
                 .show(active);
         }
 
-        _toggle(tab, state) {
+        _toggle(tab, state, args={}) {
             let content = Tabbed.contentByTab(tab),
-                eventArgs = this._getEventArgs(tab, content);
+                eventArgs = Object.assign(this._getEventArgs(tab, content), args);
             eventArgs.state = state;
             if (!this.beforeActivate(eventArgs)) {
                 return this;

@@ -43,23 +43,6 @@ define([], () => {
                 }
                 return obj;
             };
-            obj.pubSync = (name, ...args) => {
-                let doPub = n => {
-                    let entry = entries[n];
-                    if (!entry) {
-                        return obj;
-                    }
-                    entry.forEach(f => f.apply(obj, args));
-                }
-                if (name instanceof Array) {
-                    for(let i of name) {
-                        doPub(i);
-                    }
-                } else {
-                    doPub(name);
-                }
-                return obj;
-            };
         }
     }
 });

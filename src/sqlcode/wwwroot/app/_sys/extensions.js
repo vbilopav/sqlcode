@@ -46,12 +46,12 @@ define([], () => {
                 return this.hide();
             }
         }
-        this.style.display = ""; 
+        this.css("display", "");
         return this;
     }
 
     HTMLElement.prototype.hide = function() {
-        this.style.display = "none"; 
+        this.css("display", "none");
         return this;
     }
 

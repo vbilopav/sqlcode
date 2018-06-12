@@ -1,7 +1,7 @@
 define([], () => {
 
     const 
-        element = String.html`
+        template = String.html`
             <div class="vs-dark" style="display: none; position: fixed;">
                 <div class="context-view monaco-menu-container" aria-hidden="false">
                     <div class="monaco-menu">
@@ -24,36 +24,53 @@ define([], () => {
             </li>`;
         
 
-    class VerticalMonacoMenu {
+    return class {
         constructor({
-            items=(()=>{throw "items are required"})(),
-            target=(()=>{throw "target is required"})()
+            items,
+            target=(()=>{throw "target is required"})(),
+            contextmenuItems=items=>items,
         }) {
-            this.element = element.toElement();
-            let container = this.element.find(".actions-container");
-            for(let item of items) {
-                if (item.splitter) {
-                    container.append(splitter.toElement());
-                    continue;
-                } 
-                let e = itemTemplate(item.text, item.keyBindings).toElement();
-                container.append(e);
-                e.on("click", item.click);
+            let element = template.toElement(),
+                container = element.find(".actions-container");
+            if (items !== undefined) {
+                for(let item of items) {
+                    if (item.splitter) {
+                        item.element = splitter.toElement();
+                        continue;
+                    } 
+                    item.element = itemTemplate(item.text, item.keyBindings).toElement().on("click", () => {
+                        item.action(item.args)
+                    });
+                }
             }
-            document.body.append(this.element);
+            document.body.append(element);
             target.on("contextmenu", e => {
-                _app.pubSync("monaco/context-menu/open");
-                this.element.css("top", e.y + "px").css("left", e.x + "px").show();
+                container.html("");
+                for(let item of contextmenuItems(items)) {
+                    container.append(item.element);
+                }
+                element.css("top", e.y + "px").css("left", e.x + "px").show();
                 e.preventDefault();
             });
-            window.on("resize mousedown", () => this.element.hide()).on("keyup", e => {
+            element.on("click", () => element.hide());
+            window.on("resize", () => element.hide())
+            window.on("mousedown", () => {
+                if (!element.find(":hover").length) {
+                    element.hide();
+                }
+            }).on("keyup", e => {
                 if (e.keyCode === 27) {
-                    this.element.hide();
+                    element.hide();
                 }
             });
-            _app.sub("monaco/context-menu/open", () => this.element.hide())
+            this.triggerById = (id, args) => {
+                for(let item of items) {
+                    if (item.id === id) {
+                        item.action(args);
+                    }
+                }
+            };
+            _app.sub("monaco/context-menu/open", () => element.hide())
         }
     }
-
-    return VerticalMonacoMenu;
 });

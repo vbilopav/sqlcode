@@ -18,17 +18,24 @@ define([
                 width:  container.clientWidth - 10
             });
         },
-        updateSizeAndFocusOnActiveEditor = () => {
+        getActiveEditor = () => {
             let container = getActiveContentFunc();
             if (!container) {
+                return {container: undefined, editor: undefined};
+            }
+            let editor = Editor.editorByContainer(container);
+            if (!editor) {
+                return {container: container, editor: undefined};
+            }
+            return {container: container, editor: editor};
+        }
+        updateSizeAndFocusOnActiveEditor = () => {
+            let {container, editor} = getActiveEditor();
+            if (!editor || !container) {
                 return;
             }
-            let instance = Editor.editorByContainer(container);
-            if (!instance) {
-                return;
-            }
-            updateSize(instance._monaco, container);
-            instance.focus();
+            updateSize(editor._monaco, container);
+            editor.focus();
         };
 
     window.on("resize", () => {
@@ -57,6 +64,7 @@ define([
                 renderWhitespace: "all",
                 automaticLayout: false
             });
+            this._save();
             updateSize(this._monaco, container);
             this._monaco.model.onDidChangeContent(() => {
                 if (updateContentTimeout) {
@@ -71,6 +79,7 @@ define([
             service.save(this.id, this.type, {
                 viewState: this._monaco.saveViewState(),
                 content: this._monaco.model.getValue(),
+                title: this.title
             });
         }
 
@@ -105,9 +114,16 @@ define([
                     "workbench/docked",
                     "workbench/undocked",
                     "workbench/changed",
-                    "state/toggle/results",
-                    "editor/activated"
-                ], updateSizeAndFocusOnActiveEditor);
+                    "state/toggle/results"
+                    //"editor/activated"
+                ], updateSizeAndFocusOnActiveEditor)
+                .sub("monaco/active-editor/focus", () => {
+                    let {container, editor} = getActiveEditor();
+                    if (!editor) {
+                        return;
+                    }
+                    editor.focus();
+                });
         }
 
         static editorByContainer(container) {
