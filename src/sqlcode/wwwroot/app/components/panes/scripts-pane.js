@@ -1,10 +1,16 @@
 define([
     "sys/model",
     "controls/monaco-menu",
-    "controls/title-editor"
-], (Model, Menu, titleEditor) => {
+    "controls/inline-editor",
+    "services/script-service"
+], (
+    Model, 
+    Menu, 
+    InlineEditor, 
+    service
+) => {
 
-    var model, menu;
+    var model;
 
     const 
         type = "pgsql",
@@ -70,26 +76,21 @@ define([
                 e.target.data("dir", dir).html(dirEnum[dir]);
             });
 
-            menu = new Menu({
+            let menu = new Menu({
+                id: "scripts-pane-item-menu",
                 target: element, 
                 items: [
-                    {
-                        text: "Reveal", 
-                        action: () => activateByElement(element)
+                    {text: "Reveal", action: () => activateByElement(element)},
+                    {splitter: true},
+                    {id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: {element: element}, action: args => 
+                            new InlineEditor({
+                                element: args.element.find(".panel-item-title"), 
+                                getInvalidNamesCallback: () => service.getNames(type)
+                            })
                     },
                     {splitter: true},
-                    {
-                        id: "rename",
-                        text: "Rename", 
-                        keyBindings: "F2",
-                        args: {element: element},
-                        action: args => {
-                            titleEditor.byElement(args.element.find(".panel-item-title"), type);
-                        }
-                    },
-                    {splitter: true},
-                    {text: "Download", click: ()=>console.log("Download")},
-                    {text: "Remove", click: ()=>console.log("Remove")}
+                    {text: "Download", action: ()=>console.log("Download")}, //todo
+                    {text: "Remove", action: ()=>console.log("Remove")} //todo
                 ],
                 contextmenuItems: items => {
                     let show = !element.hasClass("active");
@@ -100,6 +101,9 @@ define([
             });
 
             element.on("keydown", e => {
+                if (InlineEditor.editing(element.find(".panel-item-title"))) {
+                    return;
+                }
                 if (e.key === "ArrowUp") {
                     let prev = element.previousSibling;
                     if (prev.nodeName === "#text") {
@@ -109,16 +113,21 @@ define([
                 } else if (e.key === "ArrowDown") {
                     activateByElement(element.nextSibling || model.content.firstChild.nextElementSibling);
                 } else if (e.key === "ArrowRight") {
-                    // expand
+                    
+                    // expand ... todo
+
                 } else if (e.key === "ArrowLeft") {
-                    // collapse
+                    
+                    // collapse ... todo
+
                 } else if (e.key === "Tab" || e.key === "Enter") {
                     _app.pub("monaco/active-editor/focus");
                 } else if (e.key === "F2") {
                     menu.triggerById("rename", {element: element});
                 }
-            });
-
+            })
+            .on("dblclick", () => menu.triggerById("rename", {element: element}));
+            
             return element;
         },
 
@@ -138,11 +147,7 @@ define([
             if (state) {
                 item.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
             }
-        },
-
-        createMenus = scriptItem => {
-
-        }
+        };
 
     const 
         scripts = [],
@@ -154,15 +159,16 @@ define([
 
         model = new Model().bind(container.html(paneTemplate));
         model.new.on("click", e => {
-            let getName = (n => n ? `New script ${n+1}` : "New script"), 
+            setTimeout(()=>{
+                let getName = (n => n ? `New script ${n+1}` : "New script"), 
                 unnamed = scripts.filter(s => s.unnamed),
                 suggestion = getName(unnamed.length);
-            _app.pub("scripts/create", scripts.length + 1, suggestion, type);
+                _app.pub("scripts/create", scripts.length + 1, suggestion, type);
+            }, 0);
         });
         
         _app
             .sub("editor/created/" + type, data => {
-                
                 let item = createItem(data.editor.id, data.title);
                 model.content.append(item);
                 scripts.push(scriptItem(data.editor.id, data.title));
@@ -173,7 +179,8 @@ define([
                     setTimeout(() => model.info = "", 5000);
                 }, 1000);
             })
-            .sub("editor/activated/" + type, data => activate(model.content.find(".item-" + data.id), data.state));
+            .sub("editor/activated/" + type, data => 
+                activate(model.content.find(".item-" + data.id), data.state));
 
         window
             .on("resize", () => {

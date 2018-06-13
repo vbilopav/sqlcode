@@ -78,7 +78,7 @@ define(["sys/model"], Model => {
                 .data("id", this._id)
                 .addClass("tab-content");
 
-            let tab = "span"
+            let tab = "div"
                 .createElement(id, tabHtml)
                 .addClass("tab")
                 .data(Tabbed._contentId, content)

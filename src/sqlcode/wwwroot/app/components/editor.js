@@ -47,10 +47,8 @@ define([
 
     const dirtyStates = {
         _states: {},
-        setState: (instance, state) => {
-            dirtyStates._states[instance.id + "-" + instance.type] = state;
-        },
-        getState: instance => dirtyStates._states[instance.id + "-" + instance.type]
+        set: (instance, state) => dirtyStates._states[instance.id + "-" + instance.type] = state,
+        get: instance => dirtyStates._states[instance.id + "-" + instance.type]
     };
 
     class Editor {
@@ -58,7 +56,8 @@ define([
             id=(() => {throw "id is required"})(),
             container=(() => {throw "container is required"})(),
             type=(() => {throw "type is required"})(),
-            title=(() => {throw "title is required"})()
+            title=(() => {throw "title is required"})(),
+            existing
         }) {
             this.element = String.html`<div class="wrap" style="position: fixed;"></div>`.toElement();
             container.data(_editorId, this).append(this.element);
@@ -73,21 +72,26 @@ define([
                 automaticLayout: false
             });
             updateSize(this._monaco, container);
+            if (!existing) {
+                dirtyStates.set(this, true);
+                this.save();
+                dirtyStates.set(this, false);
+            }
             this._monaco.model.onDidChangeContent(() => {
-                dirtyStates.setState(this, true);
+                dirtyStates.set(this, true);
                 if (updateContentTimeout) {
                     clearTimeout(updateContentTimeout);
                 } 
                 updateContentTimeout = setTimeout(() => {
                     this.save();
-                    dirtyStates.setState(this, false);
+                    dirtyStates.set(this, false);
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
         }
 
         save() {
-            if (dirtyStates.getState(this) === false) {
+            if (dirtyStates.get(this) === false || !this._monaco.model) {
                 return;
             }
             service.save(this.id, this.type, {
@@ -107,7 +111,7 @@ define([
             this.id = id;
             this.type = type;
             this._monaco.setValue(data.content);
-            dirtyStates.setState(this, false);
+            dirtyStates.set(this, false);
             this._monaco.restoreViewState(data.viewState);
         }
 

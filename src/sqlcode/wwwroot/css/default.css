@@ -60,7 +60,7 @@ button:focus {
   outline: none !important;
 }
 div:focus {
-  outline: #bee0eb93 1px dashed !important;
+  outline: #90acb693 1px dashed !important;
 }
 button:hover {
   color: white !important;
@@ -110,4 +110,7 @@ button:hover {
 }
 [contenteditable]:focus {
   outline: 0px solid transparent;
+}
+.editable.invalid {
+  border: 1px red dotted;
 }

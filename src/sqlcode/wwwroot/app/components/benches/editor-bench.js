@@ -1,7 +1,16 @@
 define([
     "controls/tabbed",
-    "components/editor"
-], (Tabbed, Editor) => {
+    "components/editor",
+    "controls/monaco-menu",
+    "controls/inline-editor",
+    "services/script-service"
+], (
+    Tabbed, 
+    Editor, 
+    Menu, 
+    InlineEditor, 
+    service
+) => {
 
     const 
         tabTemplate = title => String.html`
@@ -40,6 +49,53 @@ define([
             tabbed.tabs.show();
         },
         initializeTab = tab => {
+            let title = tab.find(".title");
+            let menu = new Menu({
+                id: "editor-bench-tab-menu",
+                target: tab,
+                items: [
+                    {id: "close", text: "Close", keyBindings: "Ctrl+F4", args: {tab: tab}, action: args => 
+                        tabbed.closeByTab(args.tab)
+                    },
+                    {text: "Close Others", action: () => {
+                            for(let t of tabbed.tabs.findAll("." + name)) {
+                                if (t.id !== tab.id) {
+                                    tabbed.closeByTab(t);
+                                }
+                            }
+                        }
+                    },
+                    {text: "Close All", action: () => {
+                            for(let t of tabbed.tabs.findAll("." + name)) {
+                                tabbed.closeByTab(t);
+                            }
+                        }
+                    },
+                    {splitter: true},
+                    {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => 
+                        new InlineEditor({
+                            element: args.title, 
+                            getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type"))
+                        })
+                    },
+                    {splitter: true},
+                    {id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => 
+                        args.tab.removeClass("sticky")
+                    }
+                ],
+                contextmenuItems: items => {
+                    let sticky = tab.hasClass("sticky");
+                    items[5].element.show(sticky);
+                    items[6].element.show(sticky);
+                    if (sticky) {
+                        items[4].element.find(".keybinding").html("F2");
+                    } else {
+                        items[4].element.find(".keybinding").html("dblclick, F2");
+                    }
+                    return items;
+                }
+            });
+
             tab
                 .addClass(name)
                 .attr("draggable", "true")
@@ -85,35 +141,44 @@ define([
                 .on("dragover", e => e.preventDefault())
                 .on("dragenter", e => e.target.closest("." + name).addClass("droptarget"))
                 .on("dragleave", e => e.target.closest("." + name).removeClass("droptarget"))
-                .on("dblclick", e => tab.removeClass("sticky"))
+                .on("dblclick", () => {
+                    if (tab.hasClass("sticky")) {
+                        menu.triggerById("keep-open", {tab: tab});
+                    } else {
+                        menu.triggerById("rename", {title: title, tab: tab});
+                    }
+                })
+                .on("keydown", e => {
+                    if (InlineEditor.editing(title)) {
+                        return;
+                    }
+                    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                        tabbed.activate(tab.nextSibling || tabbed.tabs.firstChild, {dontFocus: true, focusTab: true});
+                    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                        tabbed.activate(tab.previousSibling || tabbed.tabs.lastChild, {dontFocus: true, focusTab: true});
+                    } else if (e.key === "Tab" || e.key === "Enter") {
+                        e.preventDefault();
+                        Editor.editorByContainer(tabbed.activeContent).focus();
+                    } else if (e.key === "F2") {
+                        menu.triggerById("rename", {title: title, tab: tab});
+                    }
+                })
                 .find(".close")
                 .on("click", e => {
                     e.target.data("canceled", true);
-                    tabbed.closeByTab(tab);
+                    menu.triggerById("close", {tab: tab});
                 });
-
-            /*
-            tab.find(".title")
-                .on("click", e => {
-                    if (tab.data("active")) {
-                        e.target.attr("contenteditable", "true");
-                    }
-                });
-            */
+        },
+        updateTabData = (tab, type, id) => {
+            let scriptClass = type + "-" + id;
+            tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type).attr("tabindex", id);
         };
 
     const
         mapEventToPubSub = (event, editor) => {
-            return {
-                tab: event.tab,
-                count: event.count,
-                editor: editor,
-                state: event.state,
-                id: (editor ? editor.id : null),
-                type: (editor ? editor.type : null)
-            }
+            return {tab: event.tab, count: event.count, editor: editor, state: event.state, id: (editor ? editor.id : null), type: (editor ? editor.type : null)}
         },
-        createActiveNewTab = (id, title, type) => {
+        createActiveNewTab = (id, title, type, existing=false) => {
             let 
                 {tab, content} = tabbed.create({
                     tabHtml: tabTemplate(title),
@@ -124,7 +189,8 @@ define([
                     id: id, 
                     container: content,
                     title: title,
-                    type: type
+                    type: type,
+                    existing: existing
                 });
             return {tab, editor};
         }
@@ -170,6 +236,9 @@ define([
             if (event.state && !event.dontFocus) {
                 editor.focus();
             }
+            if (event.state && event.focusTab) {
+                event.tab.focus();
+            }
             _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
         };
 
@@ -179,10 +248,8 @@ define([
             }
         })
         .sub("scripts/create", (id, title, type) => {
-            let {tab, editor} = createActiveNewTab(id, title, type),
-                scriptClass = type + "-" + id;
-
-            tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type);
+            let {tab, editor} = createActiveNewTab(id, title, type);
+            updateTabData(tab, type, id);
             tabbed.revealActive();
             let args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
@@ -207,23 +274,25 @@ define([
                 sticky.removeClass(sticky.data("script-class"));
                 editor = Editor.editorByContainer(Tabbed.contentByTab(sticky));
                 sticky.find(".title").attr("title", title).html(title);
-                let oldId = sticky.data("script-id");
-                let oldType = sticky.data("script-type");
-                _app.pub(["editor/activated", "editor/activated/" + oldType], {id: oldId, type: oldType, state: false});
+                let oldId = sticky.data("script-id"), oldType = sticky.data("script-type");
+                _app.pub(["editor/activated", "editor/activated/" + oldType], {
+                    id: oldId, type: oldType, state: false, tab: sticky
+                });
             } else {
-                let r = createActiveNewTab(id, title, type);
+                let r = createActiveNewTab(id, title, type, true);
                 sticky = r.tab;
                 editor = r.editor;
                 sticky.addClass("sticky");
             }
-            let scriptClass = type + "-" + id;
-            sticky.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type);
+            updateTabData(sticky, type, id);
             editor.restore(id, type);
             tabbed.activate(sticky);
             if (!dontFocus) {
                 editor.focus();
             }
-            _app.pub(["editor/activated", "editor/activated/" + type], {id: id, type: type, state: true});
+            _app.pub(["editor/activated", "editor/activated/" + type], {
+                id: id, type: type, state: true, tab: sticky
+            });
         })
         .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"));
 

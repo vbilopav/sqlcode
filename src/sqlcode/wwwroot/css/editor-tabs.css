@@ -46,12 +46,18 @@
     padding-top: 10px;
     padding-right: 5px;
 }
+.editor-tab .title[contenteditable=true] {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 .editor-tab.sticky .title {
     font-style: italic;
 }
 .editor-tab.tab-active {
     background-color: #1E1E1E;
     color: #fff;
+    z-index: 10;
 }
 .editor-tab.tab-inactive .close {
     visibility: hidden;

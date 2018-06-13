@@ -1,8 +1,8 @@
 define([], () => {
 
     const 
-        template = String.html`
-            <div class="vs-dark" style="display: none; position: fixed;">
+        template = id => String.html`
+            <div id="${id}" class="vs-dark" style="display: none; position: fixed;">
                 <div class="context-view monaco-menu-container" aria-hidden="false">
                     <div class="monaco-menu">
                         <div class="monaco-action-bar animated vertical">
@@ -26,12 +26,24 @@ define([], () => {
 
     return class {
         constructor({
-            items,
+            id=(()=>{throw "id is required"})(),
+            items=[],
             target=(()=>{throw "target is required"})(),
             contextmenuItems=items=>items,
         }) {
-            let element = template.toElement(),
-                container = element.find(".actions-container");
+            let element = document.body.find("#" + id);
+            if (!element.length) {
+                element = element = template(id).toElement();
+                document.body.append(element);
+            }
+            
+            let 
+                container = element.find(".actions-container"),
+                clear = () => {
+                    element.hide();
+                    container.html("");
+                };
+
             if (items !== undefined) {
                 for(let item of items) {
                     if (item.splitter) {
@@ -43,7 +55,28 @@ define([], () => {
                     });
                 }
             }
-            document.body.append(element);
+
+            element.on("click", () => clear());
+            window.on("resize", () => clear());
+
+            window.on("mousedown", () => {
+                if (!element.find(":hover").length) {
+                    clear();
+                }
+            }).on("keyup", e => {
+                if (e.keyCode === 27) {
+                    clear();
+                }
+            });
+
+            this.triggerById = (id, args) => {
+                for(let item of items) {
+                    if (item.id === id) {
+                        item.action(args);
+                    }
+                }
+            };
+
             target.on("contextmenu", e => {
                 container.html("");
                 for(let item of contextmenuItems(items)) {
@@ -52,25 +85,8 @@ define([], () => {
                 element.css("top", e.y + "px").css("left", e.x + "px").show();
                 e.preventDefault();
             });
-            element.on("click", () => element.hide());
-            window.on("resize", () => element.hide())
-            window.on("mousedown", () => {
-                if (!element.find(":hover").length) {
-                    element.hide();
-                }
-            }).on("keyup", e => {
-                if (e.keyCode === 27) {
-                    element.hide();
-                }
-            });
-            this.triggerById = (id, args) => {
-                for(let item of items) {
-                    if (item.id === id) {
-                        item.action(args);
-                    }
-                }
-            };
-            _app.sub("monaco/context-menu/open", () => element.hide())
+
+            _app.sub("monaco/context-menu/open", () => clear())
         }
     }
 });
