@@ -22,6 +22,10 @@ define([], () => {
                 }
             }
             return result;
+        },
+        updateTitle: (id, type, title) => {
+            let entry = store[type + id];
+            entry.title = title;
         }
     }
 

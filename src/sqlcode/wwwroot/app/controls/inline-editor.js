@@ -1,7 +1,7 @@
 define([], () => {
 
     let 
-        clean = s => s.replace("&nbsp;", "").trim();
+        clean = s => s.replace("&nbsp;", "").replace("\\n", "").trim();
 
     return class {
         constructor ({
@@ -62,13 +62,14 @@ define([], () => {
                     return;
                 }
             })
-            .on("keyup", e => {
+            .on("input", e => {
                 if (e.keyCode === 27) {
                     reject();
                     return;
                 }
                 content = clean(element.html());
                 if (prev === content) {
+                    valid();
                     return;
                 }
                 if (!content.length) {

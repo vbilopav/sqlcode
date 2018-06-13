@@ -57,7 +57,11 @@ define([
                 title: element.data("title"),
                 dontFocus: true
             });
-        }
+        },
+
+        updateItemTitle = (element, title) => {
+            element.data("title", title).find(".text").attr("title", title).html(title);
+        },
 
         createItem = (id, title) => {
             let element = item(title).data("id", id).data("title", title).addClass("item-" + id).attr("tabindex", id);
@@ -159,7 +163,7 @@ define([
 
         model = new Model().bind(container.html(paneTemplate));
         model.new.on("click", e => {
-            setTimeout(()=>{
+            setTimeout(() => {
                 let getName = (n => n ? `New script ${n+1}` : "New script"), 
                 unnamed = scripts.filter(s => s.unnamed),
                 suggestion = getName(unnamed.length);
