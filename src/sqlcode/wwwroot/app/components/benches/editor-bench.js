@@ -26,7 +26,9 @@ define([
             </span>
             <button class="close" title="Close (Ctrl+F4)">
                 &#10006;
-            </button>`,
+            </button>`;
+
+    const
         name = "editor-tab";
 
     var 
@@ -40,14 +42,18 @@ define([
             }
             tabRibbon = false;
             tabbed.tabs.hide();
-        }
+        };
+
+    const
         editorHaveTabs = () => {
             if (tabRibbon) {
                 return
             }
             tabRibbon = true;
             tabbed.tabs.show();
-        },
+        };
+
+    const
         initializeTab = tab => {
             let title = tab.find(".title");
             let menu = new Menu({
@@ -170,7 +176,9 @@ define([
                     e.target.data("canceled", true);
                     menu.triggerById("close", {tab: tab});
                 });
-        },
+        };
+
+    const
         updateTabData = (tab, type, id) => {
             let scriptClass = type + "-" + id;
             tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type).attr("tabindex", id);
@@ -181,7 +189,9 @@ define([
             return {
                 tab: event.tab, count: event.count, editor: editor, state: event.state, id: (editor ? editor.id : null), type: (editor ? editor.type : null)
             }
-        },
+        };
+
+    const
         createActiveNewTab = (id, title, type, existing=false) => {
             let 
                 {tab, content} = tabbed.create({

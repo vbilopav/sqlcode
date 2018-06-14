@@ -11,18 +11,19 @@ define([], () => {
 
     test(HTMLElement, [
         "find", "findAll",
-        "show", "hide", "html", 
+        "show", "hide", "visible", "html", 
         "appendTo",
         "addClass", "removeClass", "hasClass", "toggleClass",
         "attr",
         "css", "_styles",
         "on", "off", "trigger",
         "data", "_data",
-        "overflownX", "overflownY"
+        "overflownX", "overflownY",
+        "setFocus"
     ]);
-    test(String, ["html", "hashCode", "createElement", "toCamelCase", "toElement", "toElements"]);
-    test(NodeList, ["addClass", "removeClass", "toggleClass"]);
-    test(Document, ["on", "off", "trigger"]);
+    test(String, ["html", "hashCode", "createElement", "toCamelCase", "toElement", "toElements", "stripHtml"]);
+    test(NodeList, ["addClass", "removeClass", "toggleClass", "show", "hide"]);
+    test(Document, ["on", "off", "trigger", "find", "findAll"]);
     test(Window, ["on", "off", "trigger"]);
 
     HTMLElement.prototype.find = function(search) {
@@ -52,6 +53,16 @@ define([], () => {
 
     HTMLElement.prototype.hide = function() {
         this.css("display", "none");
+        return this;
+    }
+
+    HTMLElement.prototype.visible = function(state) {
+        if (state !== undefined) {
+            if (!state) {
+                return this.css("visibility", "hidden");
+            }
+        }
+        this.css("visibility", "visible");
         return this;
     }
 
@@ -189,6 +200,11 @@ define([], () => {
         return this.scrollHeight > this.clientHeight
     }
 
+    HTMLElement.prototype.setFocus = function() {
+        this.focus();
+        return this;
+    }
+
     String.prototype.toCamelCase = function() {
         return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
     }
@@ -230,6 +246,12 @@ define([], () => {
         return h;
     }
 
+    String.prototype.stripHtml = function() {
+        var div = "div".createElement();
+        div.innerHTML = this;
+        return div.textContent || div.innerText || "";
+    }
+
     NodeList.prototype.addClass = function(className) {
         for(let e of this) {
             e.addClass(className);
@@ -251,9 +273,25 @@ define([], () => {
         return this;
     }
 
+    NodeList.prototype.show = function(state) {
+        for(let e of this) {
+            e.show(state);
+        }
+        return this;
+    }
+
+    NodeList.prototype.hide = function() {
+        for(let e of this) {
+            e.hide();
+        }
+        return this;
+    }
+
     Document.prototype.on = HTMLElement.prototype.on;
     Document.prototype.off = HTMLElement.prototype.off;
     Document.prototype.trigger = HTMLElement.prototype.trigger;
+    Document.prototype.find = HTMLElement.prototype.find;
+    Document.prototype.findAll = HTMLElement.prototype.findAll;
     Window.prototype.off = HTMLElement.prototype.off;
     Window.prototype.on = HTMLElement.prototype.on;
     Window.prototype.trigger = HTMLElement.prototype.trigger;

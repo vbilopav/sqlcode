@@ -53,6 +53,18 @@
     border: 1px #5f5f5f;
     border-style: solid
 }
+.panel-header input  {
+    background-color: #252526;
+    border: 1px #5f5f5f;
+    border-style: inset;
+    color: white;
+    width: calc(100% - 60px);
+    border-radius: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
 .panel-shadow-line {
     background-color: #1E1E1E;
     box-shadow: 0px 0px 3px 1px #000000;

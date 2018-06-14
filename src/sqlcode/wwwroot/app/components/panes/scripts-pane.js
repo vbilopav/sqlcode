@@ -22,32 +22,50 @@ define([
                 </div>
                 
                 <div class="panel-commands">
-                    <button id="new" title="Create new script (Ctrl+N)" class="control">new</button>
-                    <button id="filter" title="Filter scripts (Ctrl+?)" class="control">filter</button>
+                    <button id="newBtn" title="Create new script (Ctrl+N)" class="control">new</button>
+                    <button id="filterBtn" title="Filter scripts (Ctrl+?)" class="control">filter</button>
+                    <input id="inputFilter" type="text" autocorrect="off" autocapitalize="off" spellcheck="false">
                 </div>
                 
             </div>
             <div id="shadow" class="panel-shadow-line" style="display: none;"></div>
             <div id="content" class="panel-content noselect">
-            </div>`,
+            </div>`;
 
-        dirEnum = Object.freeze({right: "&#11208;",  down: "&#11206;"}),
+    const
+        dirEnum = Object.freeze({right: "&#11208;",  down: "&#11206;"});
 
+    const
         item = (title, dir="right") => String.html`
             <div class="panel-item">
                 <span class="expand" data-dir="${dir}">${dirEnum[dir]}</span>
                 <span class="text">
                     <span class="icon icon-doc-text"></span>
                     <span class="panel-item-title editable"
-                    contenteditable="false"
-                    autocorrect="off"
-                    autocapitalize="off"
-                    spellcheck="false"
-                    autocomplete="off"
-                    title="${title}">${title}</span>
+                        contenteditable="false"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        spellcheck="false"
+                        autocomplete="off"
+                        title="${title}">${title}</span>
                 </span>
-            </div>`.toElement(),
+            </div>`.toElement();
 
+    const 
+        scriptNamesRepo = {
+            _scripts: {},
+            add: (id, title, unnamed=true) => 
+                scriptNamesRepo._scripts[id] = {title: title, unnamed: unnamed},
+            getUnnamed: () => 
+                Object.values(scriptNamesRepo._scripts).filter(obj => obj.unnamed).map(obj => obj.title),
+            set: (id, title) => {
+                scriptNamesRepo._scripts[id].title = title;
+                scriptNamesRepo._scripts[id].unnamed = false;
+            },
+            total: () => Object.keys(scriptNamesRepo._scripts).length
+        };
+
+    const
         activateByElement = element => {
             element.focus();
             activate(element, true);
@@ -57,8 +75,9 @@ define([
                 title: element.data("title"),
                 dontFocus: true
             });
-        },
+        };
 
+    const
         createItem = (id, title) => {
             let element = item(title).data("id", id).data("title", title).addClass("item-" + id).attr("tabindex", id);
             
@@ -86,8 +105,12 @@ define([
                             new InlineEditor({
                                 element: args.element.find(".panel-item-title"), 
                                 getInvalidNamesCallback: () => service.getNames(scriptsType),
-                                acceptArgs: {id: element.data("id")},
-                                onaccept: (newContent, args) => _app.pub("scripts/title/update", newContent, args.id, scriptsType)
+                                acceptArgs: {id: element.data("id"), element: element},
+                                onaccept: (newContent, args) => {
+                                    _app.pub("scripts/title/update", newContent, args.id, scriptsType);
+                                    scriptNamesRepo.set(args.id, newContent);
+                                    args.element.title("title", title);
+                                }
                             })
                     },
                     {splitter: true},
@@ -131,16 +154,18 @@ define([
             .on("dblclick", () => menu.triggerById("rename", {element: element}));
             
             return element;
-        },
+        };
 
+    const
         updateShadowLine = () => {
             if (model.content.overflownY()) {
                 model.shadow.css("display", "");
             } else {
                 model.shadow.css("display", "none");
             }
-        },
+        };
 
+    const
         activate = (item, state) => {
             if (!item.length) {
                 return;
@@ -151,29 +176,89 @@ define([
             }
         };
 
-    const 
-        scripts = [],
-        scriptItem = (id, title, unnamed=true) => {
-            return {id: id, title: title, unnamed: unnamed}
+    var
+        filterTimeout;
+
+    const
+        activeFilter = state => {
+            if (state === true) {
+                model.filterBtn.css("border-style", "inset").data("state", state);
+                model.inputFilter.visible(true).setFocus().select();
+                executeFilter();
+                model.inputFilter.on("keyup", () => {
+                    if (filterTimeout) {
+                        clearTimeout(filterTimeout);
+                    } 
+                    filterTimeout = setTimeout(executeFilter, 250);
+                });
+            } else if (state === false) {
+                model.filterBtn.css("border-style", "").data("state", state);
+                model.inputFilter.visible(false);
+                clearFilter();
+                model.inputFilter.off("keyup");
+            } else if (state === undefined) {
+                return model.filterBtn.data("state");
+            }
         };
+
+    const
+        toggleFilter = () => activeFilter(!model.filterBtn.data("state"));
+
+    const
+        executeFilter = () => {
+            let val = model.inputFilter.value.trim().toLowerCase();
+            if (val === "") {
+                clearFilter();
+                return;
+            }
+            for(let item of model.content.findAll(".panel-item")) {
+                let titleElement = item.find(".panel-item-title"),
+                    title = item.data("title"),
+                    valIndex = title.toLowerCase().indexOf(val);
+                
+                if (valIndex !== -1) {
+                    item.show();
+                    let segment = title.substring(valIndex, valIndex + val.length),
+                        newTitle = title.substring(0, valIndex) + 
+                            "<span class='selected'>" + 
+                            segment + 
+                            "</span>" + 
+                            title.substring(valIndex + val.length, title.length);
+                    titleElement.html(newTitle);
+                } else {
+                    item.hide();
+                    titleElement.html(item.data("title"));
+                }
+            }
+        };
+
+    const
+        clearFilter = () => {
+            for(let item of model.content.findAll(".panel-item")) {
+                item.show();
+                item.find(".panel-item-title").html(item.data("title"));
+            }
+        }
 
     return container => {
 
         model = new Model().bind(container.html(paneTemplate));
-        model.new.on("click", e => {
+        model.newBtn.on("click", e => {
             setTimeout(() => {
                 let getName = (n => n ? `New script ${n+1}` : "New script"), 
-                unnamed = scripts.filter(s => s.unnamed),
-                suggestion = getName(unnamed.length);
-                _app.pub("scripts/create", scripts.length + 1, suggestion, scriptsType);
+                    unnamed = scriptNamesRepo.getUnnamed(),
+                    suggestion = getName(unnamed.length);
+                _app.pub("scripts/create", scriptNamesRepo.total() + 1, suggestion, scriptsType);
             }, 0);
         });
+        activeFilter(false); // initial state for filter ctrl
+        model.filterBtn.on("click", () => toggleFilter());
         
         _app
             .sub("editor/created/" + scriptsType, data => {
                 let item = createItem(data.editor.id, data.title);
                 model.content.append(item);
-                scripts.push(scriptItem(data.editor.id, data.title));
+                scriptNamesRepo.add(data.editor.id, data.title);
                 updateShadowLine();
                 model.info = "created...";
                 setTimeout(() => {
@@ -181,6 +266,7 @@ define([
                     setTimeout(() => model.info = "", 5000);
                 }, 1000);
             })
+
             .sub("editor/activated/" + scriptsType, data => 
                 activate(model.content.find(".item-" + data.id), data.state))
 

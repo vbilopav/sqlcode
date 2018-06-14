@@ -45,11 +45,12 @@ define([
         resizeTimeout = setTimeout(updateSizeAndFocusOnActiveEditor, 50);
     });
 
-    const dirtyStates = {
-        _states: {},
-        set: (instance, state) => dirtyStates._states[instance.id + "-" + instance.type] = state,
-        get: instance => dirtyStates._states[instance.id + "-" + instance.type]
-    };
+    const 
+        dirtyStates = {
+            _states: {},
+            set: (instance, state) => dirtyStates._states[instance.id + "-" + instance.type] = state,
+            get: instance => dirtyStates._states[instance.id + "-" + instance.type]
+        };
 
     class Editor {
         constructor({
@@ -67,8 +68,8 @@ define([
             this._monaco = monaco.editor.create(this.element, {
                 value: "",
                 language: this.type,
-                theme: "vs-dark",
-                renderWhitespace: "all",
+                theme: "vs-dark", // todo options
+                renderWhitespace: "all", // todo options
                 automaticLayout: false
             });
             updateSize(this._monaco, container);

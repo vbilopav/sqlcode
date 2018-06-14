@@ -4,7 +4,7 @@
     <script type="text/javascript" id="_app">
         window._app = {dev: true, version: "", appUrl: "app", cssUrl: "css", libsUrl: "libs", sysPath: "_sys"};
     </script>
-    <script>
+    <script type="text/javascript">
         var require = {baseUrl: window._app.appUrl}; 
         if (window._app && window._app.version) {
             require.urlArgs = "v=" + window._app.version;
@@ -18,7 +18,7 @@
 
     <title></title>
 
-    <script id="_css">
+    <script id="_css" type="text/javascript">
         (function() {
             var u = (window._app.cssUrl ? window._app.cssUrl : "") + "/", 
                 q = window._app.version ? "?" + require.urlArgs : "";

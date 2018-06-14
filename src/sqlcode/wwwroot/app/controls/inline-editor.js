@@ -16,7 +16,8 @@ define([], () => {
                 content = old,
                 isvalid = true,
                 invalid = () => {
-                    element.addClass("invalid").attr("title", "This is not valid value. Press ESC to exit editing and to revert to original.");
+                    element.addClass("invalid").attr("title", 
+                        "This is not valid value! Enter valid text or press ESC to exit editing and to revert to original value.");
                     isvalid = false;
                 },
                 valid = () => {
@@ -36,7 +37,7 @@ define([], () => {
                     }
                     element.removeClass("invalid").attr("contenteditable", "false").html(content);
                     if (content !== old) {
-                        onaccept(content, acceptArgs)
+                        onaccept(content.stripHtml(), acceptArgs)
                     }
                 }
 

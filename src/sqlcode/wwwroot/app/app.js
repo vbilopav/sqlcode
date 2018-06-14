@@ -39,7 +39,6 @@ define([
     });
 
     return () => setTimeout(() => {
-        document.body.find("#loading-screen-script").remove();
         document.body.find("#loading-screen").remove();
         app.show();
     }, 0);
