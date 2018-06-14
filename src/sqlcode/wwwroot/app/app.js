@@ -29,10 +29,7 @@ define([
 
     document.title = "sql code";
     new Pubsub(_app);
-
-    Storage.setNamespace("sqlcode").setStorage(sessionStorage).transferFrom(localStorage);
-    window.on("unload",  e => Storage.transferTo(localStorage));
-
+    Storage.setNamespace("sqlcode");
     sidebar(model.sidebar, model.splitter);
     workbench(model.workbench);
     toolbar(model.toolbar);

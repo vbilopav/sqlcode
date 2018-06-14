@@ -1,20 +1,44 @@
 define([], () => {
 
+    class ProtectedLocalStorage {
+        constructor() {
+            this._dict = {};
+            this._storage = localStorage;
+        }
+        getItem(ns) {
+            let value = this._dict[ns];
+            if (value === undefined) {
+                value = this._storage.getItem(ns)
+                if (value === null) {
+                    return null;
+                }
+                this._dict[ns] = value;
+            }
+            return value;
+        }
+        setItem(ns, value) {
+            this._storage.setItem(ns, value);
+            this._dict[ns] = value;
+        }
+        removeItem(ns) {
+            this._storage.removeItem(ns);
+            delete this._dict[ns];
+        }
+    }
+
     const 
         names = [];
-    
     var
-        defaultStorage,
         defaultNs;
 
     class Storage {
         constructor({
-            storage=defaultStorage,
+            storage=new ProtectedLocalStorage(),
             namespace="", 
             model=(() => {throw "model is required!"})(), 
             conversion={}
         }) {
-            this._storage = Storage._check(storage);
+            this._storage = storage;
             if (!defaultNs) {
                 throw new Exception("default namespace cannot be empty or null");
             }
@@ -29,11 +53,6 @@ define([], () => {
             }
         }
 
-        static setStorage(storage) {
-            defaultStorage = Storage._check(storage);
-            return Storage;
-        }
-
         static setNamespace(ns) {
             if (!ns) {
                 ns = "";
@@ -42,41 +61,6 @@ define([], () => {
             }
             defaultNs = ns;
             return Storage;
-        }
-
-        static transferTo(storage) {
-            Storage._check(storage);
-            Storage._transfer(defaultStorage, storage);
-            return Storage;
-        }
-
-        static transferFrom(storage) {
-            Storage._check(storage);
-            Storage._transfer(storage, defaultStorage);
-            return Storage;
-        }
-
-        static _transfer(source, target) {
-            for (let i=0, l=target.length; i<l; i++) {
-                let key = target.key(i);
-                if (!key) {
-                    continue;
-                }
-                if (key.startsWith(defaultNs)) {
-                    target.removeItem(key);
-                }
-            }
-            for (let i=0, l=source.length; i<l; i++) {
-                let key = source.key(i)
-                target.setItem(key, source.getItem(key));
-            }
-        }
-
-        static _check(storage) {
-            if (!storage.getItem || !storage.setItem || !storage.removeItem) {
-                throw new Error("missing property on storage object")
-            }
-            return storage;
         }
 
         create(name, defualtValue) {
