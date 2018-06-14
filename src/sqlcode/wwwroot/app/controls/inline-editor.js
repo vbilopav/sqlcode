@@ -6,18 +6,21 @@ define([], () => {
     return class {
         constructor ({
             element, 
-            getInvalidNamesCallback=()=>[]
+            getInvalidNamesCallback=()=>[],
+            acceptArgs,
+            onaccept=(()=>{})
         }) {
             let old = clean(element.html()), 
+                oldTitle = element.attr("title"),
                 prev = old,
                 content = old,
                 isvalid = true,
                 invalid = () => {
-                    element.addClass("invalid");
+                    element.addClass("invalid").attr("title", "This is not valid value. Press ESC to exit editing and to revert to original.");
                     isvalid = false;
                 },
                 valid = () => {
-                    element.removeClass("invalid");
+                    element.removeClass("invalid").attr("title", oldTitle);
                     isvalid = true;
                 },
                 reject = () => {
@@ -33,7 +36,7 @@ define([], () => {
                     }
                     element.removeClass("invalid").attr("contenteditable", "false").html(content);
                     if (content !== old) {
-                        console.log(content);
+                        onaccept(content, acceptArgs)
                     }
                 }
 
@@ -62,7 +65,7 @@ define([], () => {
                     return;
                 }
             })
-            .on("input", e => {
+            .on("keyup", e => {
                 if (e.keyCode === 27) {
                     reject();
                     return;

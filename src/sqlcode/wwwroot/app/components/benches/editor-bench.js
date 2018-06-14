@@ -75,7 +75,9 @@ define([
                     {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => 
                         new InlineEditor({
                             element: args.title, 
-                            getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type"))
+                            getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type")),
+                            acceptArgs: {id: tab.data("script-id"), type: tab.data("script-type")},
+                            onaccept: (newContent, args) => _app.pub("editor/title/update", newContent, args.id, args.type)
                         })
                     },
                     {splitter: true},
@@ -176,7 +178,9 @@ define([
 
     const
         mapEventToPubSub = (event, editor) => {
-            return {tab: event.tab, count: event.count, editor: editor, state: event.state, id: (editor ? editor.id : null), type: (editor ? editor.type : null)}
+            return {
+                tab: event.tab, count: event.count, editor: editor, state: event.state, id: (editor ? editor.id : null), type: (editor ? editor.type : null)
+            }
         },
         createActiveNewTab = (id, title, type, existing=false) => {
             let 
@@ -294,7 +298,9 @@ define([
                 id: id, type: type, state: true, tab: sticky
             });
         })
-        .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"));
+        .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"))
+        .sub("scripts/title/update", (title, id, type) => 
+            tabbed.tabs.find("." + type + "-" + id).find(".title").attr("title", title).html(title));
 
         // inital state... load previous scripts here
         editorNoTabs();

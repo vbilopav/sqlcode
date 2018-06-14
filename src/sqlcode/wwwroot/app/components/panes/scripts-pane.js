@@ -13,7 +13,7 @@ define([
     var model;
 
     const 
-        type = "pgsql",
+        scriptsType = "pgsql",
         paneTemplate = String.html`
             <div class="panel-header noselect">
                 <div class="panel-title">
@@ -53,14 +53,10 @@ define([
             activate(element, true);
             _app.pub("scripts/selected", {
                 id: element.data("id"), 
-                type: type, 
+                type: scriptsType, 
                 title: element.data("title"),
                 dontFocus: true
             });
-        },
-
-        updateItemTitle = (element, title) => {
-            element.data("title", title).find(".text").attr("title", title).html(title);
         },
 
         createItem = (id, title) => {
@@ -71,9 +67,9 @@ define([
                     if (element.hasClass("active")) {
                         return;
                     }
-                    _app.pub("scripts/selected", {id: id, type: type, title: title, dontFocus: true});
+                    _app.pub("scripts/selected", {id: id, type: scriptsType, title: title, dontFocus: true});
                 })
-                .on("dblclick", () => _app.pub("scripts/keep-open", id, type));
+                .on("dblclick", () => _app.pub("scripts/keep-open", id, scriptsType));
             
             element.find(".expand").on("click", e => {
                 let dir = e.target.data("dir") === "right" ? "down" : "right";
@@ -89,7 +85,9 @@ define([
                     {id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: {element: element}, action: args => 
                             new InlineEditor({
                                 element: args.element.find(".panel-item-title"), 
-                                getInvalidNamesCallback: () => service.getNames(type)
+                                getInvalidNamesCallback: () => service.getNames(scriptsType),
+                                acceptArgs: {id: element.data("id")},
+                                onaccept: (newContent, args) => _app.pub("scripts/title/update", newContent, args.id, scriptsType)
                             })
                     },
                     {splitter: true},
@@ -167,12 +165,12 @@ define([
                 let getName = (n => n ? `New script ${n+1}` : "New script"), 
                 unnamed = scripts.filter(s => s.unnamed),
                 suggestion = getName(unnamed.length);
-                _app.pub("scripts/create", scripts.length + 1, suggestion, type);
+                _app.pub("scripts/create", scripts.length + 1, suggestion, scriptsType);
             }, 0);
         });
         
         _app
-            .sub("editor/created/" + type, data => {
+            .sub("editor/created/" + scriptsType, data => {
                 let item = createItem(data.editor.id, data.title);
                 model.content.append(item);
                 scripts.push(scriptItem(data.editor.id, data.title));
@@ -183,8 +181,15 @@ define([
                     setTimeout(() => model.info = "", 5000);
                 }, 1000);
             })
-            .sub("editor/activated/" + type, data => 
-                activate(model.content.find(".item-" + data.id), data.state));
+            .sub("editor/activated/" + scriptsType, data => 
+                activate(model.content.find(".item-" + data.id), data.state))
+
+            .sub("editor/title/update", (title, id, type) => {
+                if (scriptsType !== type) {
+                    return;
+                }
+                model.content.find(".item-" + id).data("title", title).find(".panel-item-title").attr("title", title).html(title);
+            });
 
         window
             .on("resize", () => {
