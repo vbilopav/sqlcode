@@ -60,7 +60,7 @@ button:focus, input:focus {
   outline: none !important;
 }
 div:focus {
-  outline: #90acb693 1px dashed !important;
+  outline: #90acb693 1px dotted !important;
 }
 button:hover {
   color: white !important;

@@ -72,8 +72,6 @@
 .results-tab {
     font-size: 10px;
 }
-/*
-.editor .tab-content {
-    padding: 5px;
+.editor-focus {
+    outline: #90acb693 1px dotted;
 }
-*/

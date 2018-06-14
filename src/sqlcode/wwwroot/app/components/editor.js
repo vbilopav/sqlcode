@@ -89,6 +89,8 @@ define([
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
+            this._monaco.onDidFocusEditor(() => this.element.addClass("editor-focus"));
+            this._monaco.onDidBlurEditor(() => this.element.removeClass("editor-focus"));
         }
 
         save() {

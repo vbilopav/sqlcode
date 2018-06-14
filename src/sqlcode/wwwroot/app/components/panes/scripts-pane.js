@@ -109,7 +109,10 @@ define([
                                 onaccept: (newContent, args) => {
                                     _app.pub("scripts/title/update", newContent, args.id, scriptsType);
                                     scriptNamesRepo.set(args.id, newContent);
-                                    args.element.title("title", title);
+                                    args.element.data("title", newContent);
+                                    if (model.filterBtn.data("state")) {
+                                        executeFilter();
+                                    }
                                 }
                             })
                     },
@@ -235,8 +238,7 @@ define([
     const
         clearFilter = () => {
             for(let item of model.content.findAll(".panel-item")) {
-                item.show();
-                item.find(".panel-item-title").html(item.data("title"));
+                item.find(".panel-item-title").html(item.data("title")).show();
             }
         }
 
