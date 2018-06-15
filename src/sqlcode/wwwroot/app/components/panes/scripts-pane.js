@@ -238,7 +238,7 @@ define([
     const
         clearFilter = () => {
             for(let item of model.content.findAll(".panel-item")) {
-                item.find(".panel-item-title").html(item.data("title")).show();
+                item.show().find(".panel-item-title").html(item.data("title"));
             }
         }
 
