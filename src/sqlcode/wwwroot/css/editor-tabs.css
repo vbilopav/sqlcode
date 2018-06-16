@@ -51,16 +51,14 @@
     margin-bottom: 5px;
     padding-top: 0px;
     padding-bottom: 0px;
-
 }
-
 .editor-tab.sticky .title {
     font-style: italic;
 }
 .editor-tab.tab-active {
     background-color: #1E1E1E;
     color: #fff;
-    z-index: 10;
+    margin: 1px;
 }
 .editor-tab.tab-inactive .close {
     visibility: hidden;

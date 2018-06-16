@@ -40,11 +40,9 @@
 }
 #workbench > #splitter {
     grid-row: 2;
-    /*position: relative;*/
 }
 #output {
     grid-row: 3;
-    /*position: relative;*/
 }
 .tab-content {
     width: 100%;

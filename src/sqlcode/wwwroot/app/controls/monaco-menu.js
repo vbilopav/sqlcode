@@ -2,7 +2,7 @@ define([], () => {
 
     const 
         template = id => String.html`
-            <div id="${id}" class="vs-dark" style="display: none; position: fixed;">
+            <div id="${id}" class="vs-dark" style="display: none; position: absolute;">
                 <div class="context-view monaco-menu-container" aria-hidden="false">
                     <div class="monaco-menu">
                         <div class="monaco-action-bar animated vertical">
@@ -83,6 +83,18 @@ define([], () => {
                     container.append(item.element);
                 }
                 element.css("top", e.y + "px").css("left", e.x + "px").show();
+                let rect = container.getBoundingClientRect(),
+                    winWidth = window.innerWidth,
+                    winHeight = window.innerHeight,
+                    right = e.x + rect.width,
+                    bottom = rect.top + rect.height;
+                
+                if (right >= winWidth) {
+                    element.css("left", (winWidth - rect.width - 1) + "px");
+                }
+                if (bottom >= winHeight) {
+                    element.css("top", (e.y - rect.height - 1) + "px");
+                }
                 e.preventDefault();
             });
 

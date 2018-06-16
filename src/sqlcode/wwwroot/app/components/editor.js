@@ -61,7 +61,7 @@ define([
             existing
         }) {
             this.element = String.html`<div class="wrap" style="position: fixed;"></div>`.toElement();
-            container.data(_editorId, this).append(this.element);
+            this.container = container.data(_editorId, this).append(this.element);
             this.id = id;
             this.type = type;
             this.title = title;
@@ -89,8 +89,8 @@ define([
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
-            this._monaco.onDidFocusEditor(() => this.element.addClass("editor-focus"));
-            this._monaco.onDidBlurEditor(() => this.element.removeClass("editor-focus"));
+            this._monaco.onDidFocusEditor(() => this.container.addClass("editor-focus"));
+            this._monaco.onDidBlurEditor(() => this.container.removeClass("editor-focus"));
         }
 
         save() {
