@@ -69,6 +69,7 @@
     margin-left: 3px;
     margin-top: 2px;
 }
+/*
 .panel-item {
     font-size: 12px;
     padding-left: 4px;
@@ -101,7 +102,7 @@
 .panel-item:hover {
     background-color: rgba(30, 30, 30, 0.425);
 }
-
+*/
 .panel-content::-webkit-scrollbar {
     width: 6px;
 }
