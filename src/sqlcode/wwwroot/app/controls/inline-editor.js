@@ -1,14 +1,15 @@
 define([], () => {
 
     let 
-        clean = s => s.replace("&nbsp;", "").replace("\\n", "").trim();
+        clean = s => s.replace(/&nbsp;/g, "").replace(/\\n/g, "").trim();
 
     return class {
         constructor ({
             element, 
             getInvalidNamesCallback=()=>[],
             acceptArgs,
-            onaccept=(()=>{})
+            onaccept=(()=>{}),
+            max=100
         }) {
             let old = clean(element.html()), 
                 oldTitle = element.attr("title"),
@@ -24,9 +25,7 @@ define([], () => {
                     element.removeClass("invalid").attr("title", oldTitle);
                     isvalid = true;
                 },
-                reject = () => {
-                    element.html(old).removeClass("invalid").attr("contenteditable", "false");
-                },
+                reject = () => element.html(old).removeClass("invalid").attr("contenteditable", "false"),
                 accept = () => {
                     if (!isvalid) {
                         element.focus();
@@ -39,6 +38,24 @@ define([], () => {
                     if (content !== old) {
                         onaccept(content.stripHtml(), acceptArgs)
                     }
+                },
+                validate = () => {
+                    content = clean(element.html());
+                    if (prev === content) {
+                        valid();
+                        return;
+                    }
+                    if (!content.length) {
+                        invalid();
+                        return;
+                    }
+                    let names = getInvalidNamesCallback();
+                    if (content !== old && names.indexOf(content) !== -1) {
+                        invalid();
+                        return;
+                    }
+                    valid();
+                    prev = content;
                 }
 
             element
@@ -61,9 +78,24 @@ define([], () => {
             })
             .on("keydown", e => {
                 if (e.keyCode === 13) {
-                    accept();
+                    validate();
+                    if (valid) {
+                        accept();
+                    }
                     e.preventDefault();
                     return;
+                }
+                if (content.length >= max) {
+                    if (
+                        (e.keyCode > 47 && e.keyCode < 58) ||
+                        e.keyCode == 32 || e.keyCode == 13 ||
+                        (e.keyCode > 64 && e.keyCode < 91) ||
+                        (e.keyCode > 95 && e.keyCode < 112) ||
+                        (e.keyCode > 185 && e.keyCode < 193) ||
+                        (e.keyCode > 218 && e.keyCode < 223)
+                        ) {
+                            e.preventDefault();
+                    }
                 }
             })
             .on("keyup", e => {
@@ -71,22 +103,15 @@ define([], () => {
                     reject();
                     return;
                 }
-                content = clean(element.html());
-                if (prev === content) {
-                    valid();
-                    return;
+                validate();
+            })
+            .on("paste", e => {
+                let pasted = clean((e.clipboardData || window.clipboardData).getData('text'));
+                if (pasted.length >= max) {
+                    pasted = pasted.substring(0, max);
                 }
-                if (!content.length) {
-                    invalid();
-                    return;
-                }
-                let names = getInvalidNamesCallback();
-                if (content !== old && names.indexOf(content) !== -1) {
-                    invalid();
-                    return;
-                }
-                valid();
-                prev = content;
+                element.html(pasted);
+                e.preventDefault();
             })
             .focus();
         }

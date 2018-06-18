@@ -3,13 +3,11 @@
 *::after {
   box-sizing: border-box;
 }
-
 html {
   font-family: "Consolas", 'Courier New', "monospace";
   font-size: 12px;
   line-height: 1.15;
 }
-
 body {
   margin: 0;
   font-weight: 400;
@@ -20,18 +18,15 @@ body {
   font-family: sans-serif;
   font-size: 14px;
 }
-
 #loading-screen {
   margin-top: 20%; 
   font-size: 10em;
 }
-
 .align-center {
   margin-top: auto;
   margin-bottom: auto;
   text-align: center;
 }
-
 .noselect {
   -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -39,23 +34,19 @@ body {
         -ms-user-select: none;
             user-select: none;
 }
-
 .control {
   color: #ADADAD;
   background-color: #333333;
 }
-
 .btn {
   cursor: pointer;
 }
 button {
   cursor: pointer;
 }
-
 button:active {
   border-style: inset !important;
 }
-
 button:focus, input:focus {
   outline: none !important;
 }
@@ -83,7 +74,6 @@ button:hover {
   background-color: #252526;
   border: 1px #333333 dashed;
 }
-
 .tabs {
   grid-row: 1;
   display: inline-flex;

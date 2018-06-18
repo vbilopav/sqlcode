@@ -16,11 +16,6 @@
     position: relative;
     padding: 1px;
 }
-.panel-item {
-    white-space: nowrap;
-    overflow-x: hidden;
-    text-overflow: ellipsis;
-}
 .panel-title {
     padding-left: 6px;
     padding-top: 4px;
@@ -69,40 +64,6 @@
     margin-left: 3px;
     margin-top: 2px;
 }
-/*
-.panel-item {
-    font-size: 12px;
-    padding-left: 4px;
-    padding-right: 4px;
-}
-.panel-item > .expand {
-    cursor: pointer;
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-.panel-item > .text {
-    cursor: pointer;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    width: 100%;
-    display: inline-flex;
-    width: calc(100% - 14px);
-}
-.panel-item-title {
-    padding: 2px;
-    width: 100%;
-}
-.panel-item.active {
-    background-color: #1E1E1E;
-    color: #fff;
-}
-.panel-item.active > .text {
-    cursor: initial;
-}
-.panel-item:hover {
-    background-color: rgba(30, 30, 30, 0.425);
-}
-*/
 .panel-content::-webkit-scrollbar {
     width: 6px;
 }

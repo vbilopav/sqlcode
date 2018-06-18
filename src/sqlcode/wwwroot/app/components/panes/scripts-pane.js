@@ -38,17 +38,20 @@ define([
     const
         item = (title, dir="right") => String.html`
             <div class="panel-item">
-                <span class="expand" data-dir="${dir}">${dirEnum[dir]}</span>
-                <span class="text">
+                <div class="expand" data-dir="${dir}" title="${dir === "right" ? "expand" : "collapse"}">
+                    ${dirEnum[dir]}
+                </div>
+                <div class="item">
                     <span class="icon icon-doc-text"></span>
-                    <span class="panel-item-title editable"
-                        contenteditable="false"
-                        autocorrect="off"
-                        autocapitalize="off"
-                        spellcheck="false"
-                        autocomplete="off"
-                        title="${title}">${title}</span>
-                </span>
+                    <span class="title editable"
+                        contenteditable="false" autocorrect="off" 
+                        autocapitalize="off" spellcheck="false" autocomplete="off"
+                        title="${title}">${title}
+                    </span>
+                </div>
+                <div class="details" ${dir === "right" ? "style='display: none'" : ""}>
+                    empty
+                </div>
             </div>`.toElement();
 
     const 
@@ -78,21 +81,37 @@ define([
         };
 
     const
+        expand = (element, dir) => {
+            element
+                .data("dir", dir)
+                .html(dirEnum[dir])
+                .attr("title", (dir === "right" ? "expand" : "collapse"));
+            element.parentElement.find(".details").show(dir !== "right");
+        };
+
+    const
         createItem = (id, title) => {
-            let element = item(title).data("id", id).data("title", title).addClass("item-" + id).attr("tabindex", id);
+            let element = item(title)
+                .data("id", id)
+                .data("title", title)
+                .addClass("item-" + id)
+                .attr("tabindex", id);
             
-            element.find(".text")
+            element.find(".item")
                 .on("click", () => {
                     if (element.hasClass("active")) {
                         return;
                     }
                     _app.pub("scripts/selected", {id: id, type: scriptsType, title: title, dontFocus: true});
                 })
-                .on("dblclick", () => _app.pub("scripts/keep-open", id, scriptsType));
+                .on("dblclick", () => {
+                    _app.pub("scripts/keep-open", id, scriptsType);
+                    menu.triggerById("rename", {element: element});
+                });
             
             element.find(".expand").on("click", e => {
                 let dir = e.target.data("dir") === "right" ? "down" : "right";
-                e.target.data("dir", dir).html(dirEnum[dir]);
+                expand(e.target, dir);
             });
 
             let menu = new Menu({
@@ -103,7 +122,7 @@ define([
                     {splitter: true},
                     {id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: {element: element}, action: args => 
                             new InlineEditor({
-                                element: args.element.find(".panel-item-title"), 
+                                element: args.element.find(".title"), 
                                 getInvalidNamesCallback: () => service.getNames(scriptsType),
                                 acceptArgs: {id: element.data("id"), element: element},
                                 onaccept: (newContent, args) => {
@@ -129,7 +148,7 @@ define([
             });
 
             element.on("keydown", e => {
-                if (InlineEditor.editing(element.find(".panel-item-title"))) {
+                if (InlineEditor.editing(element.find(".title"))) {
                     return;
                 }
                 if (e.key === "ArrowUp") {
@@ -143,18 +162,19 @@ define([
                 } else if (e.key === "ArrowRight") {
                     
                     // expand ... todo
+                    expand(element.find(".expand"), "down");
 
                 } else if (e.key === "ArrowLeft") {
                     
                     // collapse ... todo
+                    expand(element.find(".expand"), "right");
 
                 } else if (e.key === "Tab" || e.key === "Enter") {
                     _app.pub("monaco/active-editor/focus");
                 } else if (e.key === "F2") {
                     menu.triggerById("rename", {element: element});
                 }
-            })
-            .on("dblclick", () => menu.triggerById("rename", {element: element}));
+            });
             
             return element;
         };
@@ -215,7 +235,7 @@ define([
                 return;
             }
             for(let item of model.content.findAll(".panel-item")) {
-                let titleElement = item.find(".panel-item-title"),
+                let titleElement = item.find(".title"),
                     title = item.data("title"),
                     valIndex = title.toLowerCase().indexOf(val);
                 
@@ -238,7 +258,7 @@ define([
     const
         clearFilter = () => {
             for(let item of model.content.findAll(".panel-item")) {
-                item.show().find(".panel-item-title").html(item.data("title"));
+                item.show().find(".title").html(item.data("title"));
             }
         }
 
@@ -276,7 +296,11 @@ define([
                 if (scriptsType !== type) {
                     return;
                 }
-                model.content.find(".item-" + id).data("title", title).find(".panel-item-title").attr("title", title).html(title);
+                model.content.find(".item-" + id)
+                    .data("title", title)
+                    .find(".title")
+                    .attr("title", title)
+                    .html(title);
             });
 
         window

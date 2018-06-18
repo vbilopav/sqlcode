@@ -1,24 +1,22 @@
 .panel-item {
     font-size: 12px;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding: 4px;
+    grid-template-columns: 10px auto;
+    grid-template-rows: auto auto;
+    display: grid;
 }
-.panel-item > .expand {
-    cursor: pointer;
-    padding-top: 4px;
-    padding-bottom: 4px;
+.panel-item .expand {
+    grid-column: 1;
+    grid-row: 1;
 }
-.panel-item > .text {
-    cursor: pointer;
-    padding-top: 4px;
-    padding-bottom: 4px;
+.panel-item .item {
     width: 100%;
-    display: inline-flex;
-    width: calc(100% - 14px);
+    cursor: pointer;
+    grid-column: 2;
+    grid-row: 1;
 }
-.panel-item-title {
-    padding: 2px;
-    width: 100%;
+.panel-item .details {
+    grid-row: 2;
 }
 .panel-item.active {
     background-color: #1E1E1E;
@@ -29,4 +27,22 @@
 }
 .panel-item:hover {
     background-color: rgba(30, 30, 30, 0.425);
+}
+.panel-item .expand:hover {
+    color: #fff;
+}
+.panel-item .item .title {
+    text-overflow: ellipsis !important; /*?*/
+}
+.panel-item .item .title[contenteditable=true] {
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.panel-item .details {
+    font-size: smaller;
+    color: #8e8e8e;
+    font-style: italic;
+    padding-left: 14px;
 }
