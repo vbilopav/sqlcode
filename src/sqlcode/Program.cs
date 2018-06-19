@@ -21,9 +21,8 @@ namespace sqlcode
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => 
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
     }
 
     public class Startup
@@ -39,6 +38,7 @@ namespace sqlcode
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddTransient()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,10 +46,12 @@ namespace sqlcode
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage().UseMvc().UseDefaultFiles().UseStaticFiles();
             }
-            
-            app.UseMvc().UseDefaultFiles().UseStaticFiles();
+            else
+            {
+                throw new NotImplementedException("Not ready for production yet!");
+            }
         }
     }
 
