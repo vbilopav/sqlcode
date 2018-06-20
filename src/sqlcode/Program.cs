@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -12,13 +11,15 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.IO;
 
+       
 namespace sqlcode
 {
     public class Program
     {
         public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => HostBuilder.CreateDefaultBuilder(args).UseStartup<Startup>();       
     }
 
     public class AppConfig
