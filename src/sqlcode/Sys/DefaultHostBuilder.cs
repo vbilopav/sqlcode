@@ -4,33 +4,30 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HostFiltering;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace sqlcode
+namespace sqlcode.Sys
 {
-    internal class HostFilteringStartupFilter : IStartupFilter
+    public static class DefaultHostBuilder
     {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        internal class HostFilteringStartupFilter : IStartupFilter
         {
-            return app =>
+            public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
             {
-                app.UseHostFiltering();
-                next(app);
-            };
+                return app =>
+                {
+                    app.UseHostFiltering();
+                    next(app);
+                };
+            }
         }
-    }
 
-    public static class HostBuilder
-    {
         public static IWebHostBuilder CreateDefaultBuilder(string[] args)
         {
-            var builder = new WebHostBuilder();
-
+            var builder = new WebHostBuilder();                
             if (string.IsNullOrEmpty(builder.GetSetting(WebHostDefaults.ContentRootKey)))
             {
                 builder.UseContentRoot(Directory.GetCurrentDirectory());
@@ -42,15 +39,16 @@ namespace sqlcode
 
             builder
                 .UseKestrel((builderContext, options) =>
-            {
-                options.Configure(builderContext.Configuration.GetSection("Kestrel"));
-            })
+                {
+                    options.Configure(builderContext.Configuration.GetSection("Kestrel"));
+                })
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
 
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                    config
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
                     if (env.IsDevelopment())
                     {
@@ -93,7 +91,6 @@ namespace sqlcode
 
                     services.AddTransient<IStartupFilter, HostFilteringStartupFilter>();
                 })
-                //.UseIISIntegration()
                 .UseDefaultServiceProvider((context, options) =>
                 {
                     options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
