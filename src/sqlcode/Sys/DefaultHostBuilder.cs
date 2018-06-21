@@ -11,6 +11,10 @@ using Microsoft.Extensions.Options;
 
 namespace sqlcode.Sys
 {
+    //
+    // Copy https://github.com/aspnet/MetaPackages/tree/dev/src/Microsoft.AspNetCore
+    //
+
     public static class DefaultHostBuilder
     {
         internal class HostFilteringStartupFilter : IStartupFilter
