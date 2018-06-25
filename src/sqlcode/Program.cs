@@ -14,8 +14,8 @@ namespace sqlcode
 
     public class Program
     {
-        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();       
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+        public static void Main(string[] args) => 
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();               
     }
 
     public class AppConfig
@@ -43,13 +43,12 @@ namespace sqlcode
         {
             this._services = services;
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .Services
                 .AddRouting(options => options.LowercaseUrls = true)
                 .AddAutoMapper(typeof(ScriptDocumentModel))
                 .AddLocalDatabase(_appConfig)
-                .AddScriptingService();
+                .AddScriptingService()
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -61,15 +60,22 @@ namespace sqlcode
                     .UseMvc()
                     .UseDefaultFiles()
                     .UseStaticFiles();
+
+                if (_appConfig.DiagnosticPath != null)
+                {
+                    app.UseDiagnosticPage(
+                        env, 
+                        _services, 
+                        _config, 
+                        _appConfig.DiagnosticPath, 
+                        ("AppConfig", _appConfig as object), 
+                        includeSystemServices: false
+                   );
+                }
             }
             else
             {
                 throw new NotImplementedException("Not ready for production yet!");
-            }
-
-            if (_appConfig.DiagnosticPath != null)
-            {
-                app.UseDiagnosticPage(env, this._services, _config, _appConfig.DiagnosticPath, ("AppConfig", _appConfig as object));
             }
         }
     }

@@ -20,19 +20,30 @@ namespace sqlcode.LocalStorage
             string logType="Information"
         )
         {
-            var logLevelValue = (byte?)typeof(Logger).GetField(logLevel).GetValue(null);
-            LogLevel? logTypeValue = null;
+            byte logLevelValue = 0;
+            foreach (var item in logLevel.Split(',', ';', ' '))
+            {
+                var value = (byte?)typeof(Logger).GetField(item).GetValue(null);
+                if (value != null)
+                {
+                    logLevelValue = (byte) (logLevelValue | (byte) value);
+                }
+            }
+
+            LogLevel ? logTypeValue = null;
             if (Enum.IsDefined(typeof(LogLevel), logType))
             {
                 logTypeValue = (LogLevel) Enum.Parse(typeof(LogLevel), logType);
             }
-            var logger = logLevelValue != null && logTypeValue != null ? 
-                new Logger((byte)logLevelValue, message => log.Log((LogLevel)logTypeValue, message)) : 
+
+            var logger = logLevelValue != 0 && logTypeValue != null ? 
+                new Logger(logLevelValue, message => log.Log((LogLevel)logTypeValue, message)) : 
                 null;
+
             _db = new LiteDatabase(connectionString, log: logger);
         }
 
-        public DatabaseAdapter EnsureIndexes<T, TK>(Expression<Func<T, TK>> property, bool unique = false)
+        public DatabaseAdapter EnsureIndexes<T, TK>(Expression<Func<T, TK>> property, bool unique=false)
         {
             var name = typeof(T).Name;
             var collection = _db.GetCollection<T>(name);

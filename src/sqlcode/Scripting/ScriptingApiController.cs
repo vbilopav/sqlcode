@@ -41,7 +41,7 @@ namespace sqlcode.Scripting
             {
                 model = JsonConvert.DeserializeObject<ScriptViewModel>(query);
             }
-            catch(JsonReaderException)
+            catch (JsonReaderException)
             {
                 _log.LogError("Save model malformed");
                 return BadRequest();
@@ -50,7 +50,7 @@ namespace sqlcode.Scripting
             using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
                 model.Content = await reader.ReadToEndAsync();
 
-            _service.Upsert(model);
+            _service.AddOrUpdate(model);
             return Ok();
         }
     }

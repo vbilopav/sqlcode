@@ -5,9 +5,7 @@ VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sqlcode", "src\sqlcode\sqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D2B8BC38-83AE-4D32-BA3B-E3B504AF619C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{58829186-064A-4334-94F2-2BFA13C92250}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{58829186-064A-4334-94F2-2BFA13C92250}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,8 +27,5 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E213EB42-A251-4EE4-9EF3-E60E96415B3C}
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{58829186-064A-4334-94F2-2BFA13C92250} = {D2B8BC38-83AE-4D32-BA3B-E3B504AF619C}
 	EndGlobalSection
 EndGlobal

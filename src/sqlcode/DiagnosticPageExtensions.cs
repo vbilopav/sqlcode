@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 
 namespace sqlcode
 {
@@ -19,7 +20,8 @@ namespace sqlcode
             IServiceCollection services,
             IConfiguration config,
             string path,
-            (string key, object value) extra
+            (string key, object value) extra,
+            bool includeSystemServices=false
         )
         {
             app.Map(path, builder => builder.Run(async context =>
@@ -36,12 +38,23 @@ namespace sqlcode
                             .Select(item => new { name = item.DisplayName, item.AttributeRouteInfo.Template })),
                     new KeyValuePair<string, object>("Culture", new {CultureInfo.CurrentCulture, CultureInfo.CurrentUICulture}),
                     new KeyValuePair<string, object>("Services", services.
-                        //Where(item => !item.ServiceType.FullName.StartsWith("Microsoft") && !item.ServiceType.FullName.StartsWith("System")).
+                        Where(item =>
+                        {
+                            if (!includeSystemServices)
+                            {
+                                return !item.ServiceType.FullName.StartsWith("Microsoft") && !item.ServiceType.FullName.StartsWith("System");
+                            }
+                            return true;
+                        }).
                         Select(item => new
                         {
                             lifetime = item.Lifetime.ToString(),
                             type = item.ServiceType.FullName,
-                            implementation = item.ImplementationType?.FullName
+                            implementation =
+                                item.ImplementationType != null ? item.ImplementationType.FullName : 
+                                    (item.ImplementationFactory != null ? 
+                                        item.ImplementationFactory.ToString() : 
+                                        item.ImplementationInstance.ToString())
                         })),
                     new KeyValuePair<string, object>("Configuration", config.AsEnumerable()),
                 };
