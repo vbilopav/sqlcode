@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace sqlcode.Sys
+namespace sqlcode
 {
     public static class DiagnosticPageExtensions
     {

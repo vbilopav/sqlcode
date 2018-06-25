@@ -12,6 +12,15 @@ define([], () => {
                 content: content,
                 title: title
             }
+
+            fetch(
+                "/api/scripting?" + JSON.stringify({Id: id, Type: type, Title: title, ViewState: JSON.stringify(viewState)}), {
+                method: "POST",
+                body: content,
+                headers:{
+                  "Content-Type": "text/plain"
+                }
+              });
         },
         retreive: (id, type) => store[type + id],
         getNames: type => {
