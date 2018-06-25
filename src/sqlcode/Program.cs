@@ -15,7 +15,7 @@ namespace sqlcode
     public class Program
     {
         public static void Main(string[] args) => 
-            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();               
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();
     }
 
     public class AppConfig
@@ -64,11 +64,11 @@ namespace sqlcode
                 if (_appConfig.DiagnosticPath != null)
                 {
                     app.UseDiagnosticPage(
-                        env, 
-                        _services, 
-                        _config, 
-                        _appConfig.DiagnosticPath, 
-                        ("AppConfig", _appConfig as object), 
+                        env,
+                        _services,
+                        _config,
+                        _appConfig.DiagnosticPath,
+                        ("AppConfig", _appConfig as object),
                         includeSystemServices: false
                    );
                 }
