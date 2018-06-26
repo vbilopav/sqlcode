@@ -1,5 +1,6 @@
 ﻿namespace sqlcode.Scripting
 {
+    using AutoMapper;
     using LocalStorage;
 
     public interface IScriptingService
@@ -12,6 +13,7 @@
         private readonly IDatabaseAdapter _db;
 
         public ScriptingService(IDatabaseAdapter db) => _db = db;
-        public void AddOrUpdate(ScriptViewModel model) => _db.Upsert(ScriptDocumentModel.Create(model));
+        
+        public void AddOrUpdate(ScriptViewModel model) => _db.Upsert(ScriptDocumentModel.Map(model));
     }
 }

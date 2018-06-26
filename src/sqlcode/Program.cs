@@ -44,11 +44,22 @@ namespace sqlcode
             this._services = services;
             services
                 .AddRouting(options => options.LowercaseUrls = true)
-                .AddAutoMapper(typeof(ScriptDocumentModel))
                 .AddLocalDatabase(_appConfig)
                 .AddScriptingService()
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            ConfigureAutoMapper();
+        }
+
+        public static void ConfigureAutoMapper()
+        {
+            Mapper.Initialize(c => {
+                c.CreateMap<ScriptViewModel, ScriptDocumentModel>().ForMember(
+                        dest => dest.Key, 
+                        opt => opt.MapFrom(src => new ScriptKeyModel{Id = src.Id, Type = src.Type})
+                    );
+            });
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
