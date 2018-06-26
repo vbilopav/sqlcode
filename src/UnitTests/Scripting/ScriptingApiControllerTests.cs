@@ -33,12 +33,12 @@ namespace UnitTests.Scripting
             controller.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("test content"));
 
             // Act
-            var result = await controller.Save(new ScriptViewModel{
+            var response = await controller.Save(new ScriptViewModel{
                 Id = 1, Type = "test type", Title = "title test", ViewState = "view state test"
             });
 
             // Assert
-            Assert.IsType<OkResult>(result);
+            Assert.IsType<OkResult>(response);
         }
 
         [Fact]
@@ -62,13 +62,13 @@ namespace UnitTests.Scripting
 
             // Act
             var response = controller.Retreive(new ScriptKeyModel{ Id = 1, Type = "test type"});
-            
-            Assert.IsType<ScriptViewModel>(response.Value);
-            Assert.True(1 == response.Value.Id);
-            Assert.Equal("type", response.Value.Type);
-            Assert.Equal("title", response.Value.Title);
-            Assert.Equal("viewstate", response.Value.ViewState);
-            Assert.Equal("contet", response.Value.Content);
+
+            Assert.IsType<ScriptViewModel>(((OkObjectResult)response.Result).Value);
+            Assert.True(1 == ((ScriptViewModel)((OkObjectResult)response.Result).Value).Id);
+            Assert.Equal("type", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Type);
+            Assert.Equal("title", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Title);
+            Assert.Equal("viewstate", ((ScriptViewModel)((OkObjectResult)response.Result).Value).ViewState);
+            Assert.Equal("contet", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Content);
         }
     }
 }

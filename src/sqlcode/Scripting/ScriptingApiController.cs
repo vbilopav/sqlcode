@@ -22,11 +22,7 @@ namespace sqlcode.Scripting
         }
 
         [HttpGet]
-        public ActionResult<ScriptViewModel> Retreive([FromQuery]ScriptKeyModel key)
-        {
-            var result = _service.RetreiveByKey(key);
-            return Ok(result);
-        }
+        public ActionResult<ScriptViewModel> Retreive([FromQuery]ScriptKeyModel key) => Ok(_service.RetreiveByKey(key));
 
         [HttpPost]
         public async Task<IActionResult> Save([FromQuery]ScriptViewModel model)
