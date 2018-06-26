@@ -8,6 +8,7 @@ namespace sqlcode.LocalStorage
     public interface IDatabaseAdapter
     {
         DatabaseAdapter Upsert<T>(T model);
+        T FirstOrDefault<T>(Expression<Func<T, bool>> predicate);
     }
 
     public class DatabaseAdapter : IDisposable, IDatabaseAdapter
@@ -43,20 +44,31 @@ namespace sqlcode.LocalStorage
             _db = new LiteDatabase(connectionString, log: logger);
         }
 
+        private LiteCollection<T> GetCollection<T>() => _db.GetCollection<T>(typeof(T).Name);
+
         public DatabaseAdapter EnsureIndexes<T, TK>(Expression<Func<T, TK>> property, bool unique=false)
         {
-            var name = typeof(T).Name;
-            var collection = _db.GetCollection<T>(name);
+            var collection = GetCollection<T>();
             collection.EnsureIndex(property, unique);
             return this;
         }
 
         public DatabaseAdapter Upsert<T>(T model)
         {
-            var name = typeof(T).Name;
-            var collection = _db.GetCollection<T>(name);
+            var collection = GetCollection<T>();
             collection.Upsert(model);
             return this;
+        }
+
+        public T FirstOrDefault<T>(Expression<Func<T, bool>> predicate)
+        {
+            var collection = GetCollection<T>();
+            var result = collection.FindOne(predicate);
+            if (result == null)
+            {
+                return default(T);
+            }
+            return result;
         }
 
         public DatabaseAdapter Shrink()

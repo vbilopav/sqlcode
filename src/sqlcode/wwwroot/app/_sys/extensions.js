@@ -25,6 +25,7 @@ define([], () => {
     test(NodeList, ["addClass", "removeClass", "toggleClass", "show", "hide"]);
     test(Document, ["on", "off", "trigger", "find", "findAll"]);
     test(Window, ["on", "off", "trigger"]);
+    test(Object, ["toUrlParams"])
 
     HTMLElement.prototype.find = function(search) {
         let e = this.querySelector(search);
@@ -295,6 +296,10 @@ define([], () => {
     Window.prototype.off = HTMLElement.prototype.off;
     Window.prototype.on = HTMLElement.prototype.on;
     Window.prototype.trigger = HTMLElement.prototype.trigger;
+
+    Object.prototype.toUrlParams = function() {
+        return Object.keys(this).map(item => `${encodeURIComponent(item)}=${encodeURIComponent(this[item])}`).join('&');
+    }
 
     //
     // lit-html vs code extension support

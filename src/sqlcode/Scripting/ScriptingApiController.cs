@@ -21,32 +21,16 @@ namespace sqlcode.Scripting
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Save()
+        [HttpGet]
+        public ActionResult<ScriptViewModel> Retreive([FromQuery]ScriptKeyModel key)
         {
-            if (string.IsNullOrEmpty(Request.QueryString.Value))
-            {
-                _log.LogError("Save model missing in query sttring");
-                return BadRequest();
-            }
-            var query = HttpUtility.UrlDecode(Request.QueryString.Value.Remove(0, 1));
-            if (string.IsNullOrEmpty(query))
-            {
-                _log.LogError("Save model missing in query sttring");
-                return BadRequest();
-            }
+            var result = _service.RetreiveByKey(key);
+            return Ok(result);
+        }
 
-            ScriptViewModel model;
-            try
-            {
-                model = JsonConvert.DeserializeObject<ScriptViewModel>(query);
-            }
-            catch (JsonReaderException)
-            {
-                _log.LogError("Save model malformed");
-                return BadRequest();
-            }
-
+        [HttpPost]
+        public async Task<IActionResult> Save([FromQuery]ScriptViewModel model)
+        {
             using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
                 model.Content = await reader.ReadToEndAsync();
 

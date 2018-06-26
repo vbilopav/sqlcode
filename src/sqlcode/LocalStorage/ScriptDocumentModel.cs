@@ -16,7 +16,10 @@ namespace sqlcode.LocalStorage
         public string ViewState { get; set; }
         public string Content { get; set; }
 
-        public static ScriptDocumentModel Map(ScriptViewModel viewModel) => 
+        public ScriptViewModel MapToScriptViewModel() => 
+            Mapper.Map<ScriptDocumentModel, ScriptViewModel>(this);
+
+        public static ScriptDocumentModel MapFrom(ScriptViewModel viewModel) => 
             Mapper.Map<ScriptViewModel, ScriptDocumentModel>(viewModel);
     }
 }

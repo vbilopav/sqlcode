@@ -13,8 +13,9 @@ define([], () => {
                 title: title
             }
 
+            let q = {Id: id, Type: type, Title: title, ViewState: JSON.stringify(viewState)};
             fetch(
-                "/api/scripting?" + JSON.stringify({Id: id, Type: type, Title: title, ViewState: JSON.stringify(viewState)}), {
+                "/api/scripting?" + q.toUrlParams(), {
                 method: "POST",
                 body: content,
                 headers:{
@@ -22,7 +23,18 @@ define([], () => {
                 }
               });
         },
-        retreive: (id, type) => store[type + id],
+        retreive: (id, type) => {
+            let q = {Id: 234345, Type: type}
+            fetch(
+                "/api/scripting?" + q.toUrlParams(), {
+                method: "GET",
+                headers:{
+                  "Content-Type": "application/json"
+                }
+              });
+
+            return store[type + id]
+        },
         getNames: type => {
             let result = [];
             for(let [key, item] of Object.entries(store)) {

@@ -30,17 +30,45 @@ namespace UnitTests.Scripting
             {
                 ControllerContext = {HttpContext = new DefaultHttpContext()}
             };
-            controller.Request.QueryString = new QueryString(
-                @"?{""Id"": 1, ""Type"": ""test type"", ""Title"": ""title test"", ""ViewState"":  ""view state test""}"
-            );
             controller.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes("test content"));
 
-
             // Act
-            var result = await controller.Save();
+            var result = await controller.Save(new ScriptViewModel{
+                Id = 1, Type = "test type", Title = "title test", ViewState = "view state test"
+            });
 
             // Assert
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public void Retreive_HappyPath()
+        {
+            // Arrange
+            var serviceMock = new Mock<IScriptingService>();
+            serviceMock.Setup(s => s.RetreiveByKey(It.IsAny<ScriptKeyModel>())).Callback<ScriptKeyModel>(p =>
+            {
+                Assert.True(1 == p.Id);
+                Assert.Equal("test type", p.Type);
+            }).Returns(new ScriptViewModel
+            {
+                Id = 1,
+                Type = "type",
+                Title = "title",
+                ViewState = "viewstate",
+                Content = "contet"
+            });
+            var controller = new ScriptingApiController(new Mock<ILogger<ScriptingApiController>>().Object, serviceMock.Object);
+
+            // Act
+            var response = controller.Retreive(new ScriptKeyModel{ Id = 1, Type = "test type"});
+            
+            Assert.IsType<ScriptViewModel>(response.Value);
+            Assert.True(1 == response.Value.Id);
+            Assert.Equal("type", response.Value.Type);
+            Assert.Equal("title", response.Value.Title);
+            Assert.Equal("viewstate", response.Value.ViewState);
+            Assert.Equal("contet", response.Value.Content);
         }
     }
 }

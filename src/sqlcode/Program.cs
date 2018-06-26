@@ -54,11 +54,18 @@ namespace sqlcode
 
         public static void ConfigureAutoMapper()
         {
-            Mapper.Initialize(c => {
-                c.CreateMap<ScriptViewModel, ScriptDocumentModel>().ForMember(
-                        dest => dest.Key, 
-                        opt => opt.MapFrom(src => new ScriptKeyModel{Id = src.Id, Type = src.Type})
-                    );
+            Mapper.Initialize(ctx => {
+                ctx.CreateMap<ScriptViewModel, ScriptDocumentModel>().ForMember(
+                    dest => dest.Key, 
+                    opt => opt.MapFrom(src => new ScriptKeyModel{Id = src.Id, Type = src.Type})
+                );
+                ctx.CreateMap<ScriptDocumentModel, ScriptViewModel>().ForMember(
+                    dest => dest.Id,
+                    opt => opt.MapFrom(src => src.Key.Id)
+                ).ForMember(
+                    dest => dest.Type,
+                    opt => opt.MapFrom(src => src.Key.Type)
+                );
             });
         }
 
