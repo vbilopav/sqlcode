@@ -19,11 +19,7 @@
         public ScriptViewModel RetreiveByKey(ScriptKeyModel key)
         {
             var result = _db.FirstOrDefault<ScriptDocumentModel>(item => item.Key.Id == key.Id && item.Key.Type == key.Type);
-            if (result != null)
-            {
-                return result.MapToScriptViewModel();
-            }
-            return null;
+            return result?.MapToScriptViewModel();
         }
     }
 }
