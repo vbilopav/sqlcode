@@ -11,9 +11,7 @@
     public class ScriptingService : IScriptingService
     {
         private readonly IDatabaseAdapter _db;
-
-        public ScriptingService(IDatabaseAdapter db) => _db = db;
-        
+        public ScriptingService(IDatabaseAdapter db) => _db = db;        
         public void AddOrUpdate(ScriptViewModel model) => _db.Upsert(ScriptDocumentModel.MapFrom(model));
 
         public ScriptViewModel RetreiveByKey(ScriptKeyModel key)
