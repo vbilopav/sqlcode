@@ -1,6 +1,7 @@
 ﻿using LiteDB;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace sqlcode.LocalStorage
@@ -9,6 +10,7 @@ namespace sqlcode.LocalStorage
     {
         DatabaseAdapter Upsert<T>(T model);
         T FirstOrDefault<T>(Expression<Func<T, bool>> predicate);
+        IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate);
     }
 
     public class DatabaseAdapter : IDisposable, IDatabaseAdapter
@@ -48,28 +50,28 @@ namespace sqlcode.LocalStorage
 
         public DatabaseAdapter EnsureIndexes<T, TK>(Expression<Func<T, TK>> property, bool unique=false)
         {
-            var collection = GetCollection<T>();
-            collection.EnsureIndex(property, unique);
+            GetCollection<T>().EnsureIndex(property, unique);
             return this;
         }
 
         public DatabaseAdapter Upsert<T>(T model)
         {
-            var collection = GetCollection<T>();
-            collection.Upsert(model);
+            GetCollection<T>().Upsert(model);
             return this;
         }
 
         public T FirstOrDefault<T>(Expression<Func<T, bool>> predicate)
         {
-            var collection = GetCollection<T>();
-            var result = collection.FindOne(predicate);
+            var result = GetCollection<T>().FindOne(predicate);
             if (result == null)
             {
                 return default(T);
             }
             return result;
         }
+
+        public IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate) => 
+            GetCollection<T>().Find(predicate);
 
         public DatabaseAdapter Shrink()
         {

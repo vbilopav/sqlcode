@@ -62,13 +62,14 @@ namespace UnitTests.Scripting
 
             // Act
             var response = controller.Retreive(new ScriptKeyModel{ Id = 1, Type = "test type"});
-
-            Assert.IsType<ScriptViewModel>(((OkObjectResult)response.Result).Value);
-            Assert.True(1 == ((ScriptViewModel)((OkObjectResult)response.Result).Value).Id);
-            Assert.Equal("type", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Type);
-            Assert.Equal("title", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Title);
-            Assert.Equal("viewstate", ((ScriptViewModel)((OkObjectResult)response.Result).Value).ViewState);
-            Assert.Equal("contet", ((ScriptViewModel)((OkObjectResult)response.Result).Value).Content);
+            
+            // Assert
+            var result = ((ScriptViewModel)((OkObjectResult)response.Result).Value);
+            Assert.True(1 == result.Id);
+            Assert.Equal("type", result.Type);
+            Assert.Equal("title", result.Title);
+            Assert.Equal("viewstate", result.ViewState);
+            Assert.Equal("contet", result.Content);
         }
     }
 }

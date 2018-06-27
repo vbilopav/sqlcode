@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Collections.Generic;
 
 namespace sqlcode.Scripting
 {
@@ -31,6 +32,17 @@ namespace sqlcode.Scripting
                 model.Content = await reader.ReadToEndAsync();
 
             _service.AddOrUpdate(model);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("titles")]
+        public ActionResult<IEnumerable<string>> GetTitlesByType([FromQuery]string type) => Ok(_service.GetTitles(type));
+
+        [HttpPost]
+        [Route("title")]
+        public IActionResult UpdateTitle(ScriptTitleViewModel model)
+        {
             return Ok();
         }
     }

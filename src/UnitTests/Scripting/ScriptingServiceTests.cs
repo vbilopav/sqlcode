@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Moq;
 using sqlcode;
@@ -54,9 +56,9 @@ namespace UnitTests.Scripting
             };
 
             var dbMock = new Mock<IDatabaseAdapter>();
-            dbMock.Setup(s => s.FirstOrDefault<ScriptDocumentModel>(
-                It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>())
-            ).Returns(testModel);
+            dbMock
+                .Setup(s => s.FirstOrDefault<ScriptDocumentModel>(It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>()))
+                .Returns(testModel);
 
             var service = new ScriptingService(dbMock.Object);
 
@@ -75,6 +77,7 @@ namespace UnitTests.Scripting
         [Fact]
         public void RetreiveByKey_NotFound_HappyPath()
         {
+            // Arrange
             var dbMock = new Mock<IDatabaseAdapter>();
             dbMock.Setup(s => s.FirstOrDefault<ScriptDocumentModel>(
                 It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>())
@@ -87,6 +90,35 @@ namespace UnitTests.Scripting
 
             // Assert
             Assert.Null(result);
+        }
+
+        [Fact]
+        public void GetTitles_HappyPath()
+        {
+            // Arrange
+            bool FindAll_called = false;
+            var dbMock = new Mock<IDatabaseAdapter>();
+            dbMock
+                .Setup(s => s.FindBy<ScriptDocumentModel>(It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>()))
+                .Callback<Expression<Func<ScriptDocumentModel, bool>>>(p => 
+                {
+                    FindAll_called = true;
+                })
+                .Returns(
+                    new List<ScriptDocumentModel>{
+                        new ScriptDocumentModel{Key=new ScriptKeyModel{Id=1, Type="type1"}, Title="title1"},
+                        new ScriptDocumentModel{Key=new ScriptKeyModel{Id=2, Type="type1"}, Title="title2"},
+                    });
+            var service = new ScriptingService(dbMock.Object);
+
+            // Act
+            var result = service.GetTitles("type1").ToList();
+
+            // Assert
+            Assert.True(FindAll_called);
+            Assert.Equal(2, result.Count);
+            Assert.True(result.Contains("title1"));
+            Assert.True(result.Contains("title2"));
         }
     }
 }

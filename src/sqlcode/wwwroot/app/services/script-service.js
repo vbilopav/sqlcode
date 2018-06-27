@@ -42,6 +42,15 @@ define([], () => {
                     result.push(item.title);
                 }
             }
+
+            fetch(
+                "/api/scripting/titles?type=" + type, {
+                method: "GET",
+                headers:{
+                  "Content-Type": "application/json"
+                }
+              })
+
             return result;
         },
         updateTitle: (id, type, title) => {
