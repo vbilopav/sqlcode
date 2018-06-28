@@ -96,13 +96,13 @@ namespace UnitTests.Scripting
         public void GetTitles_HappyPath()
         {
             // Arrange
-            bool FindAll_called = false;
+            bool findAllCalled = false;
             var dbMock = new Mock<IDatabaseAdapter>();
             dbMock
                 .Setup(s => s.FindBy<ScriptDocumentModel>(It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>()))
                 .Callback<Expression<Func<ScriptDocumentModel, bool>>>(p => 
                 {
-                    FindAll_called = true;
+                    findAllCalled = true;
                 })
                 .Returns(
                     new List<ScriptDocumentModel>{
@@ -115,10 +115,10 @@ namespace UnitTests.Scripting
             var result = service.GetTitles("type1").ToList();
 
             // Assert
-            Assert.True(FindAll_called);
+            Assert.True(findAllCalled);
             Assert.Equal(2, result.Count);
-            Assert.True(result.Contains("title1"));
-            Assert.True(result.Contains("title2"));
+            Assert.Contains("title1", result);
+            Assert.Contains("title2", result);
         }
     }
 }

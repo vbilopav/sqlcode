@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using sqlcode.Scripting;
 using Xunit;
@@ -18,6 +17,7 @@ namespace UnitTests.Scripting
         {
             // Arrange
             var serviceMock = new Mock<IScriptingService>();
+
             serviceMock.Setup(s => s.AddOrUpdate(It.IsAny<ScriptViewModel>())).Callback<ScriptViewModel>(p =>
             {
                 Assert.True(1 == p.Id);
@@ -25,8 +25,9 @@ namespace UnitTests.Scripting
                 Assert.Equal("title test", p.Title);
                 Assert.Equal("view state test", p.ViewState);
                 Assert.Equal("test content", p.Content);
-            });
-            var controller = new ScriptingApiController(new Mock<ILogger<ScriptingApiController>>().Object, serviceMock.Object)
+            }).Returns(true);
+
+            var controller = new ScriptingApiController(serviceMock.Object)
             {
                 ControllerContext = {HttpContext = new DefaultHttpContext()}
             };
@@ -38,7 +39,8 @@ namespace UnitTests.Scripting
             });
 
             // Assert
-            Assert.IsType<OkResult>(response);
+            var result = ((bool)((OkObjectResult)response).Value);
+            Assert.True(result);
         }
 
         [Fact]
@@ -58,13 +60,13 @@ namespace UnitTests.Scripting
                 ViewState = "viewstate",
                 Content = "contet"
             });
-            var controller = new ScriptingApiController(new Mock<ILogger<ScriptingApiController>>().Object, serviceMock.Object);
+            var controller = new ScriptingApiController(serviceMock.Object);
 
             // Act
             var response = controller.Retreive(new ScriptKeyModel{ Id = 1, Type = "test type"});
             
             // Assert
-            var result = ((ScriptViewModel)((OkObjectResult)response.Result).Value);
+            var result = ((ScriptViewModel)((OkObjectResult)response).Value);
             Assert.True(1 == result.Id);
             Assert.Equal("type", result.Type);
             Assert.Equal("title", result.Title);

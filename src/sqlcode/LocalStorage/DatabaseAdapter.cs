@@ -8,7 +8,7 @@ namespace sqlcode.LocalStorage
 {
     public interface IDatabaseAdapter
     {
-        DatabaseAdapter Upsert<T>(T model);
+        bool Upsert<T>(T model);
         T FirstOrDefault<T>(Expression<Func<T, bool>> predicate);
         IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate);
     }
@@ -54,11 +54,7 @@ namespace sqlcode.LocalStorage
             return this;
         }
 
-        public DatabaseAdapter Upsert<T>(T model)
-        {
-            GetCollection<T>().Upsert(model);
-            return this;
-        }
+        public bool Upsert<T>(T model) => GetCollection<T>().Upsert(model);
 
         public T FirstOrDefault<T>(Expression<Func<T, bool>> predicate)
         {
@@ -70,8 +66,7 @@ namespace sqlcode.LocalStorage
             return result;
         }
 
-        public IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate) => 
-            GetCollection<T>().Find(predicate);
+        public IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate) => GetCollection<T>().Find(predicate);
 
         public DatabaseAdapter Shrink()
         {
