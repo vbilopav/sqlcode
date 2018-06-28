@@ -35,7 +35,7 @@ namespace UnitTests.Scripting
                 Assert.Equal(testModel.ViewState, p.ViewState);
                 Assert.Equal(testModel.Content, p.Content);
             });
-            var service = new ScriptingService(dbMock.Object);
+            var service = new ScriptingService(dbMock.Object, new ScriptItemSpecs());
             
             // Act
             service.AddOrUpdate(testModel);
@@ -60,7 +60,7 @@ namespace UnitTests.Scripting
                 .Setup(s => s.FirstOrDefault<ScriptDocumentModel>(It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>()))
                 .Returns(testModel);
 
-            var service = new ScriptingService(dbMock.Object);
+            var service = new ScriptingService(dbMock.Object, new ScriptItemSpecs());
 
             // Act
             var result = service.RetreiveByKey(new ScriptKeyModel());
@@ -83,7 +83,7 @@ namespace UnitTests.Scripting
                 It.IsAny<Expression<Func<ScriptDocumentModel, bool>>>())
             ).Returns(default(ScriptDocumentModel));
 
-            var service = new ScriptingService(dbMock.Object);
+            var service = new ScriptingService(dbMock.Object, new ScriptItemSpecs());
 
             // Act
             var result = service.RetreiveByKey(new ScriptKeyModel());
@@ -109,7 +109,7 @@ namespace UnitTests.Scripting
                         new ScriptDocumentModel{Key=new ScriptKeyModel{Id=1, Type="type1"}, Title="title1"},
                         new ScriptDocumentModel{Key=new ScriptKeyModel{Id=2, Type="type1"}, Title="title2"},
                     });
-            var service = new ScriptingService(dbMock.Object);
+            var service = new ScriptingService(dbMock.Object, new ScriptItemSpecs());
 
             // Act
             var result = service.GetTitles("type1").ToList();
@@ -119,6 +119,36 @@ namespace UnitTests.Scripting
             Assert.Equal(2, result.Count);
             Assert.Contains("title1", result);
             Assert.Contains("title2", result);
+        }
+
+        [Fact]
+        public void KeySpecification_HappyPath()
+        {
+            // Arrange
+            var spec = new ScriptItemSpecs();
+            var list = new List<ScriptDocumentModel>{
+                new ScriptDocumentModel{Key=new ScriptKeyModel{Id=1, Type="type1"}, Title="title1"},
+                new ScriptDocumentModel{Key=new ScriptKeyModel{Id=2, Type="type1"}, Title="title2"},
+                new ScriptDocumentModel{Key=new ScriptKeyModel{Id=3, Type="type2"}, Title="title3"},
+            };
+
+            // Act
+            var result1 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=1, Type="type1"}).Compile()).ToList();
+            var result2 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=2, Type="type1"}).Compile()).ToList();
+            var result3 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=3, Type="type2"}).Compile()).ToList();
+            var result4 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=3, Type="type4"}).Compile()).ToList();
+
+            // Assert
+            Assert.Equal(1, result1.Count);
+            Assert.Equal("title1", result1.FirstOrDefault().Title);
+
+            Assert.Equal(1, result2.Count);
+            Assert.Equal("title2", result2.FirstOrDefault().Title);
+
+            Assert.Equal(1, result3.Count);
+            Assert.Equal("title3", result3.FirstOrDefault().Title);
+
+            Assert.Equal(0, result4.Count);
         }
     }
 }

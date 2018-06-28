@@ -11,6 +11,7 @@ namespace sqlcode.LocalStorage
         bool Upsert<T>(T model);
         T FirstOrDefault<T>(Expression<Func<T, bool>> predicate);
         IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate);
+        bool Update<T>(T model);
     }
 
     public class DatabaseAdapter : IDisposable, IDatabaseAdapter
@@ -48,13 +49,9 @@ namespace sqlcode.LocalStorage
 
         private LiteCollection<T> GetCollection<T>() => _db.GetCollection<T>(typeof(T).Name);
 
-        public DatabaseAdapter EnsureIndexes<T, TK>(Expression<Func<T, TK>> property, bool unique=false)
-        {
-            GetCollection<T>().EnsureIndex(property, unique);
-            return this;
-        }
-
         public bool Upsert<T>(T model) => GetCollection<T>().Upsert(model);
+        
+        public bool Update<T>(T model) => GetCollection<T>().Update(model);
 
         public T FirstOrDefault<T>(Expression<Func<T, bool>> predicate)
         {
@@ -66,7 +63,15 @@ namespace sqlcode.LocalStorage
             return result;
         }
 
-        public IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate) => GetCollection<T>().Find(predicate);
+        public IEnumerable<T> FindBy<T>(Expression<Func<T, bool>> predicate) => 
+            GetCollection<T>().Find(predicate);
+
+        
+        public DatabaseAdapter EnsureIndex<T, TK>(Expression<Func<T, TK>> property, bool unique = false)
+        {
+            GetCollection<T>().EnsureIndex(property, unique);
+            return this;
+        }
 
         public DatabaseAdapter Shrink()
         {

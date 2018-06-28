@@ -5,7 +5,7 @@ namespace sqlcode.LocalStorage
 {
     using Scripting;
 
-    public static class ConfigureServices
+    public static class Configure
     {
         public static IServiceCollection AddLocalDatabase(this IServiceCollection services, AppConfig config)
         {
@@ -23,9 +23,7 @@ namespace sqlcode.LocalStorage
             var provider = services.BuildServiceProvider();
             using (var db = provider.GetService(typeof(IDatabaseAdapter)) as DatabaseAdapter)
             {
-                db?
-                    .EnsureIndexes<ScriptDocumentModel, ScriptKeyModel>(item => item.Key, unique: true)
-                    .Shrink();
+                db?.EnsureIndex<ScriptDocumentModel, ScriptKeyModel>(item => item.Key, unique: true).Shrink();
             }
 
             return services;

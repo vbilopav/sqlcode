@@ -30,9 +30,6 @@ namespace sqlcode.Scripting
         public IActionResult GetTitlesByType([FromQuery]string type) => Ok(_service.GetTitles(type));
 
         [HttpPost("title")]
-        public IActionResult UpdateTitle(ScriptTitleViewModel model)
-        {
-            return Ok();
-        }
+        public IActionResult UpdateTitle(ScriptTitleViewModel model) => Ok(_service.UpdateTitle(model, model.Title));
     }
 }
