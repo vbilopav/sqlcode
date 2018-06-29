@@ -9,13 +9,13 @@ define([], () => {
                 throw new Error("pubsub already assigned to object!");
             }
             obj.sub = (name, handler) => {
-                let doSub = n => {
+                const doSub = n => {
                     let entry = entries[n];
                     if (!entry) {
                         entry = entries[n] = [];
                     }
                     entries[n].push(handler);
-                }
+                };
                 if (name instanceof Array) {
                     for(let i of name) {
                         doSub(i);
@@ -27,13 +27,13 @@ define([], () => {
                 return obj;
             };
             obj.pub = (name, ...args) => {
-                let doPub = n => {
-                    let entry = entries[n];
+                const doPub = n => {
+                    const entry = entries[n];
                     if (!entry) {
                         return obj;
                     }
                     setTimeout(() => entry.forEach(f => f.apply(obj, args)), 0);
-                }
+                };
                 if (name instanceof Array) {
                     for(let i of name) {
                         doPub(i);

@@ -1,6 +1,6 @@
 define([], () => {
 
-    let 
+    const
         clean = s => s.replace(/&nbsp;/g, "").replace(/\\n/g, "").trim();
 
     return class {
@@ -11,11 +11,14 @@ define([], () => {
             onaccept=(()=>{}),
             max=100
         }) {
-            let old = clean(element.html()), 
-                oldTitle = element.attr("title"),
+            const
+                old = clean(element.html()),
+                oldTitle = element.attr("title");
+            let
                 prev = old,
                 content = old,
-                isvalid = true,
+                isvalid = true;
+            const
                 invalid = () => {
                     element.addClass("invalid").attr("title", 
                         "This is not valid value! Enter valid text or press ESC to exit editing and to revert to original value.");
@@ -49,7 +52,7 @@ define([], () => {
                         invalid();
                         return;
                     }
-                    let names = getInvalidNamesCallback();
+                    const names = getInvalidNamesCallback();
                     if (content !== old && names.indexOf(content) !== -1) {
                         invalid();
                         return;
@@ -88,7 +91,7 @@ define([], () => {
                 if (content.length >= max) {
                     if (
                         (e.keyCode > 47 && e.keyCode < 58) ||
-                        e.keyCode == 32 || e.keyCode == 13 ||
+                        e.keyCode === 32 || e.keyCode === 13 ||
                         (e.keyCode > 64 && e.keyCode < 91) ||
                         (e.keyCode > 95 && e.keyCode < 112) ||
                         (e.keyCode > 185 && e.keyCode < 193) ||
@@ -106,7 +109,7 @@ define([], () => {
                 validate();
             })
             .on("paste", e => {
-                let pasted = clean((e.clipboardData || window.clipboardData).getData('text'));
+                let pasted = clean((e.clipboardData || window.clipboardData).getData("text"));
                 if (pasted.length >= max) {
                     pasted = pasted.substring(0, max);
                 }
@@ -117,7 +120,7 @@ define([], () => {
         }
 
         static editing(element) {
-            return element.attr("contenteditable") === "true"
+            return element.attr("contenteditable") === "true";
         }
     };
 });

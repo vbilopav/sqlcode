@@ -64,7 +64,7 @@ define([
 
         container.find(".panel-content")
             .on("mouseleave", e => {
-                e.target.css("overflow-y", "hidden")
+                e.target.css("overflow-y", "hidden");
                 split.css("z-index", "");
             })
             .on("mouseenter", e => {

@@ -10,12 +10,12 @@ define([], () => {
                         </div>
                     </div>
                 </div>
-            </div>`;
+            </div>`,
 
         itemTemplate = (text, keyBindings) => String.html`
             <li class="action-item" role="presentation">
                 <a class="action-label" role="menuitem" tabindex="0">${text}</a>
-                ${keyBindings ? '<span class="keybinding">' + keyBindings + '</span>' : ""}
+                ${keyBindings ? `<span class="keybinding">${keyBindings}</span>` : ""}
             </li>`,
 
         splitter = String.html`
@@ -37,7 +37,7 @@ define([], () => {
                 document.body.append(element);
             }
             
-            let 
+            const 
                 container = element.find(".actions-container"),
                 clear = () => {
                     element.hide();
@@ -69,9 +69,9 @@ define([], () => {
                 }
             });
 
-            this.triggerById = (id, args) => {
+            this.triggerById = (_id, args) => {
                 for(let item of items) {
-                    if (item.id === id) {
+                    if (item.id === _id) {
                         item.action(args);
                     }
                 }
@@ -83,7 +83,8 @@ define([], () => {
                     container.append(item.element);
                 }
                 element.css("top", e.y + "px").css("left", e.x + "px").show();
-                let rect = container.getBoundingClientRect(),
+                const
+                    rect = container.getBoundingClientRect(),
                     winWidth = window.innerWidth,
                     winHeight = window.innerHeight,
                     right = e.x + rect.width,
@@ -98,7 +99,7 @@ define([], () => {
                 e.preventDefault();
             });
 
-            _app.sub("monaco/context-menu/open", () => clear())
+            _app.sub("monaco/context-menu/open", () => clear());
         }
     }
 });

@@ -38,7 +38,7 @@ define([
     const
         editorNoTabs = () => {
             if (tabRibbon !== undefined && !tabRibbon) {
-                return
+                return;
             }
             tabRibbon = false;
             tabbed.tabs.hide();
@@ -47,7 +47,7 @@ define([
     const
         editorHaveTabs = () => {
             if (tabRibbon) {
-                return
+                return;
             }
             tabRibbon = true;
             tabbed.tabs.show();
@@ -55,54 +55,55 @@ define([
 
     const
         initializeTab = tab => {
-            let title = tab.find(".title");
-            let menu = new Menu({
-                id: "editor-bench-tab-menu",
-                target: tab,
-                items: [
-                    {id: "close", text: "Close", keyBindings: "Ctrl+F4", args: {tab: tab}, action: args => 
-                        tabbed.closeByTab(args.tab)
-                    },
-                    {text: "Close Others", action: () => {
-                            for(let t of tabbed.tabs.findAll("." + name)) {
-                                if (t.id !== tab.id) {
+            const
+                title = tab.find(".title"),
+                menu = new Menu({
+                    id: "editor-bench-tab-menu",
+                    target: tab,
+                    items: [
+                        {id: "close", text: "Close", keyBindings: "Ctrl+F4", args: {tab: tab}, action: args => 
+                            tabbed.closeByTab(args.tab)
+                        },
+                        {text: "Close Others", action: () => {
+                                for(let t of tabbed.tabs.findAll("." + name)) {
+                                    if (t.id !== tab.id) {
+                                        tabbed.closeByTab(t);
+                                    }
+                                }
+                            }
+                        },
+                        {text: "Close All", action: () => {
+                                for(let t of tabbed.tabs.findAll("." + name)) {
                                     tabbed.closeByTab(t);
                                 }
                             }
+                        },
+                        {splitter: true},
+                        {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => 
+                            new InlineEditor({
+                                element: args.title, 
+                                getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type")),
+                                acceptArgs: {id: tab.data("script-id"), type: tab.data("script-type")},
+                                onaccept: (newContent, args) => _app.pub("editor/title/update", newContent, args.id, args.type)
+                            })
+                        },
+                        {splitter: true},
+                        {id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => 
+                            args.tab.removeClass("sticky")
                         }
-                    },
-                    {text: "Close All", action: () => {
-                            for(let t of tabbed.tabs.findAll("." + name)) {
-                                tabbed.closeByTab(t);
-                            }
+                    ],
+                    contextmenuItems: items => {
+                        let sticky = tab.hasClass("sticky");
+                        items[5].element.show(sticky);
+                        items[6].element.show(sticky);
+                        if (sticky) {
+                            items[4].element.find(".keybinding").html("F2");
+                        } else {
+                            items[4].element.find(".keybinding").html("dblclick, F2");
                         }
-                    },
-                    {splitter: true},
-                    {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => 
-                        new InlineEditor({
-                            element: args.title, 
-                            getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type")),
-                            acceptArgs: {id: tab.data("script-id"), type: tab.data("script-type")},
-                            onaccept: (newContent, args) => _app.pub("editor/title/update", newContent, args.id, args.type)
-                        })
-                    },
-                    {splitter: true},
-                    {id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => 
-                        args.tab.removeClass("sticky")
+                        return items;
                     }
-                ],
-                contextmenuItems: items => {
-                    let sticky = tab.hasClass("sticky");
-                    items[5].element.show(sticky);
-                    items[6].element.show(sticky);
-                    if (sticky) {
-                        items[4].element.find(".keybinding").html("F2");
-                    } else {
-                        items[4].element.find(".keybinding").html("dblclick, F2");
-                    }
-                    return items;
-                }
-            });
+                });
 
             tab
                 .addClass(name)
@@ -113,10 +114,11 @@ define([
                 })
                 .on("drop", e => {
                     e.preventDefault();
-                    let 
+                    let
                         replace = tabbed.tabs.find("#" + e.dataTransfer.getData("tab-id")),
                         replaceNext = replace.nextElementSibling,
-                        tabNext = tab.nextElementSibling,
+                        tabNext = tab.nextElementSibling;
+                    const
                         switchTab = () => {
                             if (tabNext) {
                                 tabbed.tabs.insertBefore(replace, tabNext);
@@ -180,7 +182,7 @@ define([
 
     const
         updateTabData = (tab, type, id) => {
-            let scriptClass = type + "-" + id;
+            const scriptClass = type + "-" + id;
             tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type).attr("tabindex", id);
         };
 
@@ -193,7 +195,7 @@ define([
 
     const
         createActiveNewTab = (id, title, type, existing=false) => {
-            let 
+            const 
                 {tab, content} = tabbed.create({
                     tabHtml: tabTemplate(title),
                     contentHtml: "",
@@ -231,7 +233,8 @@ define([
         tabbed.afterClose = e => {
             if (e.count === 0) {
                 editorNoTabs();
-                let editor = Editor.editorByContainer(e.content),
+                const
+                    editor = Editor.editorByContainer(e.content),
                     args = mapEventToPubSub(e, editor);
                 _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
                 editor.dispose();
@@ -245,7 +248,8 @@ define([
         };
 
         tabbed.afterActivate = event => {
-            let editor = Editor.editorByContainer(event.content),
+            const
+                editor = Editor.editorByContainer(event.content),
                 args = mapEventToPubSub(event, editor);
             if (event.state && !event.dontFocus) {
                 editor.focus();
@@ -262,10 +266,10 @@ define([
             }
         })
         .sub("scripts/create", (id, title, type) => {
-            let {tab, editor} = createActiveNewTab(id, title, type);
+            const {tab, editor} = createActiveNewTab(id, title, type);
             updateTabData(tab, type, id);
             tabbed.revealActive();
-            let args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
+            const args = mapEventToPubSub({tab: tab, count: tabbed.tabCount}, editor);
             args.title = title;
             args.state = true;
             editor.focus();
@@ -275,7 +279,7 @@ define([
         })
         .sub("scripts/selected", ({id, type, title, dontFocus}) => {
 
-            let tab = tabbed.tabs.find("." + type + "-" + id);
+            const tab = tabbed.tabs.find(`.${type}-${id}`);
             if (tab.length) { 
                 tabbed.activate(tab, {dontFocus: dontFocus});
                 return;
@@ -288,12 +292,13 @@ define([
                 sticky.removeClass(sticky.data("script-class"));
                 editor = Editor.editorByContainer(Tabbed.contentByTab(sticky));
                 sticky.find(".title").attr("title", title).html(title);
-                let oldId = sticky.data("script-id"), oldType = sticky.data("script-type");
-                _app.pub(["editor/activated", "editor/activated/" + oldType], {
+                const oldId = sticky.data("script-id");
+                const oldType = sticky.data("script-type");
+                _app.pub(["editor/activated", `editor/activated/${oldType}`], {
                     id: oldId, type: oldType, state: false, tab: sticky
                 });
             } else {
-                let r = createActiveNewTab(id, title, type, true);
+                const r = createActiveNewTab(id, title, type, true);
                 sticky = r.tab;
                 editor = r.editor;
                 sticky.addClass("sticky");
@@ -304,11 +309,11 @@ define([
             if (!dontFocus) {
                 editor.focus();
             }
-            _app.pub(["editor/activated", "editor/activated/" + type], {
+            _app.pub(["editor/activated", `editor/activated/${type}`], {
                 id: id, type: type, state: true, tab: sticky
             });
         })
-        .sub("scripts/keep-open", (id, type) => tabbed.tabs.find("." + type + "-" + id).removeClass("sticky"))
+        .sub("scripts/keep-open", (id, type) => tabbed.tabs.find(`.${type}-${id}`).removeClass("sticky"))
         .sub("scripts/title/update", (title, id, type) => 
             tabbed.tabs.find("." + type + "-" + id).find(".title").attr("title", title).html(title));
 

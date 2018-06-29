@@ -25,13 +25,13 @@ define([], () => {
     test(NodeList, ["addClass", "removeClass", "toggleClass", "show", "hide"]);
     test(Document, ["on", "off", "trigger", "find", "findAll"]);
     test(Window, ["on", "off", "trigger"]);
-    test(Object, ["toUrlParams"])
+    test(Object, ["toUrlParams"]);
 
     HTMLElement.prototype.find = function(search) {
         let e = this.querySelector(search);
         if (!e) {
             e = "dummy".createElement();
-            e.length = 0
+            e.length = 0;
             return e;
         }
         e.length = 1;
@@ -97,7 +97,7 @@ define([], () => {
         if (this.classList) {
             this.classList.add(className);
         } else {
-            this.className += " " + className;
+            this.className += ` ${className}`;
         }
         return this;
     }
@@ -107,7 +107,7 @@ define([], () => {
             this.classList.remove(className);
         } else {
             this.className = this.className.replace(
-                new RegExp("(^|\\b)" + className.split(" ").join("|") + "(\\b|$)", "gi"), " "
+                new RegExp(`(^|\\b)${className.split(" ").join("|")}(\\b|$)`, "gi"), " "
             );
         }
         return this;
@@ -117,23 +117,23 @@ define([], () => {
         if (this.classList) {
             return this.classList.contains(className);
         } else {
-            return new RegExp('(^| )' + className + '( |$)', 'gi').test(this.className);
+            return new RegExp(`(^| )${className}( |$)`, "gi").test(this.className);
         }
     }
 
     HTMLElement.prototype.toggleClass = function(className, state) {
         if (state !== undefined) {
             if (!state) {
-                this.removeClass(className)
+                this.removeClass(className);
             } else {
-                this.addClass(className)
+                this.addClass(className);
             }
             return this;
         }
         if (this.hasClass(className)) {
-            this.removeClass(className)
+            this.removeClass(className);
         } else {
-            this.addClass(className)
+            this.addClass(className);
         }
         return this;
     }
@@ -141,12 +141,14 @@ define([], () => {
     HTMLElement.prototype.css = function(property, value) {
         if (!this._styles) {
             this._styles = {};
-            let styles = window.getComputedStyle(this);
+            const styles = window.getComputedStyle(this);
             for(let style in styles) {
-                if (!isNaN(style)) {
-                    continue;
+                if (styles.hasOwnProperty(style)) {
+                    if (!isNaN(style)) {
+                        continue;
+                    }
+                    this._styles[style] = styles[style];
                 }
-                this._styles[style] = styles[style];
             }
         }
         if (value !== undefined) {
@@ -154,7 +156,7 @@ define([], () => {
             this.style[property] = value;
             return this;
         }
-        let result = this._styles[property];
+        const result = this._styles[property];
         if (result === undefined) {
             return this._styles[property.toCamelCase()];
         }
@@ -194,11 +196,11 @@ define([], () => {
     }
 
     HTMLElement.prototype.overflownX = function() {
-        return this.scrollWidth > this.clientWidth
+        return this.scrollWidth > this.clientWidth;
     }
 
     HTMLElement.prototype.overflownY = function() {
-        return this.scrollHeight > this.clientHeight
+        return this.scrollHeight > this.clientHeight;
     }
 
     HTMLElement.prototype.setFocus = function() {
@@ -207,7 +209,7 @@ define([], () => {
     }
 
     String.prototype.toCamelCase = function() {
-        return this.replace(/-([a-z])/g, g => g[1].toUpperCase())
+        return this.replace(/-([a-z])/g, g => g[1].toUpperCase());
     }
 
     String.prototype.createElement = function(id, content) {
@@ -224,7 +226,7 @@ define([], () => {
     }
 
     const _getTemplate = str => {
-        let template = document.createElement('template');
+        let template = document.createElement("template");
         template.innerHTML = str.trim();
         return template;
     }
@@ -240,7 +242,7 @@ define([], () => {
     String.prototype.hashCode = function() {
         let h = 0;
         for (let i = 0, len = this.length; i < len; i++) {
-            let c = this.charCodeAt(i);
+            const c = this.charCodeAt(i);
             h = ((h<<5)-h)+c;
             h = h & h;
         }
@@ -298,7 +300,7 @@ define([], () => {
     Window.prototype.trigger = HTMLElement.prototype.trigger;
 
     Object.prototype.toUrlParams = function() {
-        return Object.keys(this).map(item => `${encodeURIComponent(item)}=${encodeURIComponent(this[item])}`).join('&');
+        return Object.keys(this).map(item => `${encodeURIComponent(item)}=${encodeURIComponent(this[item])}`).join("&");
     }
 
     //

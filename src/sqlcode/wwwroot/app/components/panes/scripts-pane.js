@@ -54,12 +54,87 @@ define([
                 </div>
             </div>`.toElement();
 
-    const 
+    const
+        activate = (item1, state) => {
+            if (!item1.length) {
+                return;
+            }
+            item1.toggleClass("active", state);
+            if (state) {
+                item1.scrollIntoView({ behavior: "instant", block: "end", inline: "end" });
+            }
+        };
+
+    var
+        filterTimeout;
+
+    const
+        clearFilter = () => {
+            for (let item1 of model.content.findAll(".panel-item")) {
+                item1.show().find(".title").html(item1.data("title"));
+            }
+        }
+
+    const
+        executeFilter = () => {
+            const val = model.inputFilter.value.trim().toLowerCase();
+            if (val === "") {
+                clearFilter();
+                return;
+            }
+            for (let item1 of model.content.findAll(".panel-item")) {
+                const titleElement = item1.find(".title");
+                const title = item1.data("title");
+                const valIndex = title.toLowerCase().indexOf(val);
+
+                if (valIndex !== -1) {
+                    item1.show();
+                    const
+                        segment = title.substring(valIndex, valIndex + val.length),
+                        newTitle = title.substring(0, valIndex) +
+                            "<span class='selected'>" +
+                            segment +
+                            "</span>" +
+                            title.substring(valIndex + val.length, title.length);
+                    titleElement.html(newTitle);
+                } else {
+                    item1.hide();
+                    titleElement.html(item1.data("title"));
+                }
+            }
+        };
+
+    const
+        activeFilter = state => {
+            if (state === true) {
+                model.filterBtn.css("border-style", "inset").data("state", state);
+                model.inputFilter.visible(true).setFocus().select();
+                executeFilter();
+                model.inputFilter.on("keyup", () => {
+                    if (filterTimeout) {
+                        clearTimeout(filterTimeout);
+                    }
+                    filterTimeout = setTimeout(executeFilter, 250);
+                });
+            } else if (state === false) {
+                model.filterBtn.css("border-style", "").data("state", state);
+                model.inputFilter.visible(false);
+                clearFilter();
+                model.inputFilter.off("keyup");
+            } else if (state === undefined) {
+                return model.filterBtn.data("state");
+            }
+        }
+
+    const
+        toggleFilter = () => activeFilter(!model.filterBtn.data("state"));
+
+    const
         scriptNamesRepo = {
             _scripts: {},
-            add: (id, title, unnamed=true) => 
-                scriptNamesRepo._scripts[id] = {title: title, unnamed: unnamed},
-            getUnnamed: () => 
+            add: (id, title, unnamed = true) =>
+                scriptNamesRepo._scripts[id] = { title: title, unnamed: unnamed },
+            getUnnamed: () =>
                 Object.values(scriptNamesRepo._scripts).filter(obj => obj.unnamed).map(obj => obj.title),
             set: (id, title) => {
                 scriptNamesRepo._scripts[id].title = title;
@@ -91,11 +166,47 @@ define([
 
     const
         createItem = (id, title) => {
-            let element = item(title)
+            const
+                element = item(title)
                 .data("id", id)
                 .data("title", title)
-                .addClass("item-" + id)
+                .addClass(`item-${id}`)
                 .attr("tabindex", id);
+
+            const
+                menu = new Menu({
+                    id: "scripts-pane-item-menu",
+                    target: element,
+                    items: [
+                        { text: "Reveal", action: () => activateByElement(element) },
+                        { splitter: true },
+                        {
+                            id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: { element: element }, action: args =>
+                                new InlineEditor({
+                                    element: args.element.find(".title"),
+                                    getInvalidNamesCallback: () => service.getNames(scriptsType),
+                                    acceptArgs: { id: element.data("id"), element: element },
+                                    onaccept: (newContent, args1) => {
+                                        _app.pub("scripts/title/update", newContent, args1.id, scriptsType);
+                                        scriptNamesRepo.set(args1.id, newContent);
+                                        args1.element.data("title", newContent);
+                                        if (model.filterBtn.data("state")) {
+                                            executeFilter();
+                                        }
+                                    }
+                                })
+                        },
+                        { splitter: true },
+                        { text: "Download", action: () => console.log("Download") }, //todo
+                        { text: "Remove", action: () => console.log("Remove") } //todo
+                    ],
+                    contextmenuItems: items => {
+                        const show = !element.hasClass("active");
+                        items[0].element.show(show);
+                        items[1].element.show(show);
+                        return items;
+                    }
+                });
             
             element.find(".item")
                 .on("click", () => {
@@ -110,41 +221,8 @@ define([
                 });
             
             element.find(".expand").on("click", e => {
-                let dir = e.target.data("dir") === "right" ? "down" : "right";
+                const dir = e.target.data("dir") === "right" ? "down" : "right";
                 expand(e.target, dir);
-            });
-
-            let menu = new Menu({
-                id: "scripts-pane-item-menu",
-                target: element, 
-                items: [
-                    {text: "Reveal", action: () => activateByElement(element)},
-                    {splitter: true},
-                    {id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: {element: element}, action: args => 
-                            new InlineEditor({
-                                element: args.element.find(".title"), 
-                                getInvalidNamesCallback: () => service.getNames(scriptsType),
-                                acceptArgs: {id: element.data("id"), element: element},
-                                onaccept: (newContent, args) => {
-                                    _app.pub("scripts/title/update", newContent, args.id, scriptsType);
-                                    scriptNamesRepo.set(args.id, newContent);
-                                    args.element.data("title", newContent);
-                                    if (model.filterBtn.data("state")) {
-                                        executeFilter();
-                                    }
-                                }
-                            })
-                    },
-                    {splitter: true},
-                    {text: "Download", action: ()=>console.log("Download")}, //todo
-                    {text: "Remove", action: ()=>console.log("Remove")} //todo
-                ],
-                contextmenuItems: items => {
-                    let show = !element.hasClass("active");
-                    items[0].element.show(show);
-                    items[1].element.show(show);
-                    return items;
-                }
             });
 
             element.on("keydown", e => {
@@ -188,86 +266,13 @@ define([
             }
         };
 
-    const
-        activate = (item, state) => {
-            if (!item.length) {
-                return;
-            }
-            item.toggleClass("active", state);
-            if (state) {
-                item.scrollIntoView({behavior: "instant", block: "end", inline: "end"});
-            }
-        };
-
-    var
-        filterTimeout;
-
-    const
-        activeFilter = state => {
-            if (state === true) {
-                model.filterBtn.css("border-style", "inset").data("state", state);
-                model.inputFilter.visible(true).setFocus().select();
-                executeFilter();
-                model.inputFilter.on("keyup", () => {
-                    if (filterTimeout) {
-                        clearTimeout(filterTimeout);
-                    } 
-                    filterTimeout = setTimeout(executeFilter, 250);
-                });
-            } else if (state === false) {
-                model.filterBtn.css("border-style", "").data("state", state);
-                model.inputFilter.visible(false);
-                clearFilter();
-                model.inputFilter.off("keyup");
-            } else if (state === undefined) {
-                return model.filterBtn.data("state");
-            }
-        };
-
-    const
-        toggleFilter = () => activeFilter(!model.filterBtn.data("state"));
-
-    const
-        executeFilter = () => {
-            let val = model.inputFilter.value.trim().toLowerCase();
-            if (val === "") {
-                clearFilter();
-                return;
-            }
-            for(let item of model.content.findAll(".panel-item")) {
-                let titleElement = item.find(".title"),
-                    title = item.data("title"),
-                    valIndex = title.toLowerCase().indexOf(val);
-                
-                if (valIndex !== -1) {
-                    item.show();
-                    let segment = title.substring(valIndex, valIndex + val.length),
-                        newTitle = title.substring(0, valIndex) + 
-                            "<span class='selected'>" + 
-                            segment + 
-                            "</span>" + 
-                            title.substring(valIndex + val.length, title.length);
-                    titleElement.html(newTitle);
-                } else {
-                    item.hide();
-                    titleElement.html(item.data("title"));
-                }
-            }
-        };
-
-    const
-        clearFilter = () => {
-            for(let item of model.content.findAll(".panel-item")) {
-                item.show().find(".title").html(item.data("title"));
-            }
-        }
-
     return container => {
 
         model = new Model().bind(container.html(paneTemplate));
         model.newBtn.on("click", e => {
             setTimeout(() => {
-                let getName = (n => n ? `New script ${n+1}` : "New script"), 
+                const
+                    getName = (n => n ? `New script ${n + 1}` : "New script"), 
                     unnamed = scriptNamesRepo.getUnnamed(),
                     suggestion = getName(unnamed.length);
                 _app.pub("scripts/create", scriptNamesRepo.total() + 1, suggestion, scriptsType);
@@ -284,19 +289,19 @@ define([
                 updateShadowLine();
                 model.info = "created...";
                 setTimeout(() => {
-                    model.info = "total=" + data.count
+                    model.info = `total=${data.count}`;
                     setTimeout(() => model.info = "", 5000);
                 }, 1000);
             })
 
-            .sub("editor/activated/" + scriptsType, data => 
-                activate(model.content.find(".item-" + data.id), data.state))
+            .sub(`editor/activated/${scriptsType}`, data => 
+                activate(model.content.find(`.item-${data.id}`), data.state))
 
             .sub("editor/title/update", (title, id, type) => {
                 if (scriptsType !== type) {
                     return;
                 }
-                model.content.find(".item-" + id)
+                model.content.find(`.item-${id}`)
                     .data("title", title)
                     .find(".title")
                     .attr("title", title)

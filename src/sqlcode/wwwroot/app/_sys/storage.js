@@ -8,7 +8,7 @@ define([], () => {
         getItem(ns) {
             let value = this._dict[ns];
             if (value === undefined) {
-                value = this._storage.getItem(ns)
+                value = this._storage.getItem(ns);
                 if (value === null) {
                     return null;
                 }
@@ -57,7 +57,7 @@ define([], () => {
             if (!ns) {
                 ns = "";
             } else {
-                ns = ns + "."
+                ns = ns + ".";
             }
             defaultNs = ns;
             return Storage;
@@ -71,11 +71,11 @@ define([], () => {
             names.push(namespace);
             Object.defineProperty(this, name, {
                 get: () => {
-                    let value = this._storage.getItem(namespace);
+                    const value = this._storage.getItem(namespace);
                     if (value === null && defualtValue !== undefined) {
                         return defualtValue;
                     }
-                    let conversion = this._conversion[name];
+                    const conversion = this._conversion[name];
                     if (conversion) {
                         return conversion(value);
                     }

@@ -42,7 +42,7 @@ define(["sys/storage"], Storage => {
                     if (this._docked) {
                         return true;
                     }
-                    let {_, prev} = this._getValuesArray();
+                    const {_, prev} = this._getValuesArray();
                     this._storage.position = prev;
                 })
                 .on("mousemove", e => {
@@ -52,10 +52,10 @@ define(["sys/storage"], Storage => {
                     e.preventDefault();
                     e.stopPropagation();
         
-                    let pos = this._getPos(e),
-                        calc = this._calcPos(pos, e),
-                        {values, prev} = this._getValuesArray(calc + "px"),
-                        rect = this._container.getBoundingClientRect();
+                    const pos = this._getPos(e),
+                          calc = this._calcPos(pos, e),
+                          {values, prev} = this._getValuesArray(calc + "px"),
+                          rect = this._container.getBoundingClientRect();
 
                     if (this._calcDelta(rect, pos) <= this._maxDelta) {
                         return false;
@@ -87,7 +87,7 @@ define(["sys/storage"], Storage => {
         }
         
         dock(noevent=false) {
-            let {values, prev} = this._getValuesArray(this._dockPos + "px");
+            const {values, prev} = this._getValuesArray(this._dockPos + "px");
             this._storage.position = prev;
             this._container.css(this._css, values.join(" "));
             this._docked = true;
@@ -107,7 +107,7 @@ define(["sys/storage"], Storage => {
             if (this._storage.position >= pos) {
                 pos = this._storage.position;
             }
-            let {values} = this._getValuesArray(pos + "px");
+            const {values} = this._getValuesArray(pos + "px");
             this._container.css(this._css, values.join(" "));
             this._docked = false;
             if (noevent) {
@@ -125,7 +125,7 @@ define(["sys/storage"], Storage => {
             if (values.prev <= this._min) {
                 return false;
             }
-            let p = values.prev + delta;
+            const p = values.prev + delta;
             this._storage.position = p;
             values.values[this._resizeIdx] = p + "px";
             this._container.css(this._css, values.values.join(" "));
@@ -143,8 +143,8 @@ define(["sys/storage"], Storage => {
         }
     
         _getValuesArray(newPos) {
-            let values = this._getValues();
-            let prev = Number(values[this._resizeIdx].replace("px", ""));
+            const values = this._getValues();
+            const prev = Number(values[this._resizeIdx].replace("px", ""));
             if (newPos) {
                 values[this._resizeIdx] = newPos;
                 values[this._autoIdx] = "auto";
@@ -178,16 +178,16 @@ define(["sys/storage"], Storage => {
             }
 
             _calcOffset(e) {
-                let value = this._curent();
+                const value = this._curent();
                 return value - this._getPos(e);
             }
 
             _calcDelta(rect, pos) {
-                return rect.width - pos
+                return rect.width - pos;
             }
 
             _getMin(pos, calc) {
-                return pos
+                return pos;
             }
         },
 
@@ -206,15 +206,15 @@ define(["sys/storage"], Storage => {
             }
 
             _calcDelta(rect, pos) {
-                return pos
+                return pos;
             }
 
             _calcOffset(e) {
-               return [this._getPos(e), this._curent()]
+                return [this._getPos(e), this._curent()];
             }
 
             _getMin(pos, calc) {
-                return calc
+                return calc;
             }
         }
 

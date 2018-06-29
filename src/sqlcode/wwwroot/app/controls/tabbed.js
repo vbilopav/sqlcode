@@ -30,7 +30,7 @@ define(["sys/model"], Model => {
                 if (this.active) {
                     this.reveal(this.active);
                 }
-            })
+            });
         }
 
         static get _contentId() {
@@ -49,6 +49,7 @@ define(["sys/model"], Model => {
             if (this._active) {
                 return Tabbed.contentByTab(this._active);
             }
+            return undefined;
         }
 
         get tabs() {
@@ -70,22 +71,22 @@ define(["sys/model"], Model => {
         }
 
         create({tabHtml, contentHtml, active=false}) {
-            let id = this._name + ++this._id;
+            const id = this._name + ++this._id;
             this._count++;
 
-            let content = "div"
+            const content = "div"
                 .createElement(id, contentHtml)
                 .data("id", this._id)
                 .addClass("tab-content");
 
-            let tab = "div"
+            const tab = "div"
                 .createElement(id, tabHtml)
                 .addClass("tab")
                 .data(Tabbed._contentId, content)
                 .data("id", this._id)
                 .on("click", e => this._tabClick(e));
             
-            let eventArgs = this._getEventArgs(tab, content);
+            const eventArgs = this._getEventArgs(tab, content);
             eventArgs.active = active;
             if (!this.beforeCreate(eventArgs)) {
                 this._id--;
@@ -107,8 +108,8 @@ define(["sys/model"], Model => {
         }
 
         closeByTab(tab) {
-            let content = Tabbed.contentByTab(tab),
-                eventArgs = this._getEventArgs(tab, content);
+            const content = Tabbed.contentByTab(tab);
+            const eventArgs = this._getEventArgs(tab, content);
             if (!this.beforeClose(eventArgs)) {
                 return;
             }
@@ -119,13 +120,13 @@ define(["sys/model"], Model => {
             eventArgs.state = false;
             this.afterClose(eventArgs);
             let lowest;
-            for(let tab of this.tabs.children) {
+            for(let child of this.tabs.children) {
                 if (lowest) {
-                    if (lowest.data("id") > tab.data("id")) {
-                        lowest = tab;
+                    if (lowest.data("id") > child.data("id")) {
+                        lowest = child;
                     }
                 } else {
-                    lowest = tab;
+                    lowest = child;
                 }
             }
             if (lowest) {
@@ -150,10 +151,10 @@ define(["sys/model"], Model => {
 
         reveal(tab) {
             if (!this.tabs.overflownX()) {
-                return
+                return;
             }
-            let tabRect = tab.getClientRects(),
-                tabsRect = this.tabs.getClientRects();
+            const tabRect = tab.getClientRects();
+            const tabsRect = this.tabs.getClientRects();
             if (tabRect[0].left < tabsRect[0].left) {
                 tab.scrollIntoView({behavior: "instant", block: "start", inline: "start"})
             }
@@ -188,8 +189,8 @@ define(["sys/model"], Model => {
         }
 
         _toggle(tab, state, args={}) {
-            let content = Tabbed.contentByTab(tab),
-                eventArgs = Object.assign(this._getEventArgs(tab, content), args);
+            const content = Tabbed.contentByTab(tab);
+            const eventArgs = Object.assign(this._getEventArgs(tab, content), args);
             eventArgs.state = state;
             if (!this.beforeActivate(eventArgs)) {
                 return this;
@@ -202,11 +203,11 @@ define(["sys/model"], Model => {
 
         _tabClick(e) {
             if (e.currentTarget.data("active")) {
-                return
+                return this;
             }
             if (e.target.data("canceled")) {
                 e.target.data("canceled", false);
-                return
+                return this;
             }
             this.activate(e.currentTarget);
             return this;

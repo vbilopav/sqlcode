@@ -24,7 +24,7 @@ define(["sys/model", "sys/storage"], (Model, Storage) => {
             if (btn.id === "results") {
                 storage.results = active;
             }
-            _app.pub("state/toggle/" + btn.id, btn.id, active, btn);
+            _app.pub(`state/toggle/${btn.id}`, btn.id, active, btn);
         },
         onMutexBtnClick = btn =>  {
             buttons.each(button => {

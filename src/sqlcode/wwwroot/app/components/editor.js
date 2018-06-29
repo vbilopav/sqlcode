@@ -19,18 +19,18 @@ define([
             });
         },
         getActiveEditor = () => {
-            let container = getActiveContentFunc();
+            const container = getActiveContentFunc();
             if (!container) {
                 return {container: undefined, editor: undefined};
             }
-            let editor = Editor.editorByContainer(container);
+            const editor = Editor.editorByContainer(container);
             if (!editor) {
                 return {container: container, editor: undefined};
             }
             return {container: container, editor: editor};
-        }
+        },
         updateSizeAndFocusOnActiveEditor = () => {
-            let {container, editor} = getActiveEditor();
+            const {container, editor} = getActiveEditor();
             if (!editor || !container) {
                 return;
             }
@@ -158,7 +158,7 @@ define([
                     "editor/activated"
                 ], updateSizeAndFocusOnActiveEditor)
                 .sub("monaco/active-editor/focus", () => {
-                    let {container, editor} = getActiveEditor();
+                    const {container, editor} = getActiveEditor();
                     if (!editor) {
                         return;
                     }
