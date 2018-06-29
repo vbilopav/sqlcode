@@ -93,7 +93,7 @@ namespace UnitTests.Scripting
         }
 
         [Fact]
-        public void GetTitles_HappyPath()
+        public void GetAllTitles_HappyPath()
         {
             // Arrange
             bool findAllCalled = false;
@@ -112,7 +112,7 @@ namespace UnitTests.Scripting
             var service = new ScriptingService(dbMock.Object, new ScriptItemSpecs());
 
             // Act
-            var result = service.GetTitles("type1").ToList();
+            var result = service.GetAllTitles("type1").ToList();
 
             // Assert
             Assert.True(findAllCalled);

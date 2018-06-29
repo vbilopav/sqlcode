@@ -76,7 +76,7 @@ define([
             if (!existing) {
                 dirtyStates.set(this, true);
                 this.save();
-                dirtyStates.set(this, false);
+                //dirtyStates.set(this, false);
             }
             this._monaco.model.onDidChangeContent(() => {
                 dirtyStates.set(this, true);
@@ -85,7 +85,7 @@ define([
                 } 
                 updateContentTimeout = setTimeout(() => {
                     this.save();
-                    dirtyStates.set(this, false);
+                    //dirtyStates.set(this, false);
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
@@ -101,21 +101,35 @@ define([
                 viewState: this._monaco.saveViewState(),
                 content: this._monaco.model.getValue(),
                 title: this.title
+            }).then(response => {
+                if (response.ok) {
+                    dirtyStates.set(this, !response.data.Saved);
+                } else {
+                    dirtyStates.set(this, true);
+                    _app.pub("editor/alert/save/fail", {
+                        editor: this,
+                        response: response
+                    });
+                }
             });
         }
 
         restore(id, type) {
-            let data = service.retreive(id, type);
-            if (!data) {
-                return false;
-            }
-            clearTimeout(updateContentTimeout);
-            this.save();
-            this.id = id;
-            this.type = type;
-            this._monaco.setValue(data.content);
-            dirtyStates.set(this, false);
-            this._monaco.restoreViewState(data.viewState);
+            service.retreive(id, type).then(response => {
+                if (!response.ok || !response.data) {
+                    _app.pub("editor/alert/retreive/fail", {
+                        editor: this,
+                        response: response
+                    });
+                    return false;
+                }
+                clearTimeout(updateContentTimeout);
+                this.id = response.data.id;
+                this.type = response.data.type;
+                this._monaco.setValue(response.data.content);
+                this._monaco.restoreViewState(response.data.viewState);
+                dirtyStates.set(this, false);
+            });
         }
 
         focus() {

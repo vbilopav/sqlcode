@@ -11,8 +11,9 @@ namespace sqlcode.Scripting
     {
         bool AddOrUpdate(ScriptViewModel model);
         ScriptViewModel RetreiveByKey(ScriptKeyModel key);
-        IEnumerable<string> GetTitles(string type);
+        IEnumerable<string> GetAllTitles(string type);
         bool UpdateTitle(ScriptKeyModel key, string title);
+        IEnumerable<ScriptTitleViewModel> GetAllItems(string type);
     }
 
     public class ScriptItemSpecs
@@ -40,7 +41,14 @@ namespace sqlcode.Scripting
 
         public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => _db.FirstOrDefault(_specs.GetKeySpec(key))?.MapToScriptViewModel();
 
-        public IEnumerable<string> GetTitles(string type) => _db.FindBy(_specs.GetTypeSpec(type)).Select(item => item.Title);
+        public IEnumerable<string> GetAllTitles(string type) => _db.FindBy(_specs.GetTypeSpec(type)).Select(item => item.Title);
+
+        public IEnumerable<ScriptTitleViewModel> GetAllItems(string type) => 
+            _db.FindBy(_specs.GetTypeSpec(type)).Select(item => new ScriptTitleViewModel {
+                Id = item.Key.Id,
+                Type = item.Key.Type,
+                Title = item.Title
+            });
 
         public bool UpdateTitle(ScriptKeyModel key, string title)
         {

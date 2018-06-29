@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,13 +24,19 @@ namespace sqlcode.Scripting
             using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
                 model.Content = await reader.ReadToEndAsync();
             
-            return Ok(_service.AddOrUpdate(model));
+            return Ok(new {
+                IsNew = _service.AddOrUpdate(model),
+                Saved = true
+            });
         }
 
         [HttpGet("titles")]
-        public IActionResult GetTitlesByType([FromQuery]string type) => Ok(_service.GetTitles(type));
+        public IActionResult GetAllTitles([FromQuery]string type) => Ok(_service.GetAllTitles(type));
 
         [HttpPost("title")]
         public IActionResult UpdateTitle(ScriptTitleViewModel model) => Ok(_service.UpdateTitle(model, model.Title));
+
+        [HttpGet("items")]
+        public IActionResult GetAllItems([FromQuery]string type) => Ok(_service.GetAllItems(type));
     }
 }

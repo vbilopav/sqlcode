@@ -19,14 +19,19 @@ namespace sqlcode.LocalStorage
         private readonly LiteDatabase _db;
 
         public DatabaseAdapter(
-            string connectionString, ILogger log, 
+            string connectionString, 
+            ILogger log, 
             string logLevel="ALL", 
             string logType="Information"
         )
         {
             byte logLevelValue = 0;
-            foreach (var item in logLevel.Split(',', ';', ' '))
+            foreach (var item in (logLevel??"").Split(',', ';', ' '))
             {
+                if (string.IsNullOrEmpty(item))
+                {
+                    continue;
+                }
                 var value = (byte?)typeof(Logger).GetField(item).GetValue(null);
                 if (value != null)
                 {
