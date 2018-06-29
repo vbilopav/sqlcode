@@ -19,6 +19,9 @@ namespace sqlcode.Scripting
     {
         public Expression<Func<ScriptDocumentModel, bool>> GetKeySpec(ScriptKeyModel key) => 
             item => item.Key.Id == key.Id && item.Key.Type == key.Type;
+
+        public Expression<Func<ScriptDocumentModel, bool>> GetTypeSpec(string type) => 
+            item => item.Key.Type == type;
     }
 
     public class ScriptingService : IScriptingService
@@ -35,15 +38,13 @@ namespace sqlcode.Scripting
 
         public bool AddOrUpdate(ScriptViewModel model) => _db.Upsert(ScriptDocumentModel.MapFrom(model));
 
-        public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => 
-            _db.FirstOrDefault<ScriptDocumentModel>(_specs.GetKeySpec(key))?.MapToScriptViewModel();
+        public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => _db.FirstOrDefault(_specs.GetKeySpec(key))?.MapToScriptViewModel();
 
-        public IEnumerable<string> GetTitles(string type) => 
-            _db.FindBy<ScriptDocumentModel>(item => item.Key.Type == type).Select(item => item.Title);
+        public IEnumerable<string> GetTitles(string type) => _db.FindBy(_specs.GetTypeSpec(type)).Select(item => item.Title);
 
         public bool UpdateTitle(ScriptKeyModel key, string title)
         {
-            var result = _db.FirstOrDefault<ScriptDocumentModel>(_specs.GetKeySpec(key));
+            var result = _db.FirstOrDefault(_specs.GetKeySpec(key));
             if (result == default(ScriptDocumentModel))
             {
                 return false;

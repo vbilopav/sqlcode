@@ -137,18 +137,25 @@ namespace UnitTests.Scripting
             var result2 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=2, Type="type1"}).Compile()).ToList();
             var result3 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=3, Type="type2"}).Compile()).ToList();
             var result4 = list.Where(spec.GetKeySpec(new ScriptKeyModel{Id=3, Type="type4"}).Compile()).ToList();
+            var result5 = list.Where(spec.GetTypeSpec("type1").Compile()).ToList();
+            var result6 = list.Where(spec.GetTypeSpec("type2").Compile()).ToList();
+            var result7 = list.Where(spec.GetTypeSpec("type5").Compile()).ToList();
 
             // Assert
-            Assert.Equal(1, result1.Count);
-            Assert.Equal("title1", result1.FirstOrDefault().Title);
+            Assert.Single(result1);
+            Assert.Equal("title1", result1.FirstOrDefault()?.Title);
 
-            Assert.Equal(1, result2.Count);
-            Assert.Equal("title2", result2.FirstOrDefault().Title);
+            Assert.Single(result2);
+            Assert.Equal("title2", result2.FirstOrDefault()?.Title);
 
-            Assert.Equal(1, result3.Count);
-            Assert.Equal("title3", result3.FirstOrDefault().Title);
+            Assert.Single(result3);
+            Assert.Equal("title3", result3.FirstOrDefault()?.Title);
 
-            Assert.Equal(0, result4.Count);
+            Assert.Empty(result4);
+
+            Assert.Equal(2, result5.Count);
+            Assert.Single(result6);
+            Assert.Empty(result7);
         }
     }
 }
