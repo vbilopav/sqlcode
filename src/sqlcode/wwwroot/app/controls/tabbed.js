@@ -1,5 +1,5 @@
-define(["sys/model"], Model => {
-
+define(["sys/model", "sys/html"], (Model, html) => {
+    
     class Tabbed {
         constructor({container, name="", height=40}) {
             this._model = new Model().bind(
@@ -74,13 +74,13 @@ define(["sys/model"], Model => {
             const id = this._name + ++this._id;
             this._count++;
 
-            const content = "div"
-                .createElement(id, contentHtml)
+            const 
+                content = html.tagToElement("div", id, contentHtml)
                 .data("id", this._id)
                 .addClass("tab-content");
 
-            const tab = "div"
-                .createElement(id, tabHtml)
+            const 
+                tab = html.tagToElement("div", id, tabHtml)
                 .addClass("tab")
                 .data(Tabbed._contentId, content)
                 .data("id", this._id)

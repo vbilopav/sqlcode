@@ -1,4 +1,4 @@
-define([], () => {
+define(["sys/html"], html => {
 
     const 
         template = id => String.html`
@@ -33,7 +33,7 @@ define([], () => {
         }) {
             let element = document.body.find("#" + id);
             if (!element.length) {
-                element = element = template(id).toElement();
+                element = element = html.strToElement(template(id));
                 document.body.append(element);
             }
             
@@ -47,10 +47,10 @@ define([], () => {
             if (items !== undefined) {
                 for(let item of items) {
                     if (item.splitter) {
-                        item.element = splitter.toElement();
+                        item.element = html.strToElement(splitter);
                         continue;
                     } 
-                    item.element = itemTemplate(item.text, item.keyBindings).toElement().on("click", () => {
+                    item.element = html.strToElement(itemTemplate(item.text, item.keyBindings)).on("click", () => {
                         item.action(item.args)
                     });
                 }

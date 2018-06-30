@@ -68,7 +68,7 @@ define([], () => class {
             }
             element.removeAttribute(attr);
             const instance = this._instance;
-            element.on(attr.replace("on", "").toLowerCase(), function(e) {
+            element.on(attr.replace("on", "").toLowerCase(), function() {
                 val.call(instance);
             });
         }

@@ -1,45 +1,39 @@
-define([], () => {
-
-    const getResult = async response => Object({
-        ok: response.ok,
-        status: response.status,
-        data: await response.json()
-    });
+define(["sys/fetch"], f => {
 
     return {
 
-        save: async (id, type, {viewState, content, title}) => await getResult(
+        save: async (id, type, {viewState, content, title}) => await f.getStdResponse(
             await fetch(
-                `/api/scripting?${Object({
+                `/api/scripting?${f.objToUrl({
                     Id: id, 
                     Type: type, 
                     Title: title, 
                     ViewState: JSON.stringify(viewState)
-                }).toUrlParams()}`, {method: "POST", body: content}
+                })}`, {method: "POST", body: content}
             )
         ),
 
-        retreive: async (id, type) => await getResult(
-            await fetch(`/api/scripting?${Object({Id: id, Type: type}).toUrlParams()}`)
+        retreive: async (id, type) => await f.getStdResponse(
+            await fetch(`/api/scripting?${f.objToUrl({Id: id, Type: type})}`)
         ),
         
-        getNames: async type => await getResult(
+        getNames: async type => await f.getStdResponse(
             await fetch(`/api/scripting/titles?type=${type}`)
         ),
 
-        updateTitle: async (id, type, title) => await getResult(
+        updateTitle: async (id, type, title) => await f.getStdResponse(
             await fetch(
-                `/api/scripting/title?${Object({
+                `/api/scripting/title?${f.objToUrl({
                     Id: id, 
                     Type: type, 
                     Title: title
-                }).toUrlParams()}`, {method: "POST"}
+                })}`, {method: "POST"}
             )
         ),
 
-        getItems: async type => await getResult(
+        getItems: async type => await f.getStdResponse(
             await fetch(`/api/scripting/items?type=${type}`)
-        ),
+        )
 
     }
 

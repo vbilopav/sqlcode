@@ -1,4 +1,4 @@
-define([], () => {
+define(["sys/html"], html => {
 
     const
         clean = s => s.replace(/&nbsp;/g, "").replace(/\\n/g, "").trim();
@@ -39,7 +39,7 @@ define([], () => {
                     }
                     element.removeClass("invalid").attr("contenteditable", "false").html(content);
                     if (content !== old) {
-                        onaccept(content.stripHtml(), acceptArgs)
+                        onaccept(html.stripHtml(content), acceptArgs)
                     }
                 },
                 validate = () => {

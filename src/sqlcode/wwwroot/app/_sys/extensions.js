@@ -1,4 +1,4 @@
-define([], () => {
+define(["sys/html"], html => {
         
     const 
         test = (object, extensions) => {
@@ -21,16 +21,15 @@ define([], () => {
         "overflownX", "overflownY",
         "setFocus"
     ]);
-    test(String, ["html", "hashCode", "createElement", "toCamelCase", "toElement", "toElements", "stripHtml"]);
+    test(String, ["html"]);
     test(NodeList, ["addClass", "removeClass", "toggleClass", "show", "hide"]);
     test(Document, ["on", "off", "trigger", "find", "findAll"]);
     test(Window, ["on", "off", "trigger"]);
-    test(Object, ["toUrlParams"]);
 
     HTMLElement.prototype.find = function(search) {
         let e = this.querySelector(search);
         if (!e) {
-            e = "dummy".createElement();
+            e = html.tagToElement("dummy");
             e.length = 0;
             return e;
         }
@@ -138,6 +137,8 @@ define([], () => {
         return this;
     }
 
+    const _toCamelCase = s => s.replace(/-([a-z])/g, g => g[1].toUpperCase());
+
     HTMLElement.prototype.css = function(property, value) {
         if (!this._styles) {
             this._styles = {};
@@ -158,7 +159,7 @@ define([], () => {
         }
         const result = this._styles[property];
         if (result === undefined) {
-            return this._styles[property.toCamelCase()];
+            return this._styles[_toCamelCase(property)];
         }
         return result;
     }
@@ -208,53 +209,6 @@ define([], () => {
         return this;
     }
 
-    String.prototype.toCamelCase = function() {
-        return this.replace(/-([a-z])/g, g => g[1].toUpperCase());
-    }
-
-    String.prototype.createElement = function(id, content) {
-        let e = typeof this === "object" ? 
-            document.createElement(this.toString()) : 
-            document.createElement(this);
-        if (id) {
-            e.id = id;
-        }
-        if (content) {
-            e.html(content);
-        }
-        return e;
-    }
-
-    const _getTemplate = str => {
-        let template = document.createElement("template");
-        template.innerHTML = str.trim();
-        return template;
-    }
-
-    String.prototype.toElement = function() {
-        return _getTemplate(this).content.firstChild;
-    }
-
-    String.prototype.toElements = function() {
-        return _getTemplate(this).content.childNodes;
-    }
-
-    String.prototype.hashCode = function() {
-        let h = 0;
-        for (let i = 0, len = this.length; i < len; i++) {
-            const c = this.charCodeAt(i);
-            h = ((h<<5)-h)+c;
-            h = h & h;
-        }
-        return h;
-    }
-
-    String.prototype.stripHtml = function() {
-        var div = "div".createElement();
-        div.innerHTML = this;
-        return div.textContent || div.innerText || "";
-    }
-
     NodeList.prototype.addClass = function(className) {
         for(let e of this) {
             e.addClass(className);
@@ -298,10 +252,6 @@ define([], () => {
     Window.prototype.off = HTMLElement.prototype.off;
     Window.prototype.on = HTMLElement.prototype.on;
     Window.prototype.trigger = HTMLElement.prototype.trigger;
-
-    Object.prototype.toUrlParams = function() {
-        return Object.keys(this).map(item => `${encodeURIComponent(item)}=${encodeURIComponent(this[item])}`).join("&");
-    }
 
     //
     // lit-html vs code extension support

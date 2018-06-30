@@ -1,7 +1,11 @@
 define([
+    "sys/html",
     "services/script-service",
     "vs/editor/editor.main"
-], service => {
+], (
+    html, 
+    service
+) => {
 
     var
         getActiveContentFunc,
@@ -60,7 +64,9 @@ define([
             title=(() => {throw "title is required"})(),
             existing
         }) {
-            this.element = String.html`<div class="wrap" style="position: fixed;"></div>`.toElement();
+            this.element = html.strToElement(
+                String.html`<div class="wrap" style="position: fixed;"></div>`
+            );
             this.container = container.data(_editorId, this).append(this.element);
             this.id = id;
             this.type = type;

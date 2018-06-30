@@ -1,10 +1,12 @@
 define([
     "sys/model",
+    "sys/html",
     "controls/monaco-menu",
     "controls/inline-editor",
     "services/script-service"
 ], (
     Model, 
+    html,
     Menu, 
     InlineEditor, 
     service
@@ -36,23 +38,25 @@ define([
         dirEnum = Object.freeze({right: "&#11208;",  down: "&#11206;"});
 
     const
-        item = (title, dir="right") => String.html`
-            <div class="panel-item">
-                <div class="expand" data-dir="${dir}" title="${dir === "right" ? "expand" : "collapse"}">
-                    ${dirEnum[dir]}
-                </div>
-                <div class="item">
-                    <span class="icon icon-doc-text"></span>
-                    <span class="title editable"
-                        contenteditable="false" autocorrect="off" 
-                        autocapitalize="off" spellcheck="false" autocomplete="off"
-                        title="${title}">${title}
-                    </span>
-                </div>
-                <div class="details" ${dir === "right" ? "style='display: none'" : ""}>
-                    empty
-                </div>
-            </div>`.toElement();
+        item = (title, dir="right") => html.strToElement(
+            String.html`
+                <div class="panel-item">
+                    <div class="expand" data-dir="${dir}" title="${dir === "right" ? "expand" : "collapse"}">
+                        ${dirEnum[dir]}
+                    </div>
+                    <div class="item">
+                        <span class="icon icon-doc-text"></span>
+                        <span class="title editable"
+                            contenteditable="false" autocorrect="off" 
+                            autocapitalize="off" spellcheck="false" autocomplete="off"
+                            title="${title}">${title}
+                        </span>
+                    </div>
+                    <div class="details" ${dir === "right" ? "style='display: none'" : ""}>
+                        empty
+                    </div>
+                </div>`
+            );
 
     const
         activate = (item1, state) => {
