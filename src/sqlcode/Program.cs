@@ -14,8 +14,7 @@ namespace sqlcode
 
     public class Program
     {
-        public static void Main(string[] args) => 
-            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();
+        public static void Main(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();
     }
 
     public class AppConfig
@@ -28,23 +27,23 @@ namespace sqlcode
 
     public class Startup
     {
-        private IServiceCollection _services;
-        private readonly IConfiguration _config;
-        private readonly AppConfig _appConfig;
+        private IServiceCollection services;
+        private readonly IConfiguration config;
+        private readonly AppConfig appConfig;
 
         public Startup(IConfiguration config)
         {
-            _config = config;
-            _appConfig = new AppConfig();
-            config.Bind("App", _appConfig);
+            this.config = config;
+            appConfig = new AppConfig();
+            config.Bind("App", appConfig);
         }
         
         public void ConfigureServices(IServiceCollection services)
         {
-            this._services = services;
+            this.services = services;
             services
                 .AddRouting(options => options.LowercaseUrls = true)
-                .AddLocalDatabase(_appConfig)
+                .AddLocalDatabase(appConfig)
                 .AddScriptingService()
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -79,14 +78,14 @@ namespace sqlcode
                     .UseDefaultFiles()
                     .UseStaticFiles();
 
-                if (_appConfig.DiagnosticPath != null)
+                if (appConfig.DiagnosticPath != null)
                 {
                     app.UseDiagnosticPage(
                         env,
-                        _services,
-                        _config,
-                        _appConfig.DiagnosticPath,
-                        ("AppConfig", _appConfig as object),
+                        services,
+                        config,
+                        appConfig.DiagnosticPath,
+                        ("AppConfig", appConfig as object),
                         includeSystemServices: false
                    );
                 }

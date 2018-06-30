@@ -9,12 +9,12 @@ namespace sqlcode.Scripting
     [ApiController]
     public class ScriptingApiController : ControllerBase
     {
-        private readonly IScriptingService _service;
+        private readonly IScriptingService service;
 
-        public ScriptingApiController(IScriptingService service) => _service = service;
+        public ScriptingApiController(IScriptingService service) => this.service = service;
 
         [HttpGet]
-        public IActionResult Retreive([FromQuery]ScriptKeyModel key) => Ok(_service.RetreiveByKey(key));
+        public IActionResult Retreive([FromQuery]ScriptKeyModel key) => Ok(service.RetreiveByKey(key));
 
         [HttpPost]
         public async Task<IActionResult> Save([FromQuery]ScriptViewModel model)
@@ -23,18 +23,18 @@ namespace sqlcode.Scripting
                 model.Content = await reader.ReadToEndAsync();
             
             return Ok(new {
-                IsNew = _service.AddOrUpdate(model),
+                IsNew = service.AddOrUpdate(model),
                 Saved = true
             });
         }
 
         [HttpGet("titles")]
-        public IActionResult GetAllTitles([FromQuery]string type) => Ok(_service.GetAllTitles(type));
+        public IActionResult GetAllTitles([FromQuery]string type) => Ok(service.GetAllTitles(type));
 
         [HttpPost("title")]
-        public IActionResult UpdateTitle(ScriptTitleViewModel model) => Ok(_service.UpdateTitle(model, model.Title));
+        public IActionResult UpdateTitle(ScriptTitleViewModel model) => Ok(service.UpdateTitle(model, model.Title));
 
         [HttpGet("items")]
-        public IActionResult GetAllItems([FromQuery]string type) => Ok(_service.GetAllItems(type));
+        public IActionResult GetAllItems([FromQuery]string type) => Ok(service.GetAllItems(type));
     }
 }

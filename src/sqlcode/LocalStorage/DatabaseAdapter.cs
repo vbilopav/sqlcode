@@ -16,7 +16,7 @@ namespace sqlcode.LocalStorage
 
     public class DatabaseAdapter : IDisposable, IDatabaseAdapter
     {
-        private readonly LiteDatabase _db;
+        private readonly LiteDatabase db;
 
         public DatabaseAdapter(
             string connectionString, 
@@ -49,10 +49,10 @@ namespace sqlcode.LocalStorage
                 new Logger(logLevelValue, message => log.Log((LogLevel)logTypeValue, message)) : 
                 null;
 
-            _db = new LiteDatabase(connectionString, log: logger);
+            db = new LiteDatabase(connectionString, log: logger);
         }
 
-        private LiteCollection<T> GetCollection<T>() => _db.GetCollection<T>(typeof(T).Name);
+        private LiteCollection<T> GetCollection<T>() => db.GetCollection<T>(typeof(T).Name);
 
         public bool Upsert<T>(T model) => GetCollection<T>().Upsert(model);
         
@@ -80,13 +80,13 @@ namespace sqlcode.LocalStorage
 
         public DatabaseAdapter Shrink()
         {
-            _db.Shrink();
+            db.Shrink();
             return this;
         }
 
         public void Dispose()
         {
-            _db?.Dispose();
+            db?.Dispose();
         }
     }
 }

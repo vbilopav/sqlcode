@@ -27,24 +27,24 @@ namespace sqlcode.Scripting
 
     public class ScriptingService : IScriptingService
     {
-        private readonly IDatabaseAdapter _db;
+        private readonly IDatabaseAdapter db;
 
-        private readonly ScriptItemSpecs _specs;
+        private readonly ScriptItemSpecs specs;
 
         public ScriptingService(IDatabaseAdapter db, ScriptItemSpecs specs)
         {
-            _db = db;
-            _specs = specs;
+            this.db = db;
+            this.specs = specs;
         }
 
-        public bool AddOrUpdate(ScriptViewModel model) => _db.Upsert(ScriptDocumentModel.MapFrom(model));
+        public bool AddOrUpdate(ScriptViewModel model) => db.Upsert(ScriptDocumentModel.MapFrom(model));
 
-        public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => _db.FirstOrDefault(_specs.GetKeySpec(key))?.MapToScriptViewModel();
+        public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => db.FirstOrDefault(specs.GetKeySpec(key))?.MapTo();
 
-        public IEnumerable<string> GetAllTitles(string type) => _db.FindBy(_specs.GetTypeSpec(type)).Select(item => item.Title);
+        public IEnumerable<string> GetAllTitles(string type) => db.FindBy(specs.GetTypeSpec(type)).Select(item => item.Title);
 
         public IEnumerable<ScriptTitleViewModel> GetAllItems(string type) => 
-            _db.FindBy(_specs.GetTypeSpec(type)).Select(item => new ScriptTitleViewModel {
+            db.FindBy(specs.GetTypeSpec(type)).Select(item => new ScriptTitleViewModel {
                 Id = item.Key.Id,
                 Type = item.Key.Type,
                 Title = item.Title
@@ -52,13 +52,13 @@ namespace sqlcode.Scripting
 
         public bool UpdateTitle(ScriptKeyModel key, string title)
         {
-            var result = _db.FirstOrDefault(_specs.GetKeySpec(key));
+            var result = db.FirstOrDefault(specs.GetKeySpec(key));
             if (result == default(ScriptDocumentModel))
             {
                 return false;
             }
             result.Title = title;
-            return _db.Update(result);
+            return db.Update(result);
         } 
     }
 }
