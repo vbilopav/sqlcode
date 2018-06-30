@@ -269,10 +269,28 @@ define([
                 model.shadow.css("display", "none");
             }
         };
+    
+    const
+        newItem = (id, title) => {
+            let item = createItem(id, title);
+            model.content.append(item);
+            scriptNamesRepo.add(id, title);
+            return item;
+        };
 
     return container => {
 
         model = new Model().bind(container.html(paneTemplate));
+        service.getItems(scriptsType).then(response => {
+            if (!response.ok || !response.data) {
+                _app.pub("scripts/alert/retreive-all/fail", scriptsType);
+            } else {
+                for(let data of response.data) {
+                    newItem(data.id, data.title);
+                }
+            }
+        });
+        
         model.newBtn.on("click", e => {
             setTimeout(() => {
                 const
@@ -287,9 +305,7 @@ define([
         
         _app
             .sub("editor/created/" + scriptsType, data => {
-                let item = createItem(data.editor.id, data.title);
-                model.content.append(item);
-                scriptNamesRepo.add(data.editor.id, data.title);
+                newItem(data.editor.id, data.title);
                 updateShadowLine();
                 model.info = "created...";
                 setTimeout(() => {

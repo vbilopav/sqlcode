@@ -109,7 +109,7 @@ define([
                 title: this.title
             }).then(response => {
                 if (response.ok) {
-                    dirtyStates.set(this, !response.data.Saved);
+                    dirtyStates.set(this, !response.data.saved);
                 } else {
                     dirtyStates.set(this, true);
                     _app.pub("editor/alert/save/fail", {
