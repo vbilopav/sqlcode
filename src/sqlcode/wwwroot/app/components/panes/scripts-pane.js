@@ -283,11 +283,13 @@ define([
         model = new Model().bind(container.html(paneTemplate));
         service.getItems(scriptsType).then(response => {
             if (!response.ok || !response.data) {
-                _app.pub("scripts/alert/retreive-all/fail", scriptsType);
+                _app.pub("scripts/alert/retreive-all/fail", scriptsType); // todo: alerts
             } else {
                 for(let data of response.data) {
                     newItem(data.id, data.title);
                 }
+
+                // todo: script pane loaded...
             }
         });
         

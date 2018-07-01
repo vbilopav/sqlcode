@@ -112,7 +112,7 @@ define([
                     dirtyStates.set(this, !response.data.saved);
                 } else {
                     dirtyStates.set(this, true);
-                    _app.pub("editor/alert/save/fail", {
+                    _app.pub("editor/alert/save/fail", { // todo: alerts
                         editor: this,
                         response: response
                     });
@@ -123,7 +123,7 @@ define([
         restore(id, type) {
             service.retreive(id, type).then(response => {
                 if (!response.ok || !response.data) {
-                    _app.pub("editor/alert/retreive/fail", {
+                    _app.pub("editor/alert/retreive/fail", { // todo: alerts
                         editor: this,
                         response: response
                     });
