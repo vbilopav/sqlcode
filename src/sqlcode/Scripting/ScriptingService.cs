@@ -27,6 +27,8 @@ namespace sqlcode.Scripting
 
     public class ScriptingService : IScriptingService
     {
+        private static Object titlesLock = new Object();
+
         private readonly IDatabaseAdapter db;
 
         private readonly ScriptItemSpecs specs;
@@ -41,7 +43,13 @@ namespace sqlcode.Scripting
 
         public ScriptViewModel RetreiveByKey(ScriptKeyModel key) => db.FirstOrDefault(specs.GetKeySpec(key))?.MapTo();
 
-        public IEnumerable<string> GetAllTitles(string type) => db.FindBy(specs.GetTypeSpec(type)).Select(item => item.Title);
+        public IEnumerable<string> GetAllTitles(string type)
+        {
+            lock(titlesLock)
+            {
+                return db.FindBy(specs.GetTypeSpec(type)).Select(item => item.Title);
+            }
+        }
 
         public IEnumerable<ScriptTitleViewModel> GetAllItems(string type) => 
             db.FindBy(specs.GetTypeSpec(type)).Select(item => new ScriptTitleViewModel {
@@ -52,13 +60,16 @@ namespace sqlcode.Scripting
 
         public bool UpdateTitle(ScriptKeyModel key, string title)
         {
-            var result = db.FirstOrDefault(specs.GetKeySpec(key));
-            if (result == default(ScriptDocumentModel))
+            lock(titlesLock)
             {
-                return false;
+                var result = db.FirstOrDefault(specs.GetKeySpec(key));
+                if (result == default(ScriptDocumentModel))
+                {
+                    return false;
+                }
+                result.Title = title;
+                return db.Update(result);
             }
-            result.Title = title;
-            return db.Update(result);
         } 
     }
 }

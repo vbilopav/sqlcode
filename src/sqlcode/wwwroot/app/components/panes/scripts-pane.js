@@ -3,16 +3,18 @@ define([
     "sys/html",
     "controls/monaco-menu",
     "controls/inline-editor",
-    "services/script-service"
+    "services/script-service",
+    "components/pane-filter"
 ], (
     Model, 
     html,
     Menu, 
     InlineEditor, 
-    service
+    service,
+    Filter
 ) => {
 
-    var model;
+    var model, filter
 
     const 
         scriptsType = "pgsql",
@@ -69,70 +71,6 @@ define([
             }
         };
 
-    var
-        filterTimeout;
-
-    const
-        clearFilter = () => {
-            for (let item1 of model.content.findAll(".panel-item")) {
-                item1.show().find(".title").html(item1.data("title"));
-            }
-        }
-
-    const
-        executeFilter = () => {
-            const val = model.inputFilter.value.trim().toLowerCase();
-            if (val === "") {
-                clearFilter();
-                return;
-            }
-            for (let item1 of model.content.findAll(".panel-item")) {
-                const titleElement = item1.find(".title");
-                const title = item1.data("title");
-                const valIndex = title.toLowerCase().indexOf(val);
-
-                if (valIndex !== -1) {
-                    item1.show();
-                    const
-                        segment = title.substring(valIndex, valIndex + val.length),
-                        newTitle = title.substring(0, valIndex) +
-                            "<span class='selected'>" +
-                            segment +
-                            "</span>" +
-                            title.substring(valIndex + val.length, title.length);
-                    titleElement.html(newTitle);
-                } else {
-                    item1.hide();
-                    titleElement.html(item1.data("title"));
-                }
-            }
-        };
-
-    const
-        activeFilter = state => {
-            if (state === true) {
-                model.filterBtn.css("border-style", "inset").data("state", state);
-                model.inputFilter.visible(true).setFocus().select();
-                executeFilter();
-                model.inputFilter.on("keyup", () => {
-                    if (filterTimeout) {
-                        clearTimeout(filterTimeout);
-                    }
-                    filterTimeout = setTimeout(executeFilter, 250);
-                });
-            } else if (state === false) {
-                model.filterBtn.css("border-style", "").data("state", state);
-                model.inputFilter.visible(false);
-                clearFilter();
-                model.inputFilter.off("keyup");
-            } else if (state === undefined) {
-                return model.filterBtn.data("state");
-            }
-        }
-
-    const
-        toggleFilter = () => activeFilter(!model.filterBtn.data("state"));
-
     const
         scriptNamesRepo = {
             _scripts: {},
@@ -170,6 +108,7 @@ define([
 
     const
         createItem = (id, title) => {
+
             const
                 element = item(title)
                 .data("id", id)
@@ -195,7 +134,7 @@ define([
                                         scriptNamesRepo.set(args1.id, newContent);
                                         args1.element.data("title", newContent);
                                         if (model.filterBtn.data("state")) {
-                                            executeFilter();
+                                            filter.execute();
                                         }
                                     }
                                 })
@@ -281,6 +220,8 @@ define([
     return container => {
 
         model = new Model().bind(container.html(paneTemplate));
+        filter = new Filter({content: model.content, filterBtn: model.filterBtn, inputFilter: model.inputFilter});
+
         service.getItems(scriptsType).then(response => {
             if (!response.ok || !response.data) {
                 _app.pub("scripts/alert/retreive-all/fail", scriptsType); // todo: alerts
@@ -302,8 +243,8 @@ define([
                 _app.pub("scripts/create", scriptNamesRepo.total() + 1, suggestion, scriptsType);
             }, 0);
         });
-        activeFilter(false); // initial state for filter ctrl
-        model.filterBtn.on("click", () => toggleFilter());
+        filter.activate(false); // initial state for filter ctrl
+        model.filterBtn.on("click", () => filter.toggle());
         
         _app
             .sub("editor/created/" + scriptsType, data => {
