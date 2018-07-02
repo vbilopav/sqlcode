@@ -87,14 +87,16 @@ define([
                                         values: response.data || [],
                                         acceptArgs: {id: tab.data("script-id"), type: type1},
                                         onaccept: (newContent, args) => {
-                                            if (!response.ok) {
-                                                inline.editable();
-                                                inline.element.focus();
-                                                inline.setInvalid();
-                                                _app.pub("scripts/title/save/fail", {id: args.id, type: args.type, title: newContent});// todo: alerts
-                                                return;
-                                            }
-                                            _app.pub("editor/title/update", newContent, args.id, args.type);
+                                            service.updateTitle(args.id, args.type, newContent).then(response => {
+                                                if (!response.ok) {
+                                                    inline.editable();
+                                                    inline.element.focus();
+                                                    inline.setInvalid();
+                                                    _app.pub("scripts/title/save/fail", {id: args.id, type: args.type, title: newContent});// todo: alerts
+                                                    return;
+                                                }
+                                                _app.pub("editor/title/update", newContent, args.id, args.type);
+                                            });
                                         }
                                     });
                                     

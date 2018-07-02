@@ -7,17 +7,16 @@ define(["sys/fetch"], f => {
 
         save: async (id, type, {viewState, content, title}) => await f.getStdResponse(
             await fetch(
-                `${baseUrl}?${f.objToUrl({
-                    Id: id,
-                    Type: type,
-                    Title: title,
-                    ViewState: JSON.stringify(viewState)
-                })}`, {method: "POST", body: content}
+                `${baseUrl}?${f.url({id: id, type: type, title: title, ViewState: JSON.stringify(viewState)})}`, 
+                {
+                    method: "POST", 
+                    body: content
+                }
             )
         ),
 
         retreive: async (id, type) => await f.getStdResponse(
-            await fetch(`${baseUrl}?${f.objToUrl({Id: id, Type: type})}`)
+            await fetch(`${baseUrl}?${f.url({id: id, type: type})}`)
         ),
         
         getNames: async type => await f.getStdResponse(
@@ -26,11 +25,7 @@ define(["sys/fetch"], f => {
 
         updateTitle: async (id, type, title) => await f.getStdResponse(
             await fetch(
-                `${baseUrl}/title?${f.objToUrl({
-                    Id: id, 
-                    Type: type, 
-                    Title: title
-                })}`, {method: "POST"}
+                `${baseUrl}/title?${f.url({id: id, type: type, title: title})}`, {method: "POST"}
             )
         ),
 

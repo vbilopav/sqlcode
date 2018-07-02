@@ -122,7 +122,7 @@ define(["sys/html"], html => {
 
         setInvalid () {
             this.element.addClass("invalid").attr("title", "This is not valid value! Enter valid text or press ESC to exit editing and to revert to original value.");
-            isvalid = false;
+            this.isvalid = false;
         }
 
         static editing(element) {

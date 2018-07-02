@@ -36,13 +36,12 @@ namespace sqlcode.Scripting
         {
             try
             {
-                var result = service.UpdateTitle(model, model.Title);
+               return Ok(service.UpdateTitle(model, model.Title));
             }
-            catch(DuplicateTitleException)
+            catch(ScriptingServiceException)
             {
                 return BadRequest();
             }
-            return Ok(service.UpdateTitle(model, model.Title));
         }
 
         [HttpGet("items")]

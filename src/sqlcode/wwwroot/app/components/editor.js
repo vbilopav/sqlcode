@@ -169,11 +169,13 @@ define([
                         return;
                     }
                     editor.focus();
-                })
+                });
+                /*
                 .sub([
                     "scripts/title/update", 
                     "editor/title/update"
                 ], (title, id, type) => service.updateTitle(id, type, title));
+                */
         }
 
         static editorByContainer(container) {
