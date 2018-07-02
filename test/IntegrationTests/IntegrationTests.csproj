@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\sqlcode\sqlcode.csproj" />
+    <ProjectReference Include="..\..\src\sqlcode\sqlcode.csproj" />
   </ItemGroup>
 
 </Project>

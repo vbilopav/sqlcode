@@ -5,11 +5,11 @@ VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sqlcode", "src\sqlcode\sqlcode.csproj", "{E15E9940-9995-499F-9C61-34ED167FDA53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "src\UnitTests\UnitTests.csproj", "{58829186-064A-4334-94F2-2BFA13C92250}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "test\UnitTests\UnitTests.csproj", "{58829186-064A-4334-94F2-2BFA13C92250}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6147C478-B3D7-4B12-A0D2-3F1311D0B39C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "src\IntegrationTests\IntegrationTests.csproj", "{4AD64050-7B04-402D-8A5A-FCA7C44B24B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "test\IntegrationTests\IntegrationTests.csproj", "{4AD64050-7B04-402D-8A5A-FCA7C44B24B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testing", "testing", "{780A1DA9-78E9-4993-B591-45AC01DB3EA7}"
 EndProject

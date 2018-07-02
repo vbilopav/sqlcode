@@ -14,7 +14,7 @@ namespace IntegrationTests
         public void Test_QuerySomeData()
         {
             var specs = new ScriptItemSpecs();
-            using(var db = new DatabaseAdapter("../../../../sqlcode/local.db", new Mock<ILogger>().Object, null))
+            using(var db = new DatabaseAdapter("../../../../../src/sqlcode/local.db", new Mock<ILogger>().Object, null))
             {
                 var item1 = db.FirstOrDefault(specs.GetKeySpec(new ScriptKeyModel{Id=1, Type="pgsql"}));
                 Console.WriteLine(item1.Content);
