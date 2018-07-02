@@ -6,7 +6,7 @@ define(["sys/html"], html => {
     return class {
         constructor ({
             element, 
-            getInvalidNamesCallback=()=>[],
+            values=[],
             acceptArgs,
             onaccept=(()=>{}),
             max=100
@@ -16,21 +16,18 @@ define(["sys/html"], html => {
                 oldTitle = element.attr("title");
             let
                 prev = old,
-                content = old,
-                isvalid = true;
+                content = old;
+            
+            this.isvalid = true;
             const
-                invalid = () => {
-                    element.addClass("invalid").attr("title", 
-                        "This is not valid value! Enter valid text or press ESC to exit editing and to revert to original value.");
-                    isvalid = false;
-                },
+                invalid = () => this.setInvalid(),
                 valid = () => {
                     element.removeClass("invalid").attr("title", oldTitle);
-                    isvalid = true;
+                    this.isvalid = true;
                 },
                 reject = () => element.html(old).removeClass("invalid").attr("contenteditable", "false"),
                 accept = () => {
-                    if (!isvalid) {
+                    if (!this.isvalid) {
                         element.focus();
                         return;
                     }
@@ -52,71 +49,80 @@ define(["sys/html"], html => {
                         invalid();
                         return;
                     }
-                    const names = getInvalidNamesCallback();
-                    if (content !== old && names.indexOf(content) !== -1) {
+                    if (content !== old && values.indexOf(content) !== -1) {
                         invalid();
                         return;
                     }
                     valid();
                     prev = content;
                 }
-
-            element
-            .attr("contenteditable", "true").on("blur", accept)
-            .on("focus", () => {
-                setTimeout(() => {
-                    let sel, range;
-                    if (window.getSelection && document.createRange) {
-                        range = document.createRange();
-                        range.selectNodeContents(element);
-                        sel = window.getSelection();
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    } else if (document.body.createTextRange) {
-                        range = document.body.createTextRange();
-                        range.moveToElementText(element);
-                        range.select();
+            
+            this.element = element;
+            this.editable()
+                .on("blur", accept)
+                .on("focus", () => {
+                    setTimeout(() => {
+                        let sel, range;
+                        if (window.getSelection && document.createRange) {
+                            range = document.createRange();
+                            range.selectNodeContents(element);
+                            sel = window.getSelection();
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                        } else if (document.body.createTextRange) {
+                            range = document.body.createTextRange();
+                            range.moveToElementText(element);
+                            range.select();
+                        }
+                    }, 1);
+                })
+                .on("keydown", e => {
+                    if (e.keyCode === 13) {
+                        validate();
+                        if (valid) {
+                            accept();
+                        }
+                        e.preventDefault();
+                        return;
                     }
-                }, 1);
-            })
-            .on("keydown", e => {
-                if (e.keyCode === 13) {
+                    if (content.length >= max) {
+                        if (
+                            (e.keyCode > 47 && e.keyCode < 58) ||
+                            e.keyCode === 32 || e.keyCode === 13 ||
+                            (e.keyCode > 64 && e.keyCode < 91) ||
+                            (e.keyCode > 95 && e.keyCode < 112) ||
+                            (e.keyCode > 185 && e.keyCode < 193) ||
+                            (e.keyCode > 218 && e.keyCode < 223)
+                            ) {
+                                e.preventDefault();
+                        }
+                    }
+                })
+                .on("keyup", e => {
+                    if (e.keyCode === 27) {
+                        reject();
+                        return;
+                    }
                     validate();
-                    if (valid) {
-                        accept();
+                })
+                .on("paste", e => {
+                    let pasted = clean((e.clipboardData || window.clipboardData).getData("text"));
+                    if (pasted.length >= max) {
+                        pasted = pasted.substring(0, max);
                     }
+                    element.html(pasted);
                     e.preventDefault();
-                    return;
-                }
-                if (content.length >= max) {
-                    if (
-                        (e.keyCode > 47 && e.keyCode < 58) ||
-                        e.keyCode === 32 || e.keyCode === 13 ||
-                        (e.keyCode > 64 && e.keyCode < 91) ||
-                        (e.keyCode > 95 && e.keyCode < 112) ||
-                        (e.keyCode > 185 && e.keyCode < 193) ||
-                        (e.keyCode > 218 && e.keyCode < 223)
-                        ) {
-                            e.preventDefault();
-                    }
-                }
-            })
-            .on("keyup", e => {
-                if (e.keyCode === 27) {
-                    reject();
-                    return;
-                }
-                validate();
-            })
-            .on("paste", e => {
-                let pasted = clean((e.clipboardData || window.clipboardData).getData("text"));
-                if (pasted.length >= max) {
-                    pasted = pasted.substring(0, max);
-                }
-                element.html(pasted);
-                e.preventDefault();
-            })
-            .focus();
+                })
+                .focus();
+        }
+
+        editable () {
+            return this.element.attr("contenteditable", "true");
+        }
+
+        setInvalid () {
+            this.element.addClass("invalid").attr("title", "This is not valid value! Enter valid text or press ESC to exit editing and to revert to original value.");
+            isvalid = false;
         }
 
         static editing(element) {

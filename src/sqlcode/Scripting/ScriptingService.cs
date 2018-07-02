@@ -25,6 +25,9 @@ namespace sqlcode.Scripting
             item => item.Key.Type == type;
     }
 
+    public class ScriptingServiceException : Exception {}
+    public class DuplicateTitleException : ScriptingServiceException {}
+
     public class ScriptingService : IScriptingService
     {
         private static Object titlesLock = new Object();
@@ -62,6 +65,10 @@ namespace sqlcode.Scripting
         {
             lock(titlesLock)
             {
+                if (this.GetAllItems(key.Type).Where(item => item.Title == title && item.Id != key.Id).Any())
+                {
+                    throw new DuplicateTitleException();
+                }
                 var result = db.FirstOrDefault(specs.GetKeySpec(key));
                 if (result == default(ScriptDocumentModel))
                 {

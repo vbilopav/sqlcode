@@ -79,13 +79,27 @@ define([
                             }
                         },
                         {splitter: true},
-                        {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => 
-                            new InlineEditor({
-                                element: args.title, 
-                                getInvalidNamesCallback: () => service.getNames(args.tab.data("script-type")),
-                                acceptArgs: {id: tab.data("script-id"), type: tab.data("script-type")},
-                                onaccept: (newContent, args) => _app.pub("editor/title/update", newContent, args.id, args.type)
-                            })
+                        {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => {
+                                let type1 = tab.data("script-type");
+                                service.getNames(type1).then(response => {
+                                    const inline = new InlineEditor({
+                                        element: args.title, 
+                                        values: response.data || [],
+                                        acceptArgs: {id: tab.data("script-id"), type: type1},
+                                        onaccept: (newContent, args) => {
+                                            if (!response.ok) {
+                                                inline.editable();
+                                                inline.element.focus();
+                                                inline.setInvalid();
+                                                _app.pub("scripts/title/save/fail", {id: args.id, type: args.type, title: newContent});// todo: alerts
+                                                return;
+                                            }
+                                            _app.pub("editor/title/update", newContent, args.id, args.type);
+                                        }
+                                    });
+                                    
+                                });
+                            }
                         },
                         {splitter: true},
                         {id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => 

@@ -32,7 +32,18 @@ namespace sqlcode.Scripting
         public IActionResult GetAllTitles([FromQuery]string type) => Ok(service.GetAllTitles(type));
 
         [HttpPost("title")]
-        public IActionResult UpdateTitle([FromQuery]ScriptTitleViewModel model) => Ok(service.UpdateTitle(model, model.Title));
+        public IActionResult UpdateTitle([FromQuery]ScriptTitleViewModel model)
+        {
+            try
+            {
+                var result = service.UpdateTitle(model, model.Title);
+            }
+            catch(DuplicateTitleException)
+            {
+                return BadRequest();
+            }
+            return Ok(service.UpdateTitle(model, model.Title));
+        }
 
         [HttpGet("items")]
         public IActionResult GetAllItems([FromQuery]string type) => Ok(service.GetAllItems(type));

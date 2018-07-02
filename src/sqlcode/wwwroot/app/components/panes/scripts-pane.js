@@ -76,8 +76,7 @@ define([
             _scripts: {},
             add: (id, title, unnamed = true) =>
                 scriptNamesRepo._scripts[id] = { title: title, unnamed: unnamed },
-            getUnnamed: () =>
-                Object.values(scriptNamesRepo._scripts).filter(obj => obj.unnamed).map(obj => obj.title),
+            getUnnamed: () => Object.values(scriptNamesRepo._scripts).filter(obj => obj.unnamed).map(obj => obj.title),
             set: (id, title) => {
                 scriptNamesRepo._scripts[id].title = title;
                 scriptNamesRepo._scripts[id].unnamed = false;
@@ -124,20 +123,33 @@ define([
                         { text: "Reveal", action: () => activateByElement(element) },
                         { splitter: true },
                         {
-                            id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: { element: element }, action: args =>
-                                new InlineEditor({
-                                    element: args.element.find(".title"),
-                                    getInvalidNamesCallback: () => service.getNames(scriptsType),
-                                    acceptArgs: { id: element.data("id"), element: element },
-                                    onaccept: (newContent, args1) => {
-                                        _app.pub("scripts/title/update", newContent, args1.id, scriptsType);
-                                        scriptNamesRepo.set(args1.id, newContent);
-                                        args1.element.data("title", newContent);
-                                        if (model.filterBtn.data("state")) {
-                                            filter.execute();
+                            id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: { element: element }, action: args => {
+                                service.getNames(scriptsType).then(response => {
+                                    
+                                    const inline = new InlineEditor({
+                                        element: args.element.find(".title"),
+                                        values: response.data || [],
+                                        acceptArgs: { id: element.data("id"), element: element },
+                                        onaccept: (newContent, args1) => {
+                                            service.updateTitle(args1.id, scriptsType, newContent).then(response => {
+                                                if (!response.ok) {
+                                                    inline.editable();
+                                                    inline.element.focus();
+                                                    inline.setInvalid();
+                                                    _app.pub("scripts/title/save/fail", {id: args1.id, type: scriptsType, title: newContent});// todo: alerts
+                                                    return;
+                                                }
+                                                _app.pub("scripts/title/update", newContent, args1.id, scriptsType);
+                                                scriptNamesRepo.set(args1.id, newContent);
+                                                args1.element.data("title", newContent);
+                                                if (model.filterBtn.data("state")) {
+                                                    filter.execute();
+                                                }
+                                            });
                                         }
-                                    }
-                                })
+                                    });
+                                });
+                            }
                         },
                         { splitter: true },
                         { text: "Download", action: () => console.log("Download") }, //todo
