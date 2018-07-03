@@ -16,7 +16,7 @@ define([
         service.getNames(type).then(response => {
 
             const inline = new InlineEditor({
-                element: element.find(".title"),
+                element: element,
                 values: response.data || [],
                 onaccept: newContent => {
                     service.updateTitle(id, type, newContent).then(response => {

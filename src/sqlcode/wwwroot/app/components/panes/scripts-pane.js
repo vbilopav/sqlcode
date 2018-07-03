@@ -123,8 +123,16 @@ define([
                         { text: "Reveal", action: () => activateByElement(element) },
                         { splitter: true },
                         {
-                            id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: { element: element }, action: args => {
-                                new TitleEditor({element: args.element, id: element.data("id"), type: scriptsType, onaccept: e => {
+                            id: "rename", 
+                            text: "Rename", 
+                            keyBindings: "dblclick, F2", 
+                            args: { element: element.find(".title") }, 
+                            action: args => {
+                                new TitleEditor({
+                                    element: args.element, 
+                                    id: element.data("id"), 
+                                    type: scriptsType, 
+                                    onaccept: e => {
                                         _app.pub("scripts/title/update", e.newContent, e.id, e.type);
                                         scriptNamesRepo.set(e.id, e.newContent);
                                         e.element.data("title", e.newContent);

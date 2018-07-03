@@ -77,9 +77,17 @@ define([
                             }
                         },
                         {splitter: true},
-                        {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => {
-                                new TitleEditor({element: args.title, id: tab.data("script-id"), type: type1, onaccept: e => 
-                                    _app.pub("editor/title/update", e.newContent, e.id, e.type)
+                        {
+                            id: "rename", 
+                            text: "Rename", 
+                            keyBindings: "F2", 
+                            args: {title: title, tab: tab}, 
+                            action: args => {
+                                new TitleEditor({
+                                    element: args.title, 
+                                    id: args.tab.data("script-id"), 
+                                    type: args.tab.data("script-type"), 
+                                    onaccept: e => _app.pub("editor/title/update", e.newContent, e.id, e.type)
                                 });
                             }
                         },
