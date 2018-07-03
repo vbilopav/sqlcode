@@ -2,14 +2,12 @@ define([
     "controls/tabbed",
     "components/editor",
     "controls/monaco-menu",
-    "controls/inline-editor",
-    "services/script-service"
+    "components/script-title-editor"
 ], (
     Tabbed, 
     Editor, 
     Menu, 
-    InlineEditor, 
-    service
+    TitleEditor
 ) => {
 
     const 
@@ -80,26 +78,8 @@ define([
                         },
                         {splitter: true},
                         {id: "rename", text: "Rename", keyBindings: "F2", args: {title: title, tab: tab}, action: args => {
-                                let type1 = tab.data("script-type");
-                                service.getNames(type1).then(response => {
-                                    const inline = new InlineEditor({
-                                        element: args.title, 
-                                        values: response.data || [],
-                                        acceptArgs: {id: tab.data("script-id"), type: type1},
-                                        onaccept: (newContent, args) => {
-                                            service.updateTitle(args.id, args.type, newContent).then(response => {
-                                                if (!response.ok) {
-                                                    inline.editable();
-                                                    inline.element.focus();
-                                                    inline.setInvalid();
-                                                    _app.pub("scripts/title/save/fail", {id: args.id, type: args.type, title: newContent});// todo: alerts
-                                                    return;
-                                                }
-                                                _app.pub("editor/title/update", newContent, args.id, args.type);
-                                            });
-                                        }
-                                    });
-                                    
+                                new TitleEditor({element: args.title, id: tab.data("script-id"), type: type1, onaccept: e => 
+                                    _app.pub("editor/title/update", e.newContent, e.id, e.type)
                                 });
                             }
                         },
@@ -175,7 +155,7 @@ define([
                     }
                 })
                 .on("keydown", e => {
-                    if (InlineEditor.editing(title)) {
+                    if (TitleEditor.editing(title)) {
                         return;
                     }
                     if (e.key === "ArrowRight" || e.key === "ArrowUp") {

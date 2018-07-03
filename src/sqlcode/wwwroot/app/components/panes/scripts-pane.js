@@ -2,16 +2,16 @@ define([
     "sys/model",
     "sys/html",
     "controls/monaco-menu",
-    "controls/inline-editor",
     "services/script-service",
-    "components/pane-filter"
+    "components/pane-filter",
+    "components/script-title-editor"
 ], (
     Model, 
     html,
-    Menu, 
-    InlineEditor, 
+    Menu,  
     service,
-    Filter
+    Filter,
+    TitleEditor
 ) => {
 
     var model, filter;
@@ -124,30 +124,14 @@ define([
                         { splitter: true },
                         {
                             id: "rename", text: "Rename", keyBindings: "dblclick, F2", args: { element: element }, action: args => {
-                                service.getNames(scriptsType).then(response => {
-                                    
-                                    const inline = new InlineEditor({
-                                        element: args.element.find(".title"),
-                                        values: response.data || [],
-                                        acceptArgs: { id: element.data("id"), element: element },
-                                        onaccept: (newContent, args1) => {
-                                            service.updateTitle(args1.id, scriptsType, newContent).then(response => {
-                                                if (!response.ok) {
-                                                    inline.editable();
-                                                    inline.element.focus();
-                                                    inline.setInvalid();
-                                                    _app.pub("scripts/title/save/fail", {id: args1.id, type: scriptsType, title: newContent});// todo: alerts
-                                                    return;
-                                                }
-                                                _app.pub("scripts/title/update", newContent, args1.id, scriptsType);
-                                                scriptNamesRepo.set(args1.id, newContent);
-                                                args1.element.data("title", newContent);
-                                                if (model.filterBtn.data("state")) {
-                                                    filter.execute();
-                                                }
-                                            });
+                                new TitleEditor({element: args.element, id: element.data("id"), type: scriptsType, onaccept: e => {
+                                        _app.pub("scripts/title/update", e.newContent, e.id, e.type);
+                                        scriptNamesRepo.set(e.id, e.newContent);
+                                        e.element.data("title", e.newContent);
+                                        if (model.filterBtn.data("state")) {
+                                            filter.execute();
                                         }
-                                    });
+                                    }
                                 });
                             }
                         },
@@ -181,7 +165,7 @@ define([
             });
 
             element.on("keydown", e => {
-                if (InlineEditor.editing(element.find(".title"))) {
+                if (TitleEditor.editing(element.find(".title"))) {
                     return;
                 }
                 if (e.key === "ArrowUp") {
@@ -248,11 +232,13 @@ define([
         
         model.newBtn.on("click", e => {
             setTimeout(() => {
+
                 const
                     getName = (n => n ? `New script ${n + 1}` : "New script"), 
                     unnamed = scriptNamesRepo.getUnnamed(),
                     suggestion = getName(unnamed.length);
                 _app.pub("scripts/create", scriptNamesRepo.total() + 1, suggestion, scriptsType);
+
             }, 0);
         });
         filter.activate(false); // initial state for filter ctrl
