@@ -30,7 +30,7 @@ namespace sqlcode.Scripting
 
     public class ScriptingService : IScriptingService
     {
-        private static Object titlesLock = new Object();
+        private static readonly object TitlesLock = new object();
 
         private readonly IDatabaseAdapter db;
 
@@ -48,7 +48,7 @@ namespace sqlcode.Scripting
 
         public IEnumerable<string> GetAllTitles(string type)
         {
-            lock(titlesLock)
+            lock(TitlesLock)
             {
                 return db.FindBy(specs.GetTypeSpec(type)).Select(item => item.Title);
             }
@@ -63,9 +63,9 @@ namespace sqlcode.Scripting
 
         public bool UpdateTitle(ScriptKeyModel key, string title)
         {
-            lock(titlesLock)
+            lock(TitlesLock)
             {
-                if (this.GetAllItems(key.Type).Where(item => item.Title == title && item.Id != key.Id).Any())
+                if (this.GetAllItems(key.Type).Any(item => item.Title == title && item.Id != key.Id))
                 {
                     throw new DuplicateTitleException();
                 }

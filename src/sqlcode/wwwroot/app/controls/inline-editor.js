@@ -11,6 +11,7 @@ define(["sys/html"], html => {
             onaccept=(()=>{}),
             max=100
         }) {
+            this.element = element;
             const
                 old = clean(element.html()),
                 oldTitle = element.attr("title");
@@ -36,6 +37,7 @@ define(["sys/html"], html => {
                     }
                     element.removeClass("invalid").attr("contenteditable", "false").html(content);
                     if (content !== old) {
+                        this.element.attr("title", content);
                         onaccept(html.stripHtml(content), acceptArgs)
                     }
                 },
@@ -56,8 +58,7 @@ define(["sys/html"], html => {
                     valid();
                     prev = content;
                 }
-            
-            this.element = element;
+                        
             this.editable()
                 .on("blur", accept)
                 .on("focus", () => {

@@ -14,7 +14,7 @@ define([
     Filter
 ) => {
 
-    var model, filter
+    var model, filter;
 
     const 
         scriptsType = "pgsql",
