@@ -9,6 +9,7 @@ define(["sys/html"], html => {
             values=[],
             acceptArgs,
             onaccept=(()=>{}),
+            onreject=(()=>{}),
             max=100
         }) {
             this.element = element;

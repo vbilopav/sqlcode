@@ -1,12 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using sqlcode.LocalStorage;
 
 namespace sqlcode.Scripting
-{
-    using System;
-    using System.Linq.Expressions;
-    using LocalStorage;
-
+{   
     public interface IScriptingService
     {
         bool AddOrUpdate(ScriptViewModel model);

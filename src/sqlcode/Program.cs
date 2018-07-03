@@ -6,12 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using AutoMapper;
+using sqlcode.Scripting;
+using sqlcode.LocalStorage;
 
 namespace sqlcode
 {
-    using Scripting;
-    using LocalStorage;
-
     public class Program
     {
         public static void Main(string[] args) => WebHost.CreateDefaultBuilder(args).UseStartup<Startup>().Build().Run();

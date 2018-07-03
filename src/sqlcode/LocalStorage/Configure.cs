@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using sqlcode.Scripting;
 
 namespace sqlcode.LocalStorage
-{
-    using Scripting;
-
+{    
     public static class Configure
     {
         public static IServiceCollection AddLocalDatabase(this IServiceCollection services, AppConfig config)
