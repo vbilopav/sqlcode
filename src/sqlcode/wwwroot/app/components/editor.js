@@ -82,16 +82,18 @@ define([
             if (!existing) {
                 dirtyStates.set(this, true);
                 this.save();
-                //dirtyStates.set(this, false);
             }
-            this._monaco.model.onDidChangeContent(() => {
+            this._monaco.model.onDidChangeContent(e => {
+                if (e.isFlush) {
+                    return;
+                }
                 dirtyStates.set(this, true);
                 if (updateContentTimeout) {
                     clearTimeout(updateContentTimeout);
                 } 
+                let pending = this;
                 updateContentTimeout = setTimeout(() => {
-                    this.save();
-                    //dirtyStates.set(this, false);
+                    Editor.save(pending);
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
@@ -100,20 +102,24 @@ define([
         }
 
         save() {
-            if (dirtyStates.get(this) === false || !this._monaco.model) {
+            Editor.save(this);
+        }
+
+        static save(instance) {
+            if (dirtyStates.get(instance) === false || !instance._monaco.model) {
                 return;
             }
-            service.save(this.id, this.type, {
-                viewState: this._monaco.saveViewState(),
-                content: this._monaco.model.getValue(),
-                title: this.title
+            service.save(instance.id, instance.type, {
+                viewState: instance._monaco.saveViewState(),
+                content: instance._monaco.model.getValue(),
+                title: instance.title
             }).then(response => {
                 if (response.ok) {
-                    dirtyStates.set(this, !response.data.saved);
+                    dirtyStates.set(instance, !response.data.saved);
                 } else {
-                    dirtyStates.set(this, true);
+                    dirtyStates.set(instance, true);
                     _app.pub("editor/alert/save/fail", { // todo: alerts
-                        editor: this,
+                        editor: instance,
                         response: response
                     });
                 }
@@ -132,7 +138,7 @@ define([
                 clearTimeout(updateContentTimeout);
                 this.id = response.data.id;
                 this.type = response.data.type;
-                this._monaco.setValue(response.data.content);
+                this._monaco.setValue(response.data.content == null ? "" : response.data.content);
                 this._monaco.restoreViewState(response.data.viewState);
                 dirtyStates.set(this, false);
             });
@@ -170,12 +176,6 @@ define([
                     }
                     editor.focus();
                 });
-                /*
-                .sub([
-                    "scripts/title/update", 
-                    "editor/title/update"
-                ], (title, id, type) => service.updateTitle(id, type, title));
-                */
         }
 
         static editorByContainer(container) {

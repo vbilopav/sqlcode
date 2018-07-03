@@ -59,10 +59,11 @@ define([
                     id: "editor-bench-tab-menu",
                     target: tab,
                     items: [
-                        {id: "close", text: "Close", keyBindings: "Ctrl+F4", args: {tab: tab}, action: args => 
-                            tabbed.closeByTab(args.tab)
+                        {
+                            id: "close", text: "Close", keyBindings: "Ctrl+F4", args: {tab: tab}, action: args => tabbed.closeByTab(args.tab)
                         },
-                        {text: "Close Others", action: () => {
+                        {
+                            text: "Close Others", action: () => {
                                 for(let t of tabbed.tabs.findAll("." + name)) {
                                     if (t.id !== tab.id) {
                                         tabbed.closeByTab(t);
@@ -70,13 +71,14 @@ define([
                                 }
                             }
                         },
-                        {text: "Close All", action: () => {
+                        {
+                            text: "Close All", action: () => {
                                 for(let t of tabbed.tabs.findAll("." + name)) {
                                     tabbed.closeByTab(t);
                                 }
                             }
                         },
-                        {splitter: true},
+                        { splitter: true },
                         {
                             id: "rename", 
                             text: "Rename", 
@@ -91,9 +93,9 @@ define([
                                 });
                             }
                         },
-                        {splitter: true},
-                        {id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => 
-                            args.tab.removeClass("sticky")
+                        { splitter: true },
+                        {
+                            id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => args.tab.removeClass("sticky")
                         }
                     ],
                     contextmenuItems: items => {
@@ -301,6 +303,7 @@ define([
                 _app.pub(["editor/activated", `editor/activated/${oldType}`], {
                     id: oldId, type: oldType, state: false, tab: sticky
                 });
+                editor.save();
             } else {
                 const r = createActiveNewTab(id, title, type, true);
                 sticky = r.tab;

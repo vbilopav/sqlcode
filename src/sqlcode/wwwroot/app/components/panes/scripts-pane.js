@@ -114,13 +114,21 @@ define([
                 .data("title", title)
                 .addClass(`item-${id}`)
                 .attr("tabindex", id);
+            
+            const 
+                _item = element.find(".item"),
+                _title = element.find(".title"),
+                _expand = element.find(".expand"),
+                _details = element.find(".details");
 
             const
                 menu = new Menu({
                     id: "scripts-pane-item-menu",
                     target: element,
                     items: [
-                        { text: "Reveal", action: () => activateByElement(element) },
+                        { 
+                            text: "Reveal", action: () => activateByElement(element) 
+                        },
                         { splitter: true },
                         {
                             id: "rename", 
@@ -144,8 +152,12 @@ define([
                             }
                         },
                         { splitter: true },
-                        { text: "Download", action: () => console.log("Download") }, //todo
-                        { text: "Remove", action: () => console.log("Remove") } //todo
+                        { 
+                            text: "Download", action: () => console.log("Download") //todo
+                        }, 
+                        { 
+                            text: "Remove", action: () => console.log("Remove") //todo
+                        } 
                     ],
                     contextmenuItems: items => {
                         const show = !element.hasClass("active");
@@ -155,7 +167,7 @@ define([
                     }
                 });
             
-            element.find(".item")
+            _item
                 .on("click", () => {
                     if (element.hasClass("active")) {
                         return;
@@ -167,41 +179,43 @@ define([
                     menu.triggerById("rename", {element: element});
                 });
             
-            element.find(".expand").on("click", e => {
-                const dir = e.target.data("dir") === "right" ? "down" : "right";
-                expand(e.target, dir);
-            });
+            _expand
+                .on("click", e => {
+                    const dir = e.target.data("dir") === "right" ? "down" : "right";
+                    expand(e.target, dir);
+                });
 
-            element.on("keydown", e => {
-                if (TitleEditor.editing(element.find(".title"))) {
-                    return;
-                }
-                if (e.key === "ArrowUp") {
-                    let prev = element.previousSibling;
-                    if (prev.nodeName === "#text") {
-                        prev = model.content.lastChild;
+            _details.on("click", () => _item.trigger("click"));
+
+            return element
+                .on("keydown", e => {
+                    if (TitleEditor.editing(_title)) {
+                        return;
                     }
-                    activateByElement(prev);
-                } else if (e.key === "ArrowDown") {
-                    activateByElement(element.nextSibling || model.content.firstChild.nextElementSibling);
-                } else if (e.key === "ArrowRight") {
-                    
-                    // expand ... todo
-                    expand(element.find(".expand"), "down");
+                    if (e.key === "ArrowUp") {
+                        let prev = element.previousSibling;
+                        if (prev.nodeName === "#text") {
+                            prev = model.content.lastChild;
+                        }
+                        activateByElement(prev);
+                    } else if (e.key === "ArrowDown") {
+                        activateByElement(element.nextSibling || model.content.firstChild.nextElementSibling);
+                    } else if (e.key === "ArrowRight") {
+                        
+                        // expand ... todo
+                        expand(_expand, "down");
 
-                } else if (e.key === "ArrowLeft") {
-                    
-                    // collapse ... todo
-                    expand(element.find(".expand"), "right");
+                    } else if (e.key === "ArrowLeft") {
+                        
+                        // collapse ... todo
+                        expand(_expand, "right");
 
-                } else if (e.key === "Tab" || e.key === "Enter") {
-                    _app.pub("monaco/active-editor/focus");
-                } else if (e.key === "F2") {
-                    menu.triggerById("rename", {element: element});
-                }
-            });
-            
-            return element;
+                    } else if (e.key === "Tab" || e.key === "Enter") {
+                        _app.pub("monaco/active-editor/focus");
+                    } else if (e.key === "F2") {
+                        menu.triggerById("rename", {element: element});
+                    }
+                });
         };
 
     const
