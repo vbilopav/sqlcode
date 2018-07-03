@@ -126,10 +126,10 @@ define([
                             id: "rename", 
                             text: "Rename", 
                             keyBindings: "dblclick, F2", 
-                            args: { element: element.find(".title") }, 
+                            args: { element: element }, 
                             action: args => {
                                 new TitleEditor({
-                                    element: args.element, 
+                                    element: args.element.find(".title"),
                                     id: element.data("id"), 
                                     type: scriptsType, 
                                     onaccept: e => {
