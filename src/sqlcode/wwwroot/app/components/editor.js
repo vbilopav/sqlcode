@@ -10,7 +10,8 @@ define([
     var
         getActiveContentFunc,
         resizeTimeout,
-        updateContentTimeout;
+        updateContentTimeout,
+        updateStateTimeout;
     
     const
         _editorId = "editor-ref";
@@ -93,33 +94,52 @@ define([
                 } 
                 let pending = this;
                 updateContentTimeout = setTimeout(() => {
-                    Editor.save(pending);
+                    pending.save();
                 }, 1000);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
             this._monaco.onDidFocusEditor(() => this.container.addClass("editor-focus"));
             this._monaco.onDidBlurEditor(() => this.container.removeClass("editor-focus"));
+
+            this._monaco.onDidChangeCursorPosition(e => {
+                if (updateStateTimeout || updateContentTimeout) {
+                    clearTimeout(updateStateTimeout);
+                } 
+                let pending = this;
+                updateStateTimeout = setTimeout(() => {
+                    pending.saveState();
+                }, 1000);
+            })
         }
 
         save() {
-            Editor.save(this);
-        }
-
-        static save(instance) {
-            if (dirtyStates.get(instance) === false || !instance._monaco.model) {
+            if (dirtyStates.get(this) === false || !this._monaco.model) {
                 return;
             }
-            service.save(instance.id, instance.type, {
-                viewState: instance._monaco.saveViewState(),
-                content: instance._monaco.model.getValue(),
-                title: instance.title
+            clearTimeout(updateContentTimeout);
+            updateContentTimeout = undefined;
+            service.save(this.id, this.type, {
+                viewState: this._monaco.saveViewState(),
+                content: this._monaco.model.getValue(),
+                title: this.title
             }).then(response => {
                 if (response.ok) {
-                    dirtyStates.set(instance, !response.data.saved);
+                    dirtyStates.set(this, !response.data.saved);
                 } else {
-                    dirtyStates.set(instance, true);
+                    dirtyStates.set(this, true);
                     _app.pub("editor/alert/save/fail", { // todo: alerts
-                        editor: instance,
+                        editor: this,
+                        response: response
+                    });
+                }
+            });
+        }
+
+        saveState() {
+            service.updateViewState(this.id, this.type, this._monaco.saveViewState()).then(response => {
+                if (!response.ok) {
+                    _app.pub("editor/alert/save-state/fail", { // todo: alerts
+                        editor: this,
                         response: response
                     });
                 }
@@ -136,6 +156,7 @@ define([
                     return false;
                 }
                 clearTimeout(updateContentTimeout);
+                updateContentTimeout = undefined;
                 this.id = response.data.id;
                 this.type = response.data.type;
                 this._monaco.setValue(response.data.content == null ? "" : response.data.content);

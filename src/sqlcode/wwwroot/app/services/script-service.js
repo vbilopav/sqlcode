@@ -16,7 +16,11 @@ define(["sys/fetch"], f => {
         ),
 
         retreive: async (id, type) => await f.getStdResponse(
-            await fetch(`${baseUrl}?${f.url({id: id, type: type})}`)
+            await fetch(`${baseUrl}?${f.url({id: id, type: type})}`),
+            data => {
+                data.viewState = JSON.parse(data.viewState);
+                return data;
+            }
         ),
         
         getNames: async type => await f.getStdResponse(
@@ -31,8 +35,17 @@ define(["sys/fetch"], f => {
 
         getItems: async type => await f.getStdResponse(
             await fetch(`${baseUrl}/items?type=${type}`)
-        )
+        ),
 
+        updateViewState: async (id, type, viewState) => await f.getStdResponse(
+            await fetch(
+                `${baseUrl}/viewstate?${f.url({id: id, type: type})}`, 
+                {
+                    method: "POST", 
+                    body: JSON.stringify(viewState)
+                }
+            )
+        )
     }
 
 });

@@ -46,5 +46,14 @@ namespace sqlcode.Scripting
 
         [HttpGet("items")]
         public IActionResult GetAllItems([FromQuery]string type) => Ok(service.GetAllItems(type));
+
+        [HttpPost("viewstate")]
+        public async Task<IActionResult> UpdateViewState([FromQuery]ScriptKeyModel key)
+        {
+            string viewstate;
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+                viewstate = await reader.ReadToEndAsync();
+            return Ok(service.UpdateViewState(key, viewstate));
+        }
     }
 }

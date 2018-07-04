@@ -13,6 +13,7 @@ namespace sqlcode.Scripting
         IEnumerable<string> GetAllTitles(string type);
         bool UpdateTitle(ScriptKeyModel key, string title);
         IEnumerable<ScriptTitleViewModel> GetAllItems(string type);
+        bool UpdateViewState(ScriptKeyModel key, string viewState);
     }
 
     public class ScriptItemSpecs
@@ -77,5 +78,16 @@ namespace sqlcode.Scripting
                 return db.Update(result);
             }
         } 
+
+        public bool UpdateViewState(ScriptKeyModel key, string viewState)
+        {
+            var result = db.FirstOrDefault(specs.GetKeySpec(key));
+            if (result == default(ScriptDocumentModel))
+            {
+                return false;
+            }
+            result.ViewState = viewState;
+            return db.Update(result);
+        }
     }
 }
