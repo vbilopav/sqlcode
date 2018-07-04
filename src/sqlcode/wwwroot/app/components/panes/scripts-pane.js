@@ -229,10 +229,10 @@ define([
     
     const
         newItem = (id, title) => {
-            let item = createItem(id, title);
-            model.content.append(item);
+            const item1 = createItem(id, title);
+            model.content.append(item1);
             scriptNamesRepo.add(id, title);
-            return item;
+            return item1;
         };
 
     return container => {
