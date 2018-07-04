@@ -126,7 +126,7 @@ define([
             });
         }
 
-        restore(id, type) {
+        restore(id, type, onrestored=()=>{}) {
             service.retreive(id, type).then(response => {
                 if (!response.ok || !response.data) {
                     _app.pub("editor/alert/retreive/fail", { // todo: alerts
@@ -141,6 +141,7 @@ define([
                 this._monaco.setValue(response.data.content == null ? "" : response.data.content);
                 this._monaco.restoreViewState(response.data.viewState);
                 dirtyStates.set(this, false);
+                onrestored()
             });
         }
 

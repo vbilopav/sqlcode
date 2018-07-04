@@ -189,13 +189,22 @@ define([
     const
         updateTabData = (tab, type, id) => {
             const scriptClass = type + "-" + id;
-            tab.addClass(scriptClass).data("script-class", scriptClass).data("script-id", id).data("script-type", type).attr("tabindex", id);
+            tab
+                .addClass(scriptClass)
+                .data("script-class", scriptClass)
+                .data("script-id", id).data("script-type", type)
+                .attr("tabindex", id);
         };
 
     const
         mapEventToPubSub = (event, editor) => {
             return {
-                tab: event.tab, count: event.count, editor: editor, state: event.state, id: (editor ? editor.id : null), type: (editor ? editor.type : null)
+                tab: event.tab, 
+                count: event.count, 
+                editor: editor, 
+                state: event.state, 
+                id: (editor ? editor.id : null), 
+                type: (editor ? editor.type : null)
             }
         };
 
@@ -255,15 +264,15 @@ define([
 
         tabbed.afterActivate = event => {
             const
-                editor = Editor.editorByContainer(event.content),
-                args = mapEventToPubSub(event, editor);
+                editor = Editor.editorByContainer(event.content);
             if (event.state && !event.dontFocus) {
                 editor.focus();
             }
             if (event.state && event.focusTab) {
                 event.tab.focus();
             }
-            _app.pub(["editor/activated", "editor/activated/" + editor.type], args);
+            _app.pub(["editor/activated", "editor/activated/" + editor.type], 
+                mapEventToPubSub(event, editor));
         };
 
         _app.sub("sidebar/changed", () => {
@@ -298,8 +307,9 @@ define([
                 sticky.removeClass(sticky.data("script-class"));
                 editor = Editor.editorByContainer(Tabbed.contentByTab(sticky));
                 sticky.find(".title").attr("title", title).html(title);
-                const oldId = sticky.data("script-id");
-                const oldType = sticky.data("script-type");
+                const 
+                    oldId = sticky.data("script-id"), 
+                    oldType = sticky.data("script-type");
                 _app.pub(["editor/activated", `editor/activated/${oldType}`], {
                     id: oldId, type: oldType, state: false, tab: sticky
                 });
@@ -311,8 +321,8 @@ define([
                 sticky.addClass("sticky");
             }
             updateTabData(sticky, type, id);
-            editor.restore(id, type);
-            tabbed.activate(sticky);
+            editor.restore(id, type, () => tabbed.activate(sticky, {dontFocus: dontFocus}));
+
             if (!dontFocus) {
                 editor.focus();
             }

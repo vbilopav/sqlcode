@@ -3,7 +3,7 @@ define([
     "sys/html",
     "controls/monaco-menu",
     "services/script-service",
-    "components/pane-filter",
+    "components/panes/pane-filter",
     "components/script-title-editor"
 ], (
     Model, 
@@ -167,8 +167,8 @@ define([
                     }
                 });
             
-            _item
-                .on("click", () => {
+            element
+                .on("focus", () => {
                     if (element.hasClass("active")) {
                         return;
                     }
@@ -184,8 +184,6 @@ define([
                     const dir = e.target.data("dir") === "right" ? "down" : "right";
                     expand(e.target, dir);
                 });
-
-            _details.on("click", () => _item.trigger("click"));
 
             return element
                 .on("keydown", e => {
