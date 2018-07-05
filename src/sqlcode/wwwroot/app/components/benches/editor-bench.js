@@ -1,6 +1,6 @@
 define([
     "controls/tabbed",
-    "components/editor",
+    "components/script-editor",
     "controls/monaco-menu",
     "components/script-title-editor"
 ], (
@@ -9,6 +9,13 @@ define([
     Menu, 
     TitleEditor
 ) => {
+
+    var 
+        tabbed = null,
+        tabRibbon = undefined;
+    
+    const
+        name = "editor-tab";
 
     const 
         tabTemplate = title => String.html`
@@ -25,13 +32,6 @@ define([
             <button class="close" title="Close (Ctrl+F4)">
                 &#10006;
             </button>`;
-
-    const
-        name = "editor-tab";
-
-    var 
-        tabbed = null,
-        tabRibbon = undefined;
 
     const
         editorNoTabs = () => {
@@ -258,7 +258,7 @@ define([
 
         tabbed.beforeClose = event => {
             let editor = Editor.editorByContainer(event.content);
-            editor.save();
+            editor.saveAll();
             return true;
         };
 
@@ -313,7 +313,7 @@ define([
                 _app.pub(["editor/activated", `editor/activated/${oldType}`], {
                     id: oldId, type: oldType, state: false, tab: sticky
                 });
-                editor.save();
+                editor.saveAll();
             } else {
                 const r = createActiveNewTab(id, title, type, true);
                 sticky = r.tab;

@@ -12,8 +12,10 @@ define([
         resizeTimeout,
         updateContentTimeout,
         updateStateTimeout;
-    
+
     const
+        updateContentTimeoutMs = 1000,
+        updateStateTimeoutMs = 1000,
         _editorId = "editor-ref";
 
     const 
@@ -95,7 +97,7 @@ define([
                 let pending = this;
                 updateContentTimeout = setTimeout(() => {
                     pending.save();
-                }, 1000);
+                }, updateContentTimeoutMs);
             });
             this._monaco.onContextMenu(() => _app.pub("monaco/context-menu/open"));
             this._monaco.onDidFocusEditor(() => this.container.addClass("editor-focus"));
@@ -108,13 +110,13 @@ define([
                 let pending = this;
                 updateStateTimeout = setTimeout(() => {
                     pending.saveState();
-                }, 1000);
+                }, updateStateTimeoutMs);
             })
         }
 
         save() {
             if (dirtyStates.get(this) === false || !this._monaco.model) {
-                return;
+                return false;
             }
             clearTimeout(updateContentTimeout);
             updateContentTimeout = undefined;
@@ -133,9 +135,12 @@ define([
                     });
                 }
             });
+            return true;
         }
 
         saveState() {
+            clearTimeout(updateStateTimeout);
+            updateStateTimeout = undefined;
             service.updateViewState(this.id, this.type, this._monaco.saveViewState()).then(response => {
                 if (!response.ok) {
                     _app.pub("editor/alert/save-state/fail", { // todo: alerts
@@ -144,6 +149,12 @@ define([
                     });
                 }
             });
+        }
+
+        saveAll() {
+            if (!this.save()) {
+                this.saveState();
+            }
         }
 
         restore(id, type, onrestored=()=>{}) {
