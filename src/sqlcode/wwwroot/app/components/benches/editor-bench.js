@@ -93,20 +93,15 @@ define([
                                 });
                             }
                         },
-                        { splitter: true },
+                        { id: "split", splitter: true },
                         {
                             id: "keep-open", text: "Keep Open", keyBindings: "dblclick, Ctrl+K", args: {tab: tab}, action: args => args.tab.removeClass("sticky")
                         }
                     ],
                     contextmenuItems: items => {
-                        let sticky = tab.hasClass("sticky");
-                        items[5].element.show(sticky);
-                        items[6].element.show(sticky);
-                        if (sticky) {
-                            items[4].element.find(".keybinding").html("F2");
-                        } else {
-                            items[4].element.find(".keybinding").html("dblclick, F2");
-                        }
+                        const sticky = tab.hasClass("sticky");
+                        items.filter(i => i.id === "split")[0].element.show(sticky);
+                        items.filter(i => i.id === "keep-open")[0].element.show(sticky);
                         return items;
                     }
                 });
@@ -160,9 +155,8 @@ define([
                 .on("dblclick", () => {
                     if (tab.hasClass("sticky")) {
                         menu.triggerById("keep-open", {tab: tab});
-                    } else {
-                        menu.triggerById("rename", {title: title, tab: tab});
-                    }
+                    } 
+                    Editor.editorByContainer(Tabbed.contentByTab(tab)).focus();
                 })
                 .on("keydown", e => {
                     if (TitleEditor.editing(title)) {
@@ -333,6 +327,13 @@ define([
         .sub("scripts/keep-open", (id, type) => tabbed.tabs.find(`.${type}-${id}`).removeClass("sticky"))
         .sub("scripts/title/update", (title, id, type) => 
             tabbed.tabs.find("." + type + "-" + id).find(".title").attr("title", title).html(title));
+
+        window.on("beforeunload", () => {
+            active = Editor.editorByContainer(tabbed.activeContent);
+            if (active) {
+                active.saveAll();
+            }
+        });
 
         // inital state... load previous scripts here
         editorNoTabs();

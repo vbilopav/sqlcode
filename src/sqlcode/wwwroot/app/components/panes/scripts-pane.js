@@ -127,13 +127,13 @@ define([
                     target: element,
                     items: [
                         { 
-                            text: "Reveal", action: () => activateByElement(element) 
+                            id: "reveal", text: "Reveal", action: () => activateByElement(element) 
                         },
-                        { splitter: true },
+                        { id: "split1", splitter: true },
                         {
                             id: "rename", 
                             text: "Rename", 
-                            keyBindings: "dblclick, F2", 
+                            keyBindings: "F2", 
                             args: { element: element }, 
                             action: args => {
                                 new TitleEditor({
@@ -161,14 +161,20 @@ define([
                     ],
                     contextmenuItems: items => {
                         const show = !element.hasClass("active");
-                        items[0].element.show(show);
-                        items[1].element.show(show);
+                        items.filter(i => i.id === "reveal")[0].element.show(show);
+                        items.filter(i => i.id === "split1")[0].element.show(show);
                         return items;
                     }
                 });
             
-            element
-                .on("focus", () => {
+            _expand
+                .on("click", e => {
+                    const dir = e.target.data("dir") === "right" ? "down" : "right";
+                    expand(e.target, dir);
+                });
+
+            _item
+                .on("click", () => {
                     if (element.hasClass("active")) {
                         return;
                     }
@@ -176,13 +182,7 @@ define([
                 })
                 .on("dblclick", () => {
                     _app.pub("scripts/keep-open", id, scriptsType);
-                    menu.triggerById("rename", {element: element});
-                });
-            
-            _expand
-                .on("click", e => {
-                    const dir = e.target.data("dir") === "right" ? "down" : "right";
-                    expand(e.target, dir);
+                    _app.pub("monaco/active-editor/focus"); // todo: focus associated editor, not active
                 });
 
             return element
@@ -209,7 +209,9 @@ define([
                         expand(_expand, "right");
 
                     } else if (e.key === "Tab" || e.key === "Enter") {
-                        _app.pub("monaco/active-editor/focus");
+                    
+                        _app.pub("monaco/active-editor/focus"); // todo: focus associated editor, not active
+                    
                     } else if (e.key === "F2") {
                         menu.triggerById("rename", {element: element});
                     }
