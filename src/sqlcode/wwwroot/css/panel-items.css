@@ -21,6 +21,7 @@
 .panel-item.active {
     background-color: #1E1E1E;
     color: #fff;
+    font-weight: 600;
 }
 .panel-item.active > .text {
     cursor: initial;

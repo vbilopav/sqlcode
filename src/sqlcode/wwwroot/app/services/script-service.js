@@ -7,7 +7,7 @@ define(["sys/fetch"], f => {
 
         save: async (id, type, {viewState, content, title}) => await f.getStdResponse(
             await fetch(
-                `${baseUrl}?${f.url({id: id, type: type, title: title, ViewState: JSON.stringify(viewState)})}`, 
+                `${baseUrl}?${f.url({id: id, type: type, title: title, viewState: JSON.stringify(viewState)})}`, 
                 {
                     method: "POST", 
                     body: content

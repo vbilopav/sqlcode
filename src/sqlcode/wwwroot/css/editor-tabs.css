@@ -59,6 +59,7 @@
     background-color: #1E1E1E;
     color: #fff;
     margin: 1px;
+    font-weight: 600;
 }
 .editor-tab.tab-inactive .close {
     visibility: hidden;

@@ -4,7 +4,7 @@ define([
     "controls/monaco-menu",
     "services/script-service",
     "components/panes/pane-filter",
-    "components/script-title-editor"
+    "components/editors/script-title-editor"
 ], (
     Model, 
     html,
@@ -252,6 +252,7 @@ define([
             }
         });
         
+        // new script action
         model.newBtn.on("click", e => {
             setTimeout(() => {
 
@@ -263,6 +264,8 @@ define([
 
             }, 0);
         });
+
+
         filter.activate(false); // initial state for filter ctrl
         model.filterBtn.on("click", () => filter.toggle());
         

@@ -1,8 +1,8 @@
 define([
     "controls/tabbed",
-    "components/script-editor",
+    "components/editors/script-editor",
     "controls/monaco-menu",
-    "components/script-title-editor"
+    "components/editors/script-title-editor"
 ], (
     Tabbed, 
     Editor, 
