@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 using Moq;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,18 @@ namespace IntegrationTests
                     ViewState = "test",
                     Content = "test"
                 }));
+
+
+                Console.WriteLine(db.Upsert(new ScriptDocumentModel
+                {
+                    Key = new ScriptKeyModel { Id = 0, Type = "test" },
+                    Title = "test",
+                    ViewState = "test",
+                    Content = "test"
+                }));
+
+                var test1 = db.FindBy<ScriptDocumentModel>(e => e.Key.Type == "test").ToList();
+                Console.WriteLine(test1);
             }
         }
     }
