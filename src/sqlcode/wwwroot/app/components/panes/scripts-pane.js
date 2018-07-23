@@ -261,7 +261,7 @@ define([
                 const
                     getName = (n => n ? `New script ${n + 1}` : "New script"), 
                     //unnamed = scriptNamesRepo.getUnnamed(),
-                    suggestion = getName(unnamed.length);
+                    suggestion = getName(1);//getName(unnamed.length);
                 _app.pub("scripts/create", null, "New script", scriptsType); // id and name will be created on backend
                     // scriptNamesRepo.total() + 1, suggestion, scriptsType);
 
