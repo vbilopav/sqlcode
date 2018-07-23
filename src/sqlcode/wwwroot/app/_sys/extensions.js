@@ -10,7 +10,7 @@ define(["sys/html"], html => {
         };
 
     test(HTMLElement, [
-        "find", "findAll",
+        "find", "findAll", "forEachChild",
         "show", "hide", "visible", "html", 
         "appendTo",
         "addClass", "removeClass", "hasClass", "toggleClass",
@@ -39,6 +39,18 @@ define(["sys/html"], html => {
 
     HTMLElement.prototype.findAll = function(search) {
         return this.querySelectorAll(search);
+    }
+
+    HTMLElement.prototype.forEachChild = function(callback=()=>{}, callFirst=false) {
+        if (callFirst) {
+            callback(this);
+        }
+        if (this.children.length) {
+            for(let e of this.children) {
+                e.forEachChild(callback, true);
+            }
+        }
+        return this;
     }
 
     HTMLElement.prototype.show = function(state) {

@@ -11,12 +11,11 @@ define([], () => class {
     }
 
     bind(element, instance) {
-        const search = "input, select, button, span, div, a";
         this._instance = instance || Object.assign({}, this);
         if (!this._model) {
-            element.findAll(search).forEach(e => {this._forEachDeclarative(e)});
+            element.forEachChild(e => this._forEachDeclarative(e));
         } else {
-            element.findAll(search).forEach(e => {this._forEachProgrammatic(e)});
+            element.forEachChild(e => this._forEachProgrammatic(e));
         }
         return this;
     }
@@ -49,7 +48,7 @@ define([], () => class {
                 if (m(element)) {
                     this._assignProps(name, element);
                 }
-            }           
+            }
         }
     }
 
