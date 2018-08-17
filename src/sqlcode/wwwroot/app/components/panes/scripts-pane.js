@@ -71,7 +71,7 @@ define([
             }
         };
 
-        /*
+
     const
         scriptNamesRepo = {
             _scripts: {},
@@ -84,7 +84,6 @@ define([
             },
             total: () => Object.keys(scriptNamesRepo._scripts).length
         };
-        */
 
     const
         activateByElement = element => {
@@ -144,7 +143,7 @@ define([
                                     type: scriptsType, 
                                     onaccept: e => {
                                         _app.pub("scripts/title/update", e.newContent, e.id, e.type);
-                                        //scriptNamesRepo.set(e.id, e.newContent);
+                                        scriptNamesRepo.set(e.id, e.newContent);
                                         e.element.data("title", e.newContent);
                                         if (model.filterBtn.data("state")) {
                                             filter.execute();
@@ -233,7 +232,7 @@ define([
         newItem = (id, title) => {
             const item1 = createItem(id, title);
             model.content.append(item1);
-            //scriptNamesRepo.add(id, title);
+            scriptNamesRepo.add(id, title);
             return item1;
         };
 
@@ -260,10 +259,9 @@ define([
 
                 const
                     getName = (n => n ? `New script ${n + 1}` : "New script"), 
-                    //unnamed = scriptNamesRepo.getUnnamed(),
-                    suggestion = getName(1);//getName(unnamed.length);
-                _app.pub("scripts/create", null, "New script", scriptsType); // id and name will be created on backend
-                    // scriptNamesRepo.total() + 1, suggestion, scriptsType);
+                    unnamed = scriptNamesRepo.getUnnamed(),
+                    suggestion = getName(unnamed.length);
+                    _app.pub("scripts/create", scriptNamesRepo.total() + 1, suggestion, scriptsType);
 
             }, 0);
         });
